@@ -45,35 +45,35 @@ def render_frontline_portal(jd_agent):
     col1, col2, col3, col4 = st.columns(4)
     with col1:
         st.markdown(f'''
-        <div class="kpi-card">
-            <div class="kpi-card-header"><span class="kpi-card-title">Approved Documents</span><span class="kpi-card-icon">{get_icon('book-open', 15, 'var(--text-tertiary)')}</span></div>
-            <div class="kpi-card-value">{kb_count} Docs</div>
-            <div class="kpi-card-footer">Circulars, T&Cs, Manuals</div>
+        <div class="kpi-horizon-card">
+            <div class="kpi-horizon-header"><span class="kpi-horizon-title">Approved Documents</span><span class="kpi-card-icon">{get_icon('book-open', 14, 'var(--text-tertiary)')}</span></div>
+            <div class="kpi-horizon-value">{kb_count} Docs</div>
+            <div class="kpi-horizon-subtext"><span>Circulars, T&Cs, Manuals</span></div>
         </div>
         ''', unsafe_allow_html=True)
     with col2:
         st.markdown(f'''
-        <div class="kpi-card">
-            <div class="kpi-card-header"><span class="kpi-card-title">Grounding Standard</span><span class="kpi-card-icon">{get_icon('shield', 15, 'var(--text-tertiary)')}</span></div>
-            <div class="kpi-card-value" style="color: var(--status-positive);">Zero Hallucination</div>
-            <div class="kpi-card-footer">100% Certified Citations</div>
+        <div class="kpi-horizon-card">
+            <div class="kpi-horizon-header"><span class="kpi-horizon-title">Grounding Standard</span><span class="kpi-card-icon">{get_icon('shield', 14, 'var(--status-positive)')}</span></div>
+            <div class="kpi-horizon-value" style="color: var(--status-positive); font-size: 19px;">Zero Hallucination</div>
+            <div class="kpi-horizon-subtext"><span>100% Certified Citations</span></div>
         </div>
         ''', unsafe_allow_html=True)
     with col3:
         st.markdown(f'''
-        <div class="kpi-card">
-            <div class="kpi-card-header"><span class="kpi-card-title">Retrieval SLA</span><span class="kpi-card-icon">{get_icon('zap', 15, 'var(--text-tertiary)')}</span></div>
-            <div class="kpi-card-value">&lt; 1.5s</div>
-            <div class="kpi-card-footer">BM25 Semantic Retrieval</div>
+        <div class="kpi-horizon-card">
+            <div class="kpi-horizon-header"><span class="kpi-horizon-title">Retrieval SLA</span><span class="kpi-card-icon">{get_icon('zap', 14, 'var(--text-tertiary)')}</span></div>
+            <div class="kpi-horizon-value">&lt; 1.5s</div>
+            <div class="kpi-horizon-subtext"><span>BM25 Semantic Retrieval</span></div>
         </div>
         ''', unsafe_allow_html=True)
     with col4:
         ticket_color = 'var(--status-critical)' if open_tickets_count > 0 else 'var(--status-positive)'
         st.markdown(f'''
-        <div class="kpi-card">
-            <div class="kpi-card-header"><span class="kpi-card-title">Open Escalations</span><span class="kpi-card-icon">{get_icon('ticket', 15, 'var(--text-tertiary)')}</span></div>
-            <div class="kpi-card-value" style="color: {ticket_color};">{open_tickets_count} Tickets</div>
-            <div class="kpi-card-footer">Product Team Review Queue</div>
+        <div class="kpi-horizon-card">
+            <div class="kpi-horizon-header"><span class="kpi-horizon-title">Open Escalations</span><span class="kpi-card-icon">{get_icon('ticket', 14, ticket_color)}</span></div>
+            <div class="kpi-horizon-value" style="color: {ticket_color};">{open_tickets_count} Tickets</div>
+            <div class="kpi-horizon-subtext"><span>Product Review Queue</span></div>
         </div>
         ''', unsafe_allow_html=True)
 

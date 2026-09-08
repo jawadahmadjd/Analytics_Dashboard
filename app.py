@@ -80,61 +80,63 @@ st.markdown("""
     
     code, pre, .stCode, [data-testid="stCode"] {
         font-family: 'JetBrains Mono', monospace !important;
-    }
-
-    /* DESIGN SYSTEM TOKENS (Restrained Enterprise Palette) */
+    }    /* DESIGN SYSTEM TOKENS (1080p Panoramic Luxury FinTech Palette) */
     :root {
-        /* === NEUTRALS (Primary Palette — 90% of interface) === */
+        /* === SURFACES (Warm Ivory Porcelain & Crisp White) === */
         --surface-primary: #FFFFFF;
-        --surface-secondary: #F8F9FB;
-        --surface-tertiary: #F1F3F6;
+        --surface-secondary: #FAFBFD;
+        --surface-tertiary: #F4F6F9;
         --surface-elevated: #FFFFFF;
         
-        --border-primary: #E8ECF1;
-        --border-secondary: #F1F3F6;
-        --border-interactive: #C5CDD8;
+        --border-primary: #EAEFF5;
+        --border-secondary: #F1F4F9;
+        --border-interactive: #CBD5E1;
         
-        --text-primary: #1A1F36;
-        --text-secondary: #4A5468;
-        --text-tertiary: #8492A6;
-        --text-quaternary: #B0BAC9;
+        --text-primary: #0B192C;
+        --text-secondary: #475569;
+        --text-tertiary: #64748B;
+        --text-quaternary: #94A3B8;
         
-        /* === BRAND (Minimal Usage — Key Affordances) === */
-        --brand-primary: #1B6EF3;
-        --brand-primary-hover: #1559CC;
-        --brand-subtle: #EBF2FE;
-        --brand-text: #1556B8;
+        /* === BRAND (Imperial Navy & Brushed Champagne Gold) === */
+        --brand-primary: #0B192C;
+        --brand-primary-hover: #1E3E62;
+        --brand-gold: #C5A059;
+        --brand-gold-hover: #B38E46;
+        --brand-gold-subtle: #FDFBF7;
+        --brand-gold-border: #E8DCC4;
+        --brand-subtle: #F0F4F8;
+        --brand-text: #0B192C;
         
         /* === SEMANTIC STATUS === */
-        --status-positive: #0D9B5C;
-        --status-positive-bg: #EDFAF3;
-        --status-positive-border: #B4E4CC;
+        --status-positive: #10B981;
+        --status-positive-bg: #ECFDF5;
+        --status-positive-border: #A7F3D0;
         
         --status-warning: #D4850A;
-        --status-warning-bg: #FFF8EB;
-        --status-warning-border: #F5D98C;
+        --status-warning-bg: #FFFBEB;
+        --status-warning-border: #FDE68A;
         
-        --status-critical: #D4380D;
-        --status-critical-bg: #FFF1EE;
-        --status-critical-border: #F5B09A;
+        --status-critical: #EF4444;
+        --status-critical-bg: #FEF2F2;
+        --status-critical-border: #FECACA;
         
-        --status-info: #1B6EF3;
-        --status-info-bg: #EBF2FE;
+        --status-info: #0B192C;
+        --status-info-bg: #F0F4F8;
         
         /* === DATA VISUALIZATION PALETTE === */
-        --chart-primary: #1B6EF3;
-        --chart-secondary: #8492A6;
-        --chart-tertiary: #C5CDD8;
-        --chart-positive: #0D9B5C;
-        --chart-negative: #D4380D;
-        --chart-accent-1: #6E56CF;
-        --chart-accent-2: #D4850A;
+        --chart-primary: #0B192C;
+        --chart-secondary: #64748B;
+        --chart-tertiary: #CBD5E1;
+        --chart-positive: #10B981;
+        --chart-negative: #EF4444;
+        --chart-accent-1: #C5A059;
+        --chart-accent-2: #1E3E62;
         
         /* === ELEVATION === */
-        --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.04);
-        --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.03);
-        --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.05);
-        --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.07);
+        --shadow-xs: 0 1px 2px rgba(11, 25, 44, 0.03);
+        --shadow-sm: 0 1px 3px rgba(11, 25, 44, 0.05), 0 1px 2px rgba(11, 25, 44, 0.03);
+        --shadow-md: 0 4px 12px rgba(11, 25, 44, 0.05);
+        --shadow-lg: 0 8px 24px rgba(11, 25, 44, 0.07);
         
         /* === SPACING SCALE (8px base grid) === */
         --space-1: 4px;
@@ -158,10 +160,10 @@ st.markdown("""
         --card-border: var(--border-primary);
         --card-shadow: var(--shadow-sm);
         --text-muted: var(--text-tertiary);
-        --brand-blue: var(--brand-primary);
+        --brand-blue: #1E3E62;
         --brand-cyan: #38bdf8;
-        --brand-navy: #1A1F36;
-        --accent-gold: var(--status-warning);
+        --brand-navy: #0B192C;
+        --accent-gold: var(--brand-gold);
         --accent-emerald: var(--status-positive);
         --accent-rose: var(--status-critical);
     }
@@ -198,8 +200,8 @@ st.markdown("""
         border-radius: var(--radius-sm) !important;
         box-shadow: var(--shadow-xs) !important;
         z-index: 999999 !important;
-        width: 32px !important;
-        height: 32px !important;
+        width: 30px !important;
+        height: 30px !important;
         align-items: center !important;
         justify-content: center !important;
     }
@@ -210,7 +212,7 @@ st.markdown("""
         fill: currentColor !important;
     }
 
-    /* MAIN CONTAINER & PAGE CANVAS */
+    /* MAIN CONTAINER & PAGE CANVAS (True 1080p Panoramic Widescreen) */
     .stApp {
         background-color: var(--surface-secondary) !important;
     }
@@ -218,96 +220,109 @@ st.markdown("""
     .main .block-container,
     div[data-testid="stAppViewBlockContainer"],
     div.block-container {
-        padding-top: 0.5rem !important;
-        padding-bottom: 2rem !important;
-        padding-left: 2rem !important;
-        padding-right: 2rem !important;
-        max-width: 1480px !important;
+        padding-top: 0.75rem !important;
+        padding-bottom: 2.5rem !important;
+        padding-left: 2.5rem !important;
+        padding-right: 2.5rem !important;
+        max-width: 1720px !important;
         margin: 0 auto !important;
     }
     
-    /* SIDEBAR STYLING */
+    /* SIDEBAR STYLING (Slim 230px Footprint) */
     section[data-testid="stSidebar"] {
-        background-color: var(--surface-secondary) !important;
+        background-color: #F8F9FA !important;
         border-right: 1px solid var(--border-primary) !important;
-        width: 280px !important;
+        width: 230px !important;
+        min-width: 230px !important;
+        max-width: 230px !important;
     }
     
     section[data-testid="stSidebar"] > div {
-        padding-top: 0.75rem !important;
+        padding-top: 0.5rem !important;
     }
     
     section[data-testid="stSidebar"] .block-container {
-        padding-top: 0.75rem !important;
+        padding-top: 0.5rem !important;
         padding-bottom: 1.5rem !important;
-        padding-left: 1rem !important;
-        padding-right: 1rem !important;
+        padding-left: 0.85rem !important;
+        padding-right: 0.85rem !important;
     }
 
     /* SIDEBAR SECTION LABELS */
     .sidebar-section-title {
-        font-size: 11px !important;
+        font-size: 10.5px !important;
         font-weight: 600 !important;
         letter-spacing: 0.08em !important;
         color: var(--text-tertiary) !important;
         text-transform: uppercase !important;
-        margin: 18px 0 6px 0 !important;
+        margin: 16px 0 6px 0 !important;
     }
     
     .sidebar-section-title:first-child {
         margin-top: 0 !important;
     }
 
-    /* STREAMLIT TAB STYLING OVERRIDE */
+    /* STREAMLIT TAB STYLING OVERRIDE (Luxury Capsule Navigation) */
     div[data-testid="stTabs"] {
-        margin-top: 10px;
+        margin-top: 14px;
+        margin-bottom: 18px;
     }
     
     div[data-baseweb="tab-list"] {
-        gap: 4px !important;
+        gap: 8px !important;
         border-bottom: 1px solid var(--border-primary) !important;
+        padding-bottom: 8px !important;
         background: transparent !important;
     }
     
     button[data-baseweb="tab"] {
         font-family: 'Inter', sans-serif !important;
-        font-size: 13px !important;
+        font-size: 12.5px !important;
         font-weight: 500 !important;
         color: var(--text-tertiary) !important;
-        border-bottom: 2px solid transparent !important;
-        padding: 10px 18px !important;
-        background: transparent !important;
-        border-top: none !important;
-        border-left: none !important;
-        border-right: none !important;
-        border-radius: 0 !important;
-        transition: color 150ms ease, border-color 150ms ease !important;
+        padding: 7px 18px !important;
+        background: var(--surface-primary) !important;
+        border: 1px solid var(--border-primary) !important;
+        border-radius: var(--radius-full) !important;
+        box-shadow: var(--shadow-xs) !important;
+        transition: all 150ms ease !important;
     }
     
     button[data-baseweb="tab"]:hover {
-        color: var(--text-primary) !important;
+        color: var(--brand-primary) !important;
+        border-color: var(--brand-gold) !important;
     }
     
     button[data-baseweb="tab"][aria-selected="true"] {
         font-weight: 600 !important;
-        color: var(--text-primary) !important;
-        border-bottom-color: var(--brand-primary) !important;
-    }
-
-    div[data-baseweb="tab-highlight"] {
         background-color: var(--brand-primary) !important;
-    }
-
-    /* STREAMLIT SLIDER CONTROLS */
-    div[data-testid="stSlider"] [role="slider"] {
-        background-color: var(--brand-primary) !important;
+        color: #FFFFFF !important;
         border-color: var(--brand-primary) !important;
+        box-shadow: 0 2px 6px rgba(11, 25, 44, 0.15) !important;
+    }
+
+    div[data-baseweb="tab-highlight"],
+    div[data-baseweb="tab-border"] {
+        display: none !important;
+    }
+
+    /* STREAMLIT SLIDER CONTROLS (Champagne Gold Accents) */
+    div[data-testid="stSlider"] [role="slider"] {
+        background-color: var(--brand-gold) !important;
+        border: 2px solid #FFFFFF !important;
+        box-shadow: 0 1px 4px rgba(197, 160, 89, 0.4) !important;
+        width: 14px !important;
+        height: 14px !important;
+    }
+    
+    div[data-testid="stSlider"] div[data-baseweb="slider"] > div > div:first-child {
+        background-color: var(--brand-gold) !important;
     }
     
     div[data-testid="stSlider"] [data-testid="stThumbValue"] {
         color: var(--brand-primary) !important;
         font-weight: 600 !important;
-        font-size: 11px !important;
+        font-size: 10.5px !important;
     }
 
     /* DATAFRAME STYLING */
@@ -455,6 +470,59 @@ st.markdown("""
         padding: 2px 6px;
         border-radius: var(--radius-sm);
         border: 1px solid var(--status-positive-border);
+    }
+
+    /* 1080p PANORAMIC HORIZON KPI CARDS (SLIM 85px FOOTPRINT) */
+    .kpi-horizon-card {
+        background: var(--surface-primary);
+        border: 1px solid var(--border-primary);
+        border-radius: var(--radius-md);
+        padding: 12px 18px;
+        box-shadow: 0 1px 3px rgba(11, 25, 44, 0.04);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        height: 85px;
+        transition: border-color 150ms ease, box-shadow 150ms ease;
+    }
+    
+    .kpi-horizon-card:hover {
+        border-color: var(--brand-gold);
+        box-shadow: 0 3px 8px rgba(197, 160, 89, 0.12);
+    }
+    
+    .kpi-horizon-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2px;
+    }
+    
+    .kpi-horizon-title {
+        font-size: 10.5px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--text-tertiary);
+    }
+    
+    .kpi-horizon-value {
+        font-size: 21px;
+        font-weight: 700;
+        color: var(--text-primary);
+        letter-spacing: -0.02em;
+        line-height: 1.15;
+        font-variant-numeric: tabular-nums;
+    }
+    
+    .kpi-horizon-subtext {
+        font-size: 11px;
+        font-weight: 500;
+        color: var(--text-quaternary);
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        margin-top: 2px;
     }
 
     /* REFINED KPI CARDS */
@@ -1083,59 +1151,26 @@ def apply_premium_chart_style(fig, height=280):
 
 apply_chart_style = apply_premium_chart_style
 
-# HEADER
+# EXECUTIVE 1080p WIDESCREEN HEADER
 st.markdown(f"""
 <div class="header-container">
     <div class="header-title-group">
-        <div class="header-logo-badge" style="background: var(--brand-primary); color: #fff; width: 34px; height: 34px; border-radius: 6px; display: flex; align-items: center; justify-content: center;">
-            {get_icon('shield', 18, '#ffffff')}
+        <div class="header-logo-badge" style="background: var(--brand-primary); color: #fff; width: 34px; height: 34px; border-radius: 6px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 6px rgba(11,25,44,0.2);">
+            {get_icon('shield', 18, '#C5A059')}
         </div>
         <div>
-            <h1 class="header-title" style="font-size: 17px; font-weight: 700; color: var(--text-primary); margin: 0; line-height: 1.2;">National Bonds Corporation</h1>
-            <p class="header-subtitle" style="font-size: 12px; color: var(--text-tertiary); margin: 2px 0 0 0; font-weight: 500;">Executive Intelligence & Early Warning System</p>
+            <h1 class="header-title" style="font-size: 16px; font-weight: 700; color: var(--text-primary); margin: 0; line-height: 1.2;">National Bonds Corporation</h1>
+            <p class="header-subtitle" style="font-size: 11.5px; color: var(--text-tertiary); margin: 1px 0 0 0; font-weight: 500;">Executive Intelligence Platform &bull; H1 Sovereign Baseline</p>
         </div>
     </div>
-    <div style="display: flex; align-items: center; gap: 20px;">
-        <div style="text-align: right;">
-            <div style="font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-tertiary);">Total AUM</div>
-            <div style="font-size: 15px; font-weight: 700; color: var(--text-primary); font-variant-numeric: tabular-nums;">AED 18.34B</div>
+    <div style="display: flex; align-items: center; gap: 16px;">
+        <div style="display: flex; align-items: center; gap: 8px; background: var(--surface-primary); border: 1px solid var(--border-primary); padding: 5px 12px; border-radius: 9999px; box-shadow: var(--shadow-xs);">
+            <span style="width: 7px; height: 7px; border-radius: 50%; background: #10B981; display: inline-block; box-shadow: 0 0 6px #10B981;"></span>
+            <span style="font-size: 11px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.06em;">System Nominal</span>
         </div>
-        <div style="width: 1px; height: 26px; background: var(--border-primary);"></div>
-        <div style="text-align: right;">
-            <div style="font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-tertiary);">Active Savers</div>
-            <div style="font-size: 15px; font-weight: 700; color: var(--text-primary); font-variant-numeric: tabular-nums;">154,000</div>
+        <div style="font-size: 11.5px; font-weight: 600; color: var(--brand-primary); background: var(--brand-subtle); padding: 5px 12px; border-radius: var(--radius-sm); border: 1px solid var(--border-primary);">
+            2026-06 June Cycle
         </div>
-        <div style="width: 1px; height: 26px; background: var(--border-primary);"></div>
-        <div style="text-align: right;">
-            <div style="font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-tertiary);">H1 Fresh Sales</div>
-            <div style="font-size: 15px; font-weight: 700; color: var(--brand-primary); font-variant-numeric: tabular-nums;">AED 7.51B</div>
-        </div>
-    </div>
-</div>
-""", unsafe_allow_html=True)
-
-# EXECUTIVE TOP-LINE BANNER (AUDITED SLIDE 3 GROUND TRUTH)
-st.markdown(f"""
-<div class="aum-banner">
-    <div class="aum-stat-item">
-        <div class="aum-label">{get_icon('bar-chart', 13, 'var(--text-tertiary)')} Total Company AUM</div>
-        <div class="aum-value">AED 18.34 Billion</div>
-        <div class="aum-subtext"><span class="badge-success-chip">208% of Target</span> &middot; +AED 1.63B Net Growth</div>
-    </div>
-    <div class="aum-stat-item">
-        <div class="aum-label">{get_icon('users', 13, 'var(--text-tertiary)')} Total Verified Savers</div>
-        <div class="aum-value">154,000 Accounts</div>
-        <div class="aum-subtext"><span class="badge-success-chip">+11% YoY</span> &middot; 28.1% Emirati Cohort</div>
-    </div>
-    <div class="aum-stat-item">
-        <div class="aum-label">{get_icon('trending-up', 13, 'var(--text-tertiary)')} H1 2026 Fresh Sales</div>
-        <div class="aum-value">AED 7.51 Billion</div>
-        <div class="aum-subtext"><span class="badge-success-chip">167% of Target</span> &middot; Strong Run-Rate</div>
-    </div>
-    <div class="aum-stat-item">
-        <div class="aum-label">{get_icon('refresh', 13, 'var(--text-tertiary)')} Gross H1 Volume</div>
-        <div class="aum-value">AED 14.77 Billion</div>
-        <div class="aum-subtext">Redemptions: AED 5.88B (39.8%)</div>
     </div>
 </div>
 """, unsafe_allow_html=True)
@@ -1209,35 +1244,32 @@ else:
         status_label = "OPTIMAL"
         status_pill_class = "status-healthy"
     
-    # EXECUTIVE EARLY WARNING ALERT BANNER (INITIATIVE 3)
-    render_executive_alert_banner(kpi_df, selected_cycle, warning_threshold, breach_threshold)
-
-    # OVERVIEW KPI CARDS (4 COLUMNS)
+    # MASTER 1080p HORIZON KPI STRIP (SLIM 85px FOOTPRINT)
     col_k1, col_k2, col_k3, col_k4 = st.columns(4)
     
     with col_k1:
         st.markdown(f"""
-        <div class="kpi-card">
-            <div class="kpi-card-header">
-                <span class="kpi-card-title">Active Savers</span>
-                <span class="kpi-card-icon">{get_icon('users', 15, 'var(--text-tertiary)')}</span>
+        <div class="kpi-horizon-card">
+            <div class="kpi-horizon-header">
+                <span class="kpi-horizon-title">Total AUM</span>
+                <span style="color: var(--brand-gold);">{get_icon('shield', 14, 'var(--brand-gold)')}</span>
             </div>
-            <div class="kpi-card-value">{prod_data['active_customers']:,}</div>
-            <div class="kpi-card-footer">
-                <span>Cohort Share: <b>{(prod_data['active_customers']/154000*100):.1f}%</b> of 154K</span>
+            <div class="kpi-horizon-value">AED 18.34B</div>
+            <div class="kpi-horizon-subtext">
+                <span class="badge-success-chip">208% Plan</span> <span>&middot; 154K Verified Savers</span>
             </div>
         </div>
         """, unsafe_allow_html=True)
     
     with col_k2:
         st.markdown(f"""
-        <div class="kpi-card">
-            <div class="kpi-card-header">
-                <span class="kpi-card-title">Actual Net Inflow</span>
-                <span class="kpi-card-icon">{get_icon('dollar-sign', 15, 'var(--text-tertiary)')}</span>
+        <div class="kpi-horizon-card">
+            <div class="kpi-horizon-header">
+                <span class="kpi-horizon-title">Net Capital Inflow</span>
+                <span style="color: var(--text-tertiary);">{get_icon('dollar-sign', 14, 'var(--text-tertiary)')}</span>
             </div>
-            <div class="kpi-card-value">AED {net_inflow_aed/1e6:.2f}M</div>
-            <div class="kpi-card-footer">
+            <div class="kpi-horizon-value">AED {net_inflow_aed/1e6:.2f}M</div>
+            <div class="kpi-horizon-subtext">
                 <span>Gross: AED {prod_data['gross_inflows_aed']/1e6:.1f}M &middot; Redemptions: AED {prod_data['redemptions_aed']/1e6:.1f}M</span>
             </div>
         </div>
@@ -1245,34 +1277,37 @@ else:
     
     with col_k3:
         st.markdown(f"""
-        <div class="kpi-card">
-            <div class="kpi-card-header">
-                <span class="kpi-card-title">Target Plan</span>
-                <span class="kpi-card-icon">{get_icon('target', 15, 'var(--text-tertiary)')}</span>
+        <div class="kpi-horizon-card">
+            <div class="kpi-horizon-header">
+                <span class="kpi-horizon-title">Plan Target</span>
+                <span style="color: var(--text-tertiary);">{get_icon('target', 14, 'var(--text-tertiary)')}</span>
             </div>
-            <div class="kpi-card-value">AED {target_inflow_aed/1e6:.2f}M</div>
-            <div class="kpi-card-footer">
-                <span>Variance Gap: <b style="color: {dev_color};">AED {abs(net_inflow_aed - target_inflow_aed)/1e6:.2f}M</b></span>
+            <div class="kpi-horizon-value">AED {target_inflow_aed/1e6:.2f}M</div>
+            <div class="kpi-horizon-subtext">
+                <span style="color: {dev_color}; font-weight: 600;">Variance: AED {abs(net_inflow_aed - target_inflow_aed)/1e6:.2f}M ({dev:+.1f}%)</span>
             </div>
         </div>
         """, unsafe_allow_html=True)
     
     with col_k4:
-        delta_icon = get_icon('trending-up', 14, dev_color) if dev >= 0 else get_icon('trending-down', 14, dev_color)
+        delta_icon = get_icon('trending-up', 13, dev_color) if dev >= 0 else get_icon('trending-down', 13, dev_color)
         st.markdown(f"""
-        <div class="kpi-card">
-            <div class="kpi-card-header">
-                <span class="kpi-card-title">Governance Status</span>
-                <span class="kpi-card-icon">{get_icon('shield', 15, 'var(--text-tertiary)')}</span>
+        <div class="kpi-horizon-card">
+            <div class="kpi-horizon-header">
+                <span class="kpi-horizon-title">Governance Status</span>
+                <span style="color: {dev_color};">{delta_icon}</span>
             </div>
-            <div class="kpi-card-value" style="color: {dev_color}; display: flex; align-items: center; gap: 6px;">
-                {delta_icon} {dev:+.1f}%
+            <div class="kpi-horizon-value" style="color: {dev_color}; font-size: 19px; display: flex; align-items: center; gap: 6px;">
+                {status_label}
             </div>
-            <div class="kpi-card-footer">
-                <span class="status-pill {status_pill_class}">{status_label}</span>
+            <div class="kpi-horizon-subtext">
+                <span class="status-pill {status_pill_class}">{dev:+.1f}% vs Threshold</span>
             </div>
         </div>
         """, unsafe_allow_html=True)
+
+    # EXECUTIVE EARLY WARNING ALERT BANNER (INITIATIVE 3)
+    render_executive_alert_banner(kpi_df, selected_cycle, warning_threshold, breach_threshold)
     
     tab_pbi, tab_workflow, tab_portfolio, tab_diagnostics, tab_simulator, tab_biweekly, tab_export = st.tabs([
         "Analytics",

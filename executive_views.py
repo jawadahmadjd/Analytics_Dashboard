@@ -45,7 +45,7 @@ def render_executive_alert_banner(kpi_df, selected_cycle, warning_threshold, bre
 
     if not breaches.empty:
         st.markdown(f'''
-        <div style="background: var(--status-critical-bg); border: 1px solid var(--status-critical-border); border-left: 3px solid var(--status-critical); border-radius: var(--radius-sm); padding: 12px 18px; margin-bottom: 14px;">
+        <div style="background: var(--status-critical-bg); border: 1px solid var(--status-critical-border); border-left: 3px solid var(--status-critical); border-radius: var(--radius-sm); padding: 12px 18px; margin: 16px 0 16px 0; clear: both;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
                 <div style="display: flex; align-items: center; gap: 8px;">
                     {get_icon('alert-circle', 15, 'var(--status-critical)')}
@@ -64,7 +64,7 @@ def render_executive_alert_banner(kpi_df, selected_cycle, warning_threshold, bre
         ''', unsafe_allow_html=True)
     else:
         st.markdown(f'''
-        <div style="background: var(--status-warning-bg); border: 1px solid var(--status-warning-border); border-left: 3px solid var(--status-warning); border-radius: var(--radius-sm); padding: 12px 18px; margin-bottom: 14px;">
+        <div style="background: var(--status-warning-bg); border: 1px solid var(--status-warning-border); border-left: 3px solid var(--status-warning); border-radius: var(--radius-sm); padding: 12px 18px; margin: 16px 0 16px 0; clear: both;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
                 <div style="display: flex; align-items: center; gap: 8px;">
                     {get_icon('alert-triangle', 15, 'var(--status-warning)')}

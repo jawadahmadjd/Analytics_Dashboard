@@ -1,5 +1,15 @@
 [
   {
+    "timestamp": "2026-09-08 15:11:15",
+    "user_role": "Direct Sales / Branch Network",
+    "query": "Can Booster Plan milestone bonus combine with 7% certificate profit, and what is the withdrawal notice period?",
+    "citations": [
+      "Product Circular 2026/04"
+    ],
+    "escalated": false,
+    "latency_sec": 1.2
+  },
+  {
     "timestamp": "2026-09-08 14:24:50",
     "user_role": "Direct Sales / Branch Network",
     "query": "What is the holding period for Saving Bonds?",

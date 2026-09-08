@@ -32,42 +32,34 @@ def render_powerbi_studio(kpi_df, cust_df, market_json_path="market_intelligence
     """, unsafe_allow_html=True)
 
     # -------------------------------------------------------------
-    # 1. POWERBI-STYLE MULTI-DIMENSIONAL SLICER RIBBON
+    # 1. 1080p PANORAMIC CONTEXT STRIP & SLICER DRAWER
     # -------------------------------------------------------------
-    st.markdown("<div class='sidebar-section-title' style='margin-bottom: 8px;'>Interactive Visual Slicers & Dynamic Filters</div>", unsafe_allow_html=True)
-    
-    with st.container():
-        f_col1, f_col2, f_col3, f_col4 = st.columns([1.5, 2, 1.5, 1.5])
-        
-        all_months = sorted(list(kpi_df['month'].unique()))
-        with f_col1:
+    all_months = sorted(list(kpi_df['month'].unique()))
+    all_prods = list(kpi_df['product_name'].unique())
+    segments_list = ["All Segments", "Mass Retail", "Emerging Affluent", "High Net Worth"]
+    channels_list = ["All Channels", "Mobile App", "Branch Network", "Direct Sales", "Exchange Houses", "Web Portal"]
+
+    strip_c1, strip_c2 = st.columns([3.8, 1.2])
+    with strip_c2:
+        with st.popover("Adjust Slicers & Dimensions ▾", use_container_width=True):
             selected_cycle = st.selectbox(
                 "Reporting Cycle",
                 options=all_months,
                 index=all_months.index(default_cycle) if default_cycle in all_months else len(all_months)-1,
                 key="pbi_slicer_cycle"
             )
-            
-        all_prods = list(kpi_df['product_name'].unique())
-        with f_col2:
             selected_prods = st.multiselect(
                 "Product Families",
                 options=all_prods,
                 default=all_prods,
                 key="pbi_slicer_prods"
             )
-            
-        with f_col3:
-            segments_list = ["All Segments", "Mass Retail", "Emerging Affluent", "High Net Worth"]
             selected_segment = st.selectbox(
                 "Customer Segment",
                 options=segments_list,
                 index=0,
                 key="pbi_slicer_segment"
             )
-            
-        with f_col4:
-            channels_list = ["All Channels", "Mobile App", "Branch Network", "Direct Sales", "Exchange Houses", "Web Portal"]
             selected_channel = st.selectbox(
                 "Acquisition Channel",
                 options=channels_list,
@@ -76,15 +68,25 @@ def render_powerbi_studio(kpi_df, cust_df, market_json_path="market_intelligence
             )
 
     if not selected_prods:
-        st.warning("Please select at least one product family to display visual analytics.")
         selected_prods = all_prods
+
+    with strip_c1:
+        st.markdown(f"""
+        <div style="display: flex; align-items: center; gap: 14px; background: var(--surface-primary); border: 1px solid var(--border-primary); padding: 8px 16px; border-radius: 8px; box-shadow: var(--shadow-xs); margin-bottom: 16px;">
+            <span style="font-size: 11px; font-weight: 700; color: var(--brand-gold); text-transform: uppercase; letter-spacing: 0.08em;">Active Slice</span>
+            <span style="font-size: 12px; color: var(--text-secondary);">Cycle: <b style="color: var(--text-primary);">{selected_cycle}</b></span>
+            <span style="color: var(--border-interactive);">&bull;</span>
+            <span style="font-size: 12px; color: var(--text-secondary);">Products: <b style="color: var(--text-primary);">{len(selected_prods)} of {len(all_prods)}</b></span>
+            <span style="color: var(--border-interactive);">&bull;</span>
+            <span style="font-size: 12px; color: var(--text-secondary);">Segment: <b style="color: var(--text-primary);">{selected_segment}</b></span>
+            <span style="color: var(--border-interactive);">&bull;</span>
+            <span style="font-size: 12px; color: var(--text-secondary);">Channel: <b style="color: var(--text-primary);">{selected_channel}</b></span>
+        </div>
+        """, unsafe_allow_html=True)
 
     # Filtered KPI Dataset
     cycle_kpis = kpi_df[(kpi_df['month'] == selected_cycle) & (kpi_df['product_name'].isin(selected_prods))]
 
-    # -------------------------------------------------------------
-    # 2. POWERBI SUMMARY CARDS RIBBON
-    # -------------------------------------------------------------
     tot_gross = cycle_kpis['gross_inflows_aed'].sum() / 1e6
     tot_redemptions = cycle_kpis['redemptions_aed'].sum() / 1e6
     tot_net = cycle_kpis['net_inflows_aed'].sum() / 1e6
@@ -93,49 +95,13 @@ def render_powerbi_studio(kpi_df, cust_df, market_json_path="market_intelligence
     redemption_rate = (tot_redemptions / tot_gross) * 100 if tot_gross > 0 else 0.0
     active_savers = cycle_kpis['active_customers'].sum()
 
-    var_color = "#0D9B5C" if tot_variance >= 0 else ("#D4850A" if tot_variance >= -10 else "#D4380D")
-
-    c1, c2, c3, c4 = st.columns(4)
-    with c1:
-        st.markdown(f"""
-        <div class="kpi-card">
-            <div class="kpi-card-header"><span class="kpi-card-title">Gross Inflows</span><span class="kpi-card-icon">{get_icon('bar-chart', 15, 'var(--text-tertiary)')}</span></div>
-            <div class="kpi-card-value">AED {tot_gross:.1f}M</div>
-            <div class="kpi-card-footer"><span>Total Fresh Capital Inflow</span></div>
-        </div>
-        """, unsafe_allow_html=True)
-    with c2:
-        st.markdown(f"""
-        <div class="kpi-card">
-            <div class="kpi-card-header"><span class="kpi-card-title">Gross Redemptions</span><span class="kpi-card-icon">{get_icon('refresh', 15, 'var(--text-tertiary)')}</span></div>
-            <div class="kpi-card-value">AED {tot_redemptions:.1f}M</div>
-            <div class="kpi-card-footer"><span>{redemption_rate:.1f}% Outflow / Volume Ratio</span></div>
-        </div>
-        """, unsafe_allow_html=True)
-    with c3:
-        st.markdown(f"""
-        <div class="kpi-card">
-            <div class="kpi-card-header"><span class="kpi-card-title">Actual Net Position</span><span class="kpi-card-icon">{get_icon('dollar-sign', 15, 'var(--text-tertiary)')}</span></div>
-            <div class="kpi-card-value" style="color: {var_color};">AED {tot_net:.1f}M</div>
-            <div class="kpi-card-footer"><span>Target: AED {tot_target:.1f}M ({tot_variance:+.1f}%)</span></div>
-        </div>
-        """, unsafe_allow_html=True)
-    with c4:
-        st.markdown(f"""
-        <div class="kpi-card">
-            <div class="kpi-card-header"><span class="kpi-card-title">Active Savers Sliced</span><span class="kpi-card-icon">{get_icon('users', 15, 'var(--text-tertiary)')}</span></div>
-            <div class="kpi-card-value">{active_savers:,}</div>
-            <div class="kpi-card-footer"><span>{(active_savers/154000*100):.1f}% of 154K Total Base</span></div>
-        </div>
-        """, unsafe_allow_html=True)
-
     # -------------------------------------------------------------
-    # 3. ROW 1: CASHFLOW WATERFALL & HIERARCHICAL SUNBURST
+    # 2. ROW 1: 1080p PANORAMIC CASHFLOW WATERFALL & ASSET ALLOCATION
     # -------------------------------------------------------------
-    col_w1, col_w2 = st.columns([1.2, 1])
+    col_w1, col_w2 = st.columns([1.5, 1])
 
     with col_w1:
-        st.markdown("<div class='exec-section-header'>1. Portfolio Liquidity & Cashflow Waterfall Bridge</div>", unsafe_allow_html=True)
+        st.markdown("<div class='exec-section-header' style='font-size: 14px; font-weight: 700; color: var(--text-primary); margin-bottom: 2px;'>1. Portfolio Liquidity & Cashflow Waterfall Bridge</div>", unsafe_allow_html=True)
         st.caption(f"Deconstruction of Gross Inflows, Channel Contributions, and Redemptions for {selected_cycle} (AED Millions)")
         
         wf_digital = tot_gross * 0.42
@@ -152,72 +118,61 @@ def render_powerbi_studio(kpi_df, cust_df, market_json_path="market_intelligence
             textposition="outside",
             text=[f"+{wf_digital:.1f}M", f"+{wf_branch:.1f}M", f"+{wf_wealth:.1f}M", f"{wf_mature_red:.1f}M", f"{wf_early_red:.1f}M", f"AED {tot_net:.1f}M"],
             y=[wf_digital, wf_branch, wf_wealth, wf_mature_red, wf_early_red, tot_net],
-            connector={"line": {"color": "#E8ECF1", "width": 1.5, "dash": "dot"}},
-            decreasing={"marker": {"color": "#D4380D"}},
-            increasing={"marker": {"color": "#1B6EF3"}},
-            totals={"marker": {"color": "#1A1F36" if tot_net > 0 else "#D4380D"}}
+            connector={"line": {"color": "#E2E8F0", "width": 1.2, "dash": "dot"}},
+            decreasing={"marker": {"color": "#EF4444"}},
+            increasing={"marker": {"color": "#10B981"}},
+            totals={"marker": {"color": "#0B192C"}}
         ))
         fig_wf.update_layout(
             paper_bgcolor='rgba(0,0,0,0)',
             plot_bgcolor='rgba(0,0,0,0)',
-            height=320,
-            margin=dict(l=20, r=20, t=30, b=20),
+            height=340,
+            margin=dict(l=20, r=20, t=30, b=25),
             yaxis_title="AED Millions",
-            font=dict(family='Inter, -apple-system, BlinkMacSystemFont, sans-serif', color='#8492A6', size=11),
-            yaxis=dict(gridcolor='#F1F3F6', zerolinecolor='#E8ECF1', tickfont=dict(family='Inter, sans-serif', size=11)),
+            font=dict(family='Inter, -apple-system, BlinkMacSystemFont, sans-serif', color='#64748B', size=11),
+            yaxis=dict(gridcolor='#F1F4F9', zerolinecolor='#EAEFF5', tickfont=dict(family='Inter, sans-serif', size=11)),
             xaxis=dict(tickfont=dict(family='Inter, sans-serif', size=11))
         )
         st.plotly_chart(fig_wf, use_container_width=True)
 
     with col_w2:
-        st.markdown("<div class='exec-section-header'>2. Hierarchical AUM Allocation Sunburst</div>", unsafe_allow_html=True)
-        st.caption("Click any product ring to zoom into Tenor Bands and Customer Tier Volumes")
+        st.markdown("<div class='exec-section-header' style='font-size: 14px; font-weight: 700; color: var(--text-primary); margin-bottom: 2px;'>2. Asset Allocation & Strategic Distribution</div>", unsafe_allow_html=True)
+        st.caption("Distribution of Portfolio AUM across Core Products and Tenor Bands")
         
-        sun_labels = [
-            "Total AUM (18.34B)", 
-            "Term Sukuk", "Saving Bonds", "Booster Plan", "MyPlan", "Second Salary",
-            "Sukuk: 1Y Tenor", "Sukuk: 2Y-3Y", "Sukuk: 5Y+",
-            "Bonds: Mass Retail", "Bonds: Affluent", "Bonds: Minors",
-            "Booster: 2Y Lock", "Booster: 3Y Lock",
-            "MyPlan: 3Y Saver", "MyPlan: 5Y Saver",
-            "Salary: 3Y Ret", "Salary: 10Y Ret"
-        ]
-        sun_parents = [
-            "", 
-            "Total AUM (18.34B)", "Total AUM (18.34B)", "Total AUM (18.34B)", "Total AUM (18.34B)", "Total AUM (18.34B)",
-            "Term Sukuk", "Term Sukuk", "Term Sukuk",
-            "Saving Bonds", "Saving Bonds", "Saving Bonds",
-            "Booster Plan", "Booster Plan",
-            "MyPlan", "MyPlan",
-            "Second Salary", "Second Salary"
-        ]
-        sun_values = [
-            18340,
-            11500, 4600, 482, 460, 20,
-            4600, 4600, 2300,
-            2300, 1840, 460,
-            337, 145,
-            276, 184,
-            14, 6
-        ]
+        donut_labels = ["Term Sukuk", "Saving Bonds", "Booster Plan", "MyPlan Saver", "Second Salary"]
+        donut_values = [11500, 4600, 482, 460, 20]
+        donut_colors = ['#0B192C', '#1E3E62', '#2A5298', '#C5A059', '#D4AF37']
         
-        fig_sun = go.Figure(go.Sunburst(
-            labels=sun_labels,
-            parents=sun_parents,
-            values=sun_values,
-            branchvalues="total",
-            marker=dict(colorscale="Blues", showscale=False),
-            hovertemplate="<b>%{label}</b><br>Volume: AED %{value:,.0f}M (%{percentRoot:.1%})<extra></extra>"
+        fig_donut = go.Figure(go.Pie(
+            labels=donut_labels,
+            values=donut_values,
+            hole=0.62,
+            marker=dict(colors=donut_colors, line=dict(color='#FFFFFF', width=2)),
+            textinfo='percent',
+            hoverinfo='label+value+percent',
+            hovertemplate="<b>%{label}</b><br>AUM: AED %{value:,.0f}M (%{percent})<extra></extra>"
         ))
-        fig_sun.update_layout(
+        fig_donut.update_layout(
             paper_bgcolor='rgba(0,0,0,0)',
-            height=320,
-            margin=dict(l=10, r=10, t=20, b=20),
-            font=dict(family='Inter, -apple-system, BlinkMacSystemFont, sans-serif', color='#8492A6', size=11)
+            height=230,
+            margin=dict(l=10, r=10, t=10, b=10),
+            showlegend=False,
+            font=dict(family='Inter, sans-serif', size=11)
         )
-        st.plotly_chart(fig_sun, use_container_width=True)
+        st.plotly_chart(fig_donut, use_container_width=True)
+        
+        st.markdown(f"""
+        <div style="background: var(--surface-primary); border: 1px solid var(--border-primary); border-radius: 8px; padding: 10px 14px; margin-top: 4px; box-shadow: var(--shadow-xs);">
+            <div style="font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-tertiary); margin-bottom: 6px;">Refined Commentary</div>
+            <div style="font-size: 11.5px; color: var(--text-secondary); line-height: 1.5; display: flex; flex-direction: column; gap: 4px;">
+                <div style="display: flex; align-items: center; gap: 6px;"><span style="width: 6px; height: 6px; border-radius: 50%; background: #0B192C;"></span> <b>Fixed Income Core:</b> 62.7% anchored in Term Sukuk</div>
+                <div style="display: flex; align-items: center; gap: 6px;"><span style="width: 6px; height: 6px; border-radius: 50%; background: #10B981;"></span> <b>Digital Inflow:</b> 42.0% fresh volume generated via App</div>
+                <div style="display: flex; align-items: center; gap: 6px;"><span style="width: 6px; height: 6px; border-radius: 50%; background: #C5A059;"></span> <b>Capital Preservation:</b> Redemptions steady at 39.7%</div>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
 
-    st.markdown("<hr style='margin: 16px 0; border: none; border-top: 1px solid var(--border-primary);'>", unsafe_allow_html=True)
+    st.markdown("<hr style='margin: 20px 0 16px 0; border: none; border-top: 1px solid var(--border-primary);'>", unsafe_allow_html=True)
 
     # -------------------------------------------------------------
     # 4. ROW 2: 4-QUADRANT BUBBLE MATRIX & DUAL-AXIS MACRO COMBO
