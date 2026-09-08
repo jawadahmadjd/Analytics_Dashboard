@@ -15,77 +15,20 @@ import os
 from icons import ICONS, get_icon
 
 def render_powerbi_studio(kpi_df, cust_df, market_json_path="market_intelligence_data.json", default_cycle="2026-06"):
-    st.markdown(f"""
-    <div style="display: flex; justify-content: space-between; align-items: flex-end; padding-bottom: 12px; margin-bottom: 16px; border-bottom: 1px solid var(--border-primary);">
-        <div>
-            <h2 style="margin: 0; font-size: 18px; font-weight: 700; color: var(--text-primary); letter-spacing: -0.01em;">
-                Commercial Intelligence & Analytics Studio
-            </h2>
-            <p style="margin: 2px 0 0 0; font-size: 12.5px; color: var(--text-tertiary);">
-                Multi-dimensional OLAP analysis across reporting cycles, products, customer segments, and distribution channels.
-            </p>
-        </div>
-        <div style="text-align: right;">
-            <span style="font-size: 11px; font-weight: 600; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.05em;">Cycle: {default_cycle} &bull; 5 Products &bull; 154K Accounts</span>
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
-
     # -------------------------------------------------------------
-    # 1. 1080p PANORAMIC CONTEXT STRIP & SLICER DRAWER
+    # 1. 1080p PANORAMIC SLICER STATE & METRICS CALCULATION
     # -------------------------------------------------------------
     all_months = sorted(list(kpi_df['month'].unique()))
     all_prods = list(kpi_df['product_name'].unique())
     segments_list = ["All Segments", "Mass Retail", "Emerging Affluent", "High Net Worth"]
     channels_list = ["All Channels", "Mobile App", "Branch Network", "Direct Sales", "Exchange Houses", "Web Portal"]
 
-    strip_c1, strip_c2 = st.columns([3.8, 1.2])
-    with strip_c2:
-        with st.popover("Adjust Slicers & Dimensions ▾", use_container_width=True):
-            selected_cycle = st.selectbox(
-                "Reporting Cycle",
-                options=all_months,
-                index=all_months.index(default_cycle) if default_cycle in all_months else len(all_months)-1,
-                key="pbi_slicer_cycle"
-            )
-            selected_prods = st.multiselect(
-                "Product Families",
-                options=all_prods,
-                default=all_prods,
-                key="pbi_slicer_prods"
-            )
-            selected_segment = st.selectbox(
-                "Customer Segment",
-                options=segments_list,
-                index=0,
-                key="pbi_slicer_segment"
-            )
-            selected_channel = st.selectbox(
-                "Acquisition Channel",
-                options=channels_list,
-                index=0,
-                key="pbi_slicer_channel"
-            )
+    active_cycle = st.session_state.get("pbi_slicer_cycle", default_cycle)
+    active_prods = st.session_state.get("pbi_slicer_prods", all_prods)
+    if not active_prods:
+        active_prods = all_prods
 
-    if not selected_prods:
-        selected_prods = all_prods
-
-    with strip_c1:
-        st.markdown(f"""
-        <div style="display: flex; align-items: center; gap: 14px; background: var(--surface-primary); border: 1px solid var(--border-primary); padding: 8px 16px; border-radius: 8px; box-shadow: var(--shadow-xs); margin-bottom: 16px;">
-            <span style="font-size: 11px; font-weight: 700; color: var(--brand-gold); text-transform: uppercase; letter-spacing: 0.08em;">Active Slice</span>
-            <span style="font-size: 12px; color: var(--text-secondary);">Cycle: <b style="color: var(--text-primary);">{selected_cycle}</b></span>
-            <span style="color: var(--border-interactive);">&bull;</span>
-            <span style="font-size: 12px; color: var(--text-secondary);">Products: <b style="color: var(--text-primary);">{len(selected_prods)} of {len(all_prods)}</b></span>
-            <span style="color: var(--border-interactive);">&bull;</span>
-            <span style="font-size: 12px; color: var(--text-secondary);">Segment: <b style="color: var(--text-primary);">{selected_segment}</b></span>
-            <span style="color: var(--border-interactive);">&bull;</span>
-            <span style="font-size: 12px; color: var(--text-secondary);">Channel: <b style="color: var(--text-primary);">{selected_channel}</b></span>
-        </div>
-        """, unsafe_allow_html=True)
-
-    # Filtered KPI Dataset
-    cycle_kpis = kpi_df[(kpi_df['month'] == selected_cycle) & (kpi_df['product_name'].isin(selected_prods))]
+    cycle_kpis = kpi_df[(kpi_df['month'] == active_cycle) & (kpi_df['product_name'].isin(active_prods))]
 
     tot_gross = cycle_kpis['gross_inflows_aed'].sum() / 1e6
     tot_redemptions = cycle_kpis['redemptions_aed'].sum() / 1e6
@@ -96,81 +39,131 @@ def render_powerbi_studio(kpi_df, cust_df, market_json_path="market_intelligence
     active_savers = cycle_kpis['active_customers'].sum()
 
     # -------------------------------------------------------------
-    # 2. ROW 1: 1080p PANORAMIC CASHFLOW WATERFALL & ASSET ALLOCATION
+    # 2. MASTER UNIFIED 1080p CHART CARD (Matches Image 1 1:1)
     # -------------------------------------------------------------
-    col_w1, col_w2 = st.columns([1.5, 1])
-
-    with col_w1:
-        st.markdown("<div class='exec-section-header' style='font-size: 14px; font-weight: 700; color: var(--text-primary); margin-bottom: 2px;'>1. Portfolio Liquidity & Cashflow Waterfall Bridge</div>", unsafe_allow_html=True)
-        st.caption(f"Deconstruction of Gross Inflows, Channel Contributions, and Redemptions for {selected_cycle} (AED Millions)")
-        
-        wf_digital = tot_gross * 0.42
-        wf_branch = tot_gross * 0.38
-        wf_wealth = tot_gross * 0.20
-        wf_mature_red = -1 * (tot_redemptions * 0.65)
-        wf_early_red = -1 * (tot_redemptions * 0.35)
-        
-        fig_wf = go.Figure(go.Waterfall(
-            name="Cashflow Bridge",
-            orientation="v",
-            measure=["relative", "relative", "relative", "relative", "relative", "total"],
-            x=["Digital Inflows", "Branch Inflows", "Wealth Direct", "Maturity Outflows", "Pre-mature Outflows", "Net Position"],
-            textposition="outside",
-            text=[f"+{wf_digital:.1f}M", f"+{wf_branch:.1f}M", f"+{wf_wealth:.1f}M", f"{wf_mature_red:.1f}M", f"{wf_early_red:.1f}M", f"AED {tot_net:.1f}M"],
-            y=[wf_digital, wf_branch, wf_wealth, wf_mature_red, wf_early_red, tot_net],
-            connector={"line": {"color": "#E2E8F0", "width": 1.2, "dash": "dot"}},
-            decreasing={"marker": {"color": "#EF4444"}},
-            increasing={"marker": {"color": "#10B981"}},
-            totals={"marker": {"color": "#0B192C"}}
-        ))
-        fig_wf.update_layout(
-            paper_bgcolor='rgba(0,0,0,0)',
-            plot_bgcolor='rgba(0,0,0,0)',
-            height=340,
-            margin=dict(l=20, r=20, t=30, b=25),
-            yaxis_title="AED Millions",
-            font=dict(family='Inter, -apple-system, BlinkMacSystemFont, sans-serif', color='#64748B', size=11),
-            yaxis=dict(gridcolor='#F1F4F9', zerolinecolor='#EAEFF5', tickfont=dict(family='Inter, sans-serif', size=11)),
-            xaxis=dict(tickfont=dict(family='Inter, sans-serif', size=11))
-        )
-        st.plotly_chart(fig_wf, use_container_width=True)
-
-    with col_w2:
-        st.markdown("<div class='exec-section-header' style='font-size: 14px; font-weight: 700; color: var(--text-primary); margin-bottom: 2px;'>2. Asset Allocation & Strategic Distribution</div>", unsafe_allow_html=True)
-        st.caption("Distribution of Portfolio AUM across Core Products and Tenor Bands")
-        
-        donut_labels = ["Term Sukuk", "Saving Bonds", "Booster Plan", "MyPlan Saver", "Second Salary"]
-        donut_values = [11500, 4600, 482, 460, 20]
-        donut_colors = ['#0B192C', '#1E3E62', '#2A5298', '#C5A059', '#D4AF37']
-        
-        fig_donut = go.Figure(go.Pie(
-            labels=donut_labels,
-            values=donut_values,
-            hole=0.62,
-            marker=dict(colors=donut_colors, line=dict(color='#FFFFFF', width=2)),
-            textinfo='percent',
-            hoverinfo='label+value+percent',
-            hovertemplate="<b>%{label}</b><br>AUM: AED %{value:,.0f}M (%{percent})<extra></extra>"
-        ))
-        fig_donut.update_layout(
-            paper_bgcolor='rgba(0,0,0,0)',
-            height=230,
-            margin=dict(l=10, r=10, t=10, b=10),
-            showlegend=False,
-            font=dict(family='Inter, sans-serif', size=11)
-        )
-        st.plotly_chart(fig_donut, use_container_width=True)
-        
-        st.markdown(f"""
-        <div style="background: var(--surface-primary); border: 1px solid var(--border-primary); border-radius: 8px; padding: 10px 14px; margin-top: 4px; box-shadow: var(--shadow-xs);">
-            <div style="font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-tertiary); margin-bottom: 6px;">Refined Commentary</div>
-            <div style="font-size: 11.5px; color: var(--text-secondary); line-height: 1.5; display: flex; flex-direction: column; gap: 4px;">
-                <div style="display: flex; align-items: center; gap: 6px;"><span style="width: 6px; height: 6px; border-radius: 50%; background: #0B192C;"></span> <b>Fixed Income Core:</b> 62.7% anchored in Term Sukuk</div>
-                <div style="display: flex; align-items: center; gap: 6px;"><span style="width: 6px; height: 6px; border-radius: 50%; background: #10B981;"></span> <b>Digital Inflow:</b> 42.0% fresh volume generated via App</div>
-                <div style="display: flex; align-items: center; gap: 6px;"><span style="width: 6px; height: 6px; border-radius: 50%; background: #C5A059;"></span> <b>Capital Preservation:</b> Redemptions steady at 39.7%</div>
+    with st.container(border=True):
+        col_hdr_title, col_hdr_filter = st.columns([4.2, 1.1])
+        with col_hdr_title:
+            st.markdown(f"""
+            <div style="margin-bottom: 4px;">
+                <div style="font-size: 15px; font-weight: 700; color: #0B192C; letter-spacing: -0.01em;">
+                    Portfolio Liquidity & Cashflow Waterfall Bridge
+                </div>
+                <div style="font-size: 11.5px; color: #64748B; margin-top: 2px;">
+                    Deconstruction of Gross Inflows, Channel Contributions, and Redemptions for {active_cycle} (AED Millions)
+                </div>
             </div>
-        </div>
-        """, unsafe_allow_html=True)
+            """, unsafe_allow_html=True)
+        with col_hdr_filter:
+            with st.popover("Port #01s ▾", use_container_width=True):
+                st.selectbox(
+                    "Reporting Cycle",
+                    options=all_months,
+                    index=all_months.index(active_cycle) if active_cycle in all_months else len(all_months)-1,
+                    key="pbi_slicer_cycle"
+                )
+                st.multiselect(
+                    "Product Families",
+                    options=all_prods,
+                    default=active_prods,
+                    key="pbi_slicer_prods"
+                )
+                st.selectbox(
+                    "Customer Segment",
+                    options=segments_list,
+                    index=0,
+                    key="pbi_slicer_segment"
+                )
+                st.selectbox(
+                    "Acquisition Channel",
+                    options=channels_list,
+                    index=0,
+                    key="pbi_slicer_channel"
+                )
+
+        col_w1, col_w2 = st.columns([1.85, 1.0])
+
+        with col_w1:
+            wf_digital = tot_gross * 0.42
+            wf_branch = tot_gross * 0.38
+            wf_wealth = tot_gross * 0.20
+            wf_mature_red = -1 * (tot_redemptions * 0.65)
+            wf_early_red = -1 * (tot_redemptions * 0.35)
+            
+            fig_wf = go.Figure(go.Waterfall(
+                name="Cashflow Bridge",
+                orientation="v",
+                measure=["relative", "relative", "relative", "relative", "relative", "total"],
+                x=["Digital Inflows", "Branch Inflows", "Wealth Direct", "Maturity Outflows", "Pre-mature Outflows", "Net Position"],
+                textposition="outside",
+                text=[f"+{wf_digital:.1f}M", f"+{wf_branch:.1f}M", f"+{wf_wealth:.1f}M", f"{wf_mature_red:.1f}M", f"{wf_early_red:.1f}M", f"AED {tot_net:.1f}M"],
+                y=[wf_digital, wf_branch, wf_wealth, wf_mature_red, wf_early_red, tot_net],
+                connector={"line": {"color": "#CBD5E1", "width": 1.2, "dash": "dot"}},
+                decreasing={"marker": {"color": "#EF4444"}},
+                increasing={"marker": {"color": "#10B981"}},
+                totals={"marker": {"color": "#0B192C"}}
+            ))
+            fig_wf.update_layout(
+                paper_bgcolor='rgba(0,0,0,0)',
+                plot_bgcolor='rgba(0,0,0,0)',
+                height=380,
+                margin=dict(l=20, r=20, t=25, b=25),
+                yaxis_title="AED Millions",
+                font=dict(family='Inter, -apple-system, BlinkMacSystemFont, sans-serif', color='#64748B', size=11),
+                yaxis=dict(gridcolor='#F1F4F9', zerolinecolor='#E2E8F0', tickfont=dict(family='Inter, sans-serif', size=11)),
+                xaxis=dict(tickfont=dict(family='Inter, sans-serif', size=11, color='#334155'))
+            )
+            st.plotly_chart(fig_wf, use_container_width=True)
+
+        with col_w2:
+            st.markdown("""
+            <div style="margin-bottom: 6px;">
+                <div style="font-size: 14px; font-weight: 700; color: #0B192C; letter-spacing: -0.01em;">Asset Allocation & Strategic Distribution</div>
+                <div style="font-size: 11px; color: #64748B; margin-top: 1px;">Distribution of Portfolio AUM across Core Products and Tenor Bands</div>
+            </div>
+            """, unsafe_allow_html=True)
+            
+            donut_labels = ["Term Sukuk", "Saving Bonds", "Booster Plan", "MyPlan Saver", "Second Salary"]
+            donut_values = [11500, 4600, 482, 460, 20]
+            donut_colors = ['#0B192C', '#1E3E62', '#2A5298', '#C5A059', '#D4AF37']
+            
+            fig_donut = go.Figure(go.Pie(
+                labels=donut_labels,
+                values=donut_values,
+                hole=0.62,
+                marker=dict(colors=donut_colors, line=dict(color='#FFFFFF', width=2)),
+                textinfo='percent',
+                hoverinfo='label+value+percent',
+                hovertemplate="<b>%{label}</b><br>AUM: AED %{value:,.0f}M (%{percent})<extra></extra>"
+            ))
+            fig_donut.update_layout(
+                paper_bgcolor='rgba(0,0,0,0)',
+                height=210,
+                margin=dict(l=10, r=10, t=10, b=10),
+                showlegend=False,
+                font=dict(family='Inter, sans-serif', size=11)
+            )
+            st.plotly_chart(fig_donut, use_container_width=True)
+            
+            st.markdown("""
+            <div style="background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 8px; padding: 12px 14px; margin-top: 4px;">
+                <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: #64748B; margin-bottom: 8px;">Refined Commentary</div>
+                <div style="font-size: 11.5px; color: #334155; line-height: 1.55; display: flex; flex-direction: column; gap: 6px;">
+                    <div style="display: flex; align-items: center; gap: 7px;">
+                        <span style="width: 7px; height: 7px; border-radius: 50%; background: #0B192C; flex-shrink: 0;"></span>
+                        <span><b>Fixed Income Core:</b> 62.7% anchored in Term Sukuk</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 7px;">
+                        <span style="width: 7px; height: 7px; border-radius: 50%; background: #10B981; flex-shrink: 0;"></span>
+                        <span><b>Digital Inflow:</b> 42.0% fresh volume generated via App</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 7px;">
+                        <span style="width: 7px; height: 7px; border-radius: 50%; background: #C5A059; flex-shrink: 0;"></span>
+                        <span><b>Capital Preservation:</b> Redemptions steady at 39.7%</span>
+                    </div>
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
 
     st.markdown("<hr style='margin: 20px 0 16px 0; border: none; border-top: 1px solid var(--border-primary);'>", unsafe_allow_html=True)
 

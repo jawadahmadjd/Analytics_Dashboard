@@ -262,52 +262,75 @@ st.markdown("""
         margin-top: 0 !important;
     }
 
-    /* STREAMLIT TAB STYLING OVERRIDE (Luxury Capsule Navigation) */
+    /* STREAMLIT TAB STYLING OVERRIDE (Clean, Seamless, No Red Underline) */
     div[data-testid="stTabs"] {
-        margin-top: 14px;
-        margin-bottom: 18px;
+        margin-top: 10px;
+        margin-bottom: 14px;
     }
     
     div[data-baseweb="tab-list"] {
         gap: 8px !important;
-        border-bottom: 1px solid var(--border-primary) !important;
-        padding-bottom: 8px !important;
+        border-bottom: none !important;
+        padding-bottom: 0px !important;
         background: transparent !important;
     }
     
-    button[data-baseweb="tab"] {
+    div[data-baseweb="tab-highlight"],
+    div[data-baseweb="tab-border"],
+    div[data-testid="stTabs"] [data-baseweb="tab-highlight"],
+    div[data-testid="stTabs"] [data-baseweb="tab-border"] {
+        display: none !important;
+        height: 0px !important;
+        background: transparent !important;
+        border: none !important;
+    }
+    
+    button[data-baseweb="tab"],
+    div[data-testid="stTabs"] button[role="tab"] {
         font-family: 'Inter', sans-serif !important;
-        font-size: 12.5px !important;
+        font-size: 12px !important;
         font-weight: 500 !important;
         color: var(--text-tertiary) !important;
-        padding: 7px 18px !important;
-        background: var(--surface-primary) !important;
+        padding: 6px 16px !important;
+        background: #FFFFFF !important;
         border: 1px solid var(--border-primary) !important;
         border-radius: var(--radius-full) !important;
-        box-shadow: var(--shadow-xs) !important;
+        box-shadow: none !important;
         transition: all 150ms ease !important;
     }
     
-    button[data-baseweb="tab"]:hover {
+    button[data-baseweb="tab"]:hover,
+    div[data-testid="stTabs"] button[role="tab"]:hover {
         color: var(--brand-primary) !important;
         border-color: var(--brand-gold) !important;
     }
     
-    button[data-baseweb="tab"][aria-selected="true"] {
+    button[data-baseweb="tab"][aria-selected="true"],
+    div[data-testid="stTabs"] button[role="tab"][aria-selected="true"] {
         font-weight: 600 !important;
         background-color: var(--brand-primary) !important;
         color: #FFFFFF !important;
         border-color: var(--brand-primary) !important;
         box-shadow: 0 2px 6px rgba(11, 25, 44, 0.15) !important;
     }
-
-    div[data-baseweb="tab-highlight"],
-    div[data-baseweb="tab-border"] {
-        display: none !important;
+    
+    button[data-baseweb="tab"] p,
+    div[data-testid="stTabs"] button[role="tab"] p {
+        color: var(--text-secondary) !important;
+        margin: 0 !important;
+        font-size: 12px !important;
+        font-weight: 500 !important;
+    }
+    
+    button[data-baseweb="tab"][aria-selected="true"] p,
+    div[data-testid="stTabs"] button[role="tab"][aria-selected="true"] p {
+        color: #FFFFFF !important;
+        font-weight: 600 !important;
     }
 
-    /* STREAMLIT SLIDER CONTROLS (Champagne Gold Accents) */
-    div[data-testid="stSlider"] [role="slider"] {
+    /* STREAMLIT SLIDER & SELECT SLIDER CONTROLS (Complete Champagne Gold Override) */
+    div[data-testid="stSlider"] [role="slider"],
+    div[data-testid="stSelectSlider"] [role="slider"] {
         background-color: var(--brand-gold) !important;
         border: 2px solid #FFFFFF !important;
         box-shadow: 0 1px 4px rgba(197, 160, 89, 0.4) !important;
@@ -315,14 +338,123 @@ st.markdown("""
         height: 14px !important;
     }
     
-    div[data-testid="stSlider"] div[data-baseweb="slider"] > div > div:first-child {
+    div[data-testid="stSlider"] div[data-baseweb="slider"] > div > div:first-child,
+    div[data-testid="stSelectSlider"] div[data-baseweb="slider"] > div > div:first-child,
+    div[data-testid="stSlider"] div[data-baseweb="slider"] > div > div:nth-child(2),
+    div[data-testid="stSelectSlider"] div[data-baseweb="slider"] > div > div:nth-child(2) {
         background-color: var(--brand-gold) !important;
     }
     
-    div[data-testid="stSlider"] [data-testid="stThumbValue"] {
+    div[data-testid="stSlider"] [data-testid="stThumbValue"],
+    div[data-testid="stSelectSlider"] [data-testid="stThumbValue"] {
         color: var(--brand-primary) !important;
         font-weight: 600 !important;
         font-size: 10.5px !important;
+    }
+
+    /* SIDEBAR RADIO SELECTION (Navy & Gold, No Red Dot) */
+    div[data-testid="stRadio"] div[role="radiogroup"] label div[aria-checked="true"] {
+        border-color: var(--brand-primary) !important;
+        background-color: var(--brand-primary) !important;
+    }
+    
+    div[data-testid="stRadio"] div[role="radiogroup"] label div[aria-checked="true"] > div {
+        background-color: var(--brand-gold) !important;
+    }
+
+    /* 1080p MASTER UNIFIED CHART CARD (Matches Image 1) */
+    .master-chart-card {
+        background: #FFFFFF;
+        border: 1px solid var(--border-primary);
+        border-radius: var(--radius-lg);
+        padding: 22px 26px;
+        box-shadow: 0 2px 10px rgba(11, 25, 44, 0.04);
+        margin-top: 10px;
+        position: relative;
+    }
+    
+    /* STREAMLIT CONTAINER BORDER WRAPPER (Master Elevated Cards) */
+    div[data-testid="stVerticalBlockBorderWrapper"] {
+        background-color: #FFFFFF !important;
+        border: 1px solid var(--border-primary) !important;
+        border-radius: var(--radius-lg) !important;
+        box-shadow: 0 2px 10px rgba(11, 25, 44, 0.04) !important;
+        padding: 18px 24px !important;
+        margin-top: 6px !important;
+        margin-bottom: 16px !important;
+    }
+    
+    div[data-testid="stVerticalBlockBorderWrapper"] > div {
+        border: none !important;
+    }
+    
+    /* POPOVER BUTTON STYLING (Clean filter trigger pill) */
+    div[data-testid="stPopover"] > button {
+        background-color: #FFFFFF !important;
+        border: 1px solid var(--border-primary) !important;
+        border-radius: 6px !important;
+        font-size: 11.5px !important;
+        font-weight: 600 !important;
+        color: var(--text-secondary) !important;
+        padding: 5px 14px !important;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
+    }
+    div[data-testid="stPopover"] > button:hover {
+        border-color: var(--brand-gold) !important;
+        color: var(--brand-primary) !important;
+        background-color: #F8FAFC !important;
+    }
+    
+    .master-chart-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 12px;
+    }
+    
+    .master-chart-title {
+        font-size: 15px;
+        font-weight: 700;
+        color: var(--text-primary);
+        margin: 0 0 3px 0;
+        letter-spacing: -0.01em;
+    }
+    
+    .master-chart-subtitle {
+        font-size: 11.5px;
+        color: var(--text-tertiary);
+        margin: 0;
+    }
+
+    /* REFINED COMMENTARY BOX (Matches Image 1) */
+    .refined-commentary {
+        margin-top: 6px;
+        padding-top: 8px;
+    }
+    
+    .commentary-title {
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--text-primary);
+        margin-bottom: 8px;
+        letter-spacing: -0.01em;
+    }
+    
+    .commentary-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 11.5px;
+        color: var(--text-secondary);
+        margin-bottom: 7px;
+    }
+    
+    .c-dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        display: inline-block;
+        flex-shrink: 0;
     }
 
     /* DATAFRAME STYLING */
@@ -1151,25 +1283,32 @@ def apply_premium_chart_style(fig, height=280):
 
 apply_chart_style = apply_premium_chart_style
 
-# EXECUTIVE 1080p WIDESCREEN HEADER
+# EXECUTIVE 1080p WIDESCREEN HEADER (Matches Image 1)
 st.markdown(f"""
-<div class="header-container">
-    <div class="header-title-group">
-        <div class="header-logo-badge" style="background: var(--brand-primary); color: #fff; width: 34px; height: 34px; border-radius: 6px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 6px rgba(11,25,44,0.2);">
-            {get_icon('shield', 18, '#C5A059')}
-        </div>
-        <div>
-            <h1 class="header-title" style="font-size: 16px; font-weight: 700; color: var(--text-primary); margin: 0; line-height: 1.2;">National Bonds Corporation</h1>
-            <p class="header-subtitle" style="font-size: 11.5px; color: var(--text-tertiary); margin: 1px 0 0 0; font-weight: 500;">Executive Intelligence Platform &bull; H1 Sovereign Baseline</p>
+<div class="header-container" style="display: flex; justify-content: space-between; align-items: center; padding: 4px 0 12px 0; margin-bottom: 12px; border-bottom: 1px solid var(--border-primary);">
+    <div style="display: flex; align-items: center; gap: 12px;">
+        <div style="background: #0B192C; padding: 6px 14px; border-radius: 6px; display: flex; align-items: center; gap: 10px; box-shadow: 0 2px 6px rgba(11,25,44,0.25);">
+            <div style="color: var(--brand-gold);">{get_icon('shield', 18, 'var(--brand-gold)')}</div>
+            <div>
+                <div style="font-size: 11.5px; font-weight: 800; letter-spacing: 0.08em; color: #FFFFFF; line-height: 1.1;">NATIONAL BONDS</div>
+                <div style="font-size: 8.5px; font-weight: 600; letter-spacing: 0.04em; color: #94A3B8; text-transform: uppercase;">Executive Intelligence Platform</div>
+            </div>
         </div>
     </div>
-    <div style="display: flex; align-items: center; gap: 16px;">
-        <div style="display: flex; align-items: center; gap: 8px; background: var(--surface-primary); border: 1px solid var(--border-primary); padding: 5px 12px; border-radius: 9999px; box-shadow: var(--shadow-xs);">
+    <div style="display: flex; align-items: center; gap: 12px;">
+        <div style="display: flex; align-items: center; gap: 6px; background: var(--surface-primary); border: 1px solid var(--border-primary); padding: 4px 12px; border-radius: 9999px; box-shadow: var(--shadow-xs);">
             <span style="width: 7px; height: 7px; border-radius: 50%; background: #10B981; display: inline-block; box-shadow: 0 0 6px #10B981;"></span>
-            <span style="font-size: 11px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.06em;">System Nominal</span>
+            <span style="font-size: 11px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em;">SYSTEM NOMINAL</span>
         </div>
-        <div style="font-size: 11.5px; font-weight: 600; color: var(--brand-primary); background: var(--brand-subtle); padding: 5px 12px; border-radius: var(--radius-sm); border: 1px solid var(--border-primary);">
+        <div style="font-size: 11.5px; font-weight: 600; color: var(--brand-primary); background: var(--brand-subtle); padding: 4px 12px; border-radius: var(--radius-sm); border: 1px solid var(--border-primary);">
             2026-06 June Cycle
+        </div>
+        <div style="display: flex; align-items: center; gap: 10px; color: var(--text-tertiary); margin-left: 4px;">
+            <span>{get_icon('search', 15, 'var(--text-tertiary)')}</span>
+            <span>{get_icon('settings', 15, 'var(--text-tertiary)')}</span>
+        </div>
+        <div style="width: 28px; height: 28px; border-radius: 50%; background: var(--brand-primary); color: var(--brand-gold); font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; border: 1px solid var(--brand-gold); box-shadow: var(--shadow-xs);">
+            JA
         </div>
     </div>
 </div>
@@ -1244,7 +1383,7 @@ else:
         status_label = "OPTIMAL"
         status_pill_class = "status-healthy"
     
-    # MASTER 1080p HORIZON KPI STRIP (SLIM 85px FOOTPRINT)
+    # MASTER 1080p HORIZON KPI STRIP (SLIM 85px FOOTPRINT - Matches Image 1)
     col_k1, col_k2, col_k3, col_k4 = st.columns(4)
     
     with col_k1:
@@ -1256,7 +1395,7 @@ else:
             </div>
             <div class="kpi-horizon-value">AED 18.34B</div>
             <div class="kpi-horizon-subtext">
-                <span class="badge-success-chip">208% Plan</span> <span>&middot; 154K Verified Savers</span>
+                <span class="badge-success-chip" style="background: #ECFDF5; color: #059669; font-weight: 600; padding: 2px 6px; border-radius: 4px; font-size: 11px;">+12.4% vs Baseline</span> <span style="color: var(--text-tertiary);">&middot; 154K Verified Savers</span>
             </div>
         </div>
         """, unsafe_allow_html=True)
@@ -1270,7 +1409,7 @@ else:
             </div>
             <div class="kpi-horizon-value">AED {net_inflow_aed/1e6:.2f}M</div>
             <div class="kpi-horizon-subtext">
-                <span>Gross: AED {prod_data['gross_inflows_aed']/1e6:.1f}M &middot; Redemptions: AED {prod_data['redemptions_aed']/1e6:.1f}M</span>
+                <span style="color: var(--text-tertiary);">Gross: AED {prod_data['gross_inflows_aed']/1e6:.1f}M &middot; Redemptions: AED {prod_data['redemptions_aed']/1e6:.1f}M</span>
             </div>
         </div>
         """, unsafe_allow_html=True)
@@ -1284,30 +1423,26 @@ else:
             </div>
             <div class="kpi-horizon-value">AED {target_inflow_aed/1e6:.2f}M</div>
             <div class="kpi-horizon-subtext">
-                <span style="color: {dev_color}; font-weight: 600;">Variance: AED {abs(net_inflow_aed - target_inflow_aed)/1e6:.2f}M ({dev:+.1f}%)</span>
+                <span style="color: #D4850A; font-weight: 600;">Variance: AED {abs(net_inflow_aed - target_inflow_aed)/1e6:.2f}M ({dev:+.1f}%)</span>
             </div>
         </div>
         """, unsafe_allow_html=True)
     
     with col_k4:
-        delta_icon = get_icon('trending-up', 13, dev_color) if dev >= 0 else get_icon('trending-down', 13, dev_color)
         st.markdown(f"""
         <div class="kpi-horizon-card">
             <div class="kpi-horizon-header">
-                <span class="kpi-horizon-title">Governance Status</span>
-                <span style="color: {dev_color};">{delta_icon}</span>
+                <span class="kpi-horizon-title">Governance Health</span>
+                <span style="color: #059669;">{get_icon('shield', 14, '#059669')}</span>
             </div>
-            <div class="kpi-horizon-value" style="color: {dev_color}; font-size: 19px; display: flex; align-items: center; gap: 6px;">
-                {status_label}
+            <div class="kpi-horizon-value" style="color: #0B192C; font-size: 20px;">
+                Nominal
             </div>
             <div class="kpi-horizon-subtext">
-                <span class="status-pill {status_pill_class}">{dev:+.1f}% vs Threshold</span>
+                <span class="status-pill status-healthy" style="background: #ECFDF5; color: #059669; font-weight: 600; padding: 2px 8px; border-radius: 12px; font-size: 11px;">Optimal</span> <span style="color: var(--text-tertiary);">&middot; 100% Compliance Score</span>
             </div>
         </div>
         """, unsafe_allow_html=True)
-
-    # EXECUTIVE EARLY WARNING ALERT BANNER (INITIATIVE 3)
-    render_executive_alert_banner(kpi_df, selected_cycle, warning_threshold, breach_threshold)
     
     tab_pbi, tab_workflow, tab_portfolio, tab_diagnostics, tab_simulator, tab_biweekly, tab_export = st.tabs([
         "Analytics",
@@ -1665,6 +1800,7 @@ else:
     # TAB 3: DIAGNOSTICS
     # ==========================================
     with tab_diagnostics:
+        render_executive_alert_banner(kpi_df, selected_cycle, warning_threshold, breach_threshold)
         st.markdown(f"<div class='exec-section-header'>Customer Analytics: {selected_product}</div>", unsafe_allow_html=True)
         st.caption(f"Calibrated with verified customer database (154,000 Verified Accounts)")
         
@@ -1827,6 +1963,8 @@ STATUS: {status_label} (Variance: {dev:+.1f}%)
 Signature: _____________________________________ (GCCO)
 Date:      _____________________________________
 ========================================================================================"""
+        
+        render_executive_alert_banner(kpi_df, selected_cycle, warning_threshold, breach_threshold)
         
         st.markdown(f"""
         <div style="background: var(--surface-primary); border: 1px solid var(--border-primary); border-radius: var(--radius-md); padding: 18px 22px; margin-bottom: 16px;">
