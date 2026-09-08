@@ -173,43 +173,67 @@ st.markdown("""
     footer { display: none !important; }
     header[data-testid="stHeader"] {
         background: transparent !important;
-        height: 0px !important;
         pointer-events: none !important;
-        z-index: 999 !important;
+        z-index: 9999 !important;
+    }
+    header[data-testid="stHeader"] * {
+        pointer-events: auto !important;
     }
     header[data-testid="stToolbar"] { display: none !important; }
     div[data-testid="stToolbar"] { display: none !important; }
     [data-testid="stDeployButton"], .stAppDeployButton { display: none !important; }
     
-    /* CLEAN SIDEBAR COLLAPSE TOGGLE */
-    header[data-testid="stHeader"] [data-testid="stSidebarCollapsedControl"],
-    button[data-testid="stSidebarCollapsedControl"],
-    [data-testid="stSidebarCollapseButton"],
-    [data-testid="stSidebarCollapsedControl"] button,
-    div[data-testid="stSidebarCollapsedControl"] {
+    /* CLEAN SIDEBAR COLLAPSE & EXPAND CONTROLS */
+    div[data-testid="stSidebarCollapsedControl"],
+    header[data-testid="stHeader"] div[data-testid="stSidebarCollapsedControl"],
+    button[data-testid="stSidebarCollapsedControl"] {
         position: fixed !important;
-        top: 14px !important;
-        left: 14px !important;
-        pointer-events: auto !important;
+        top: 12px !important;
+        left: 12px !important;
+        z-index: 999999 !important;
         display: flex !important;
         visibility: visible !important;
         opacity: 1 !important;
-        color: var(--text-secondary) !important;
-        background-color: var(--surface-primary) !important;
-        border: 1px solid var(--border-primary) !important;
-        border-radius: var(--radius-sm) !important;
-        box-shadow: var(--shadow-xs) !important;
-        z-index: 999999 !important;
-        width: 30px !important;
-        height: 30px !important;
-        align-items: center !important;
-        justify-content: center !important;
+        pointer-events: auto !important;
     }
     
-    header[data-testid="stHeader"] [data-testid="stSidebarCollapsedControl"] svg,
-    button[data-testid="stSidebarCollapsedControl"] svg {
-        display: block !important;
-        fill: currentColor !important;
+    div[data-testid="stSidebarCollapsedControl"] button,
+    button[data-testid="stSidebarCollapsedControl"],
+    header[data-testid="stHeader"] [data-testid="stSidebarCollapsedControl"] button {
+        background-color: #FFFFFF !important;
+        border: 1px solid var(--border-primary) !important;
+        border-radius: var(--radius-sm) !important;
+        box-shadow: 0 1px 4px rgba(11, 25, 44, 0.08) !important;
+        color: var(--brand-primary) !important;
+        width: 32px !important;
+        height: 32px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        transition: all 150ms ease !important;
+        pointer-events: auto !important;
+    }
+    
+    div[data-testid="stSidebarCollapsedControl"] button:hover,
+    button[data-testid="stSidebarCollapsedControl"]:hover {
+        background-color: #F8FAFC !important;
+        border-color: var(--brand-gold) !important;
+        color: var(--brand-gold) !important;
+    }
+
+    div[data-testid="stSidebarCollapseButton"] button,
+    button[data-testid="stSidebarCollapseButton"] {
+        color: var(--text-tertiary) !important;
+        background: transparent !important;
+        border: 1px solid transparent !important;
+        border-radius: 6px !important;
+    }
+    
+    div[data-testid="stSidebarCollapseButton"] button:hover,
+    button[data-testid="stSidebarCollapseButton"]:hover {
+        background: #F1F5F9 !important;
+        color: var(--brand-primary) !important;
+        border-color: var(--border-primary) !important;
     }
 
     /* MAIN CONTAINER & PAGE CANVAS (True 1080p Panoramic Widescreen) */
@@ -228,13 +252,14 @@ st.markdown("""
         margin: 0 auto !important;
     }
     
-    /* SIDEBAR STYLING (Slim 230px Footprint) */
+    /* EXECUTIVE SIDEBAR STYLING (Modern 265px Luxury Console) */
     section[data-testid="stSidebar"] {
-        background-color: #F8F9FA !important;
+        background-color: #FFFFFF !important;
         border-right: 1px solid var(--border-primary) !important;
-        width: 230px !important;
-        min-width: 230px !important;
-        max-width: 230px !important;
+        width: 265px !important;
+        min-width: 265px !important;
+        max-width: 265px !important;
+        box-shadow: 2px 0 12px rgba(11, 25, 44, 0.03) !important;
     }
     
     section[data-testid="stSidebar"] > div {
@@ -242,24 +267,122 @@ st.markdown("""
     }
     
     section[data-testid="stSidebar"] .block-container {
-        padding-top: 0.5rem !important;
-        padding-bottom: 1.5rem !important;
-        padding-left: 0.85rem !important;
-        padding-right: 0.85rem !important;
+        padding-top: 0.75rem !important;
+        padding-bottom: 2rem !important;
+        padding-left: 1rem !important;
+        padding-right: 1rem !important;
+    }
+
+    /* SIDEBAR BRAND CARD */
+    .sidebar-brand-card {
+        background: linear-gradient(135deg, #0B192C 0%, #1E3E62 100%);
+        padding: 14px 16px;
+        border-radius: var(--radius-md);
+        margin-bottom: 16px;
+        box-shadow: 0 4px 12px rgba(11, 25, 44, 0.15);
+        border: 1px solid rgba(197, 160, 89, 0.25);
     }
 
     /* SIDEBAR SECTION LABELS */
     .sidebar-section-title {
-        font-size: 10.5px !important;
-        font-weight: 600 !important;
+        font-size: 11px !important;
+        font-weight: 700 !important;
         letter-spacing: 0.08em !important;
         color: var(--text-tertiary) !important;
         text-transform: uppercase !important;
-        margin: 16px 0 6px 0 !important;
+        margin: 18px 0 8px 0 !important;
+        display: flex !important;
+        align-items: center !important;
+        gap: 6px !important;
     }
     
     .sidebar-section-title:first-child {
         margin-top: 0 !important;
+    }
+
+    /* SIDEBAR RADIO AS MODERN SEGMENTED PILL CARDS */
+    section[data-testid="stSidebar"] div[data-testid="stRadio"] div[role="radiogroup"] {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 6px !important;
+        background: transparent !important;
+    }
+    
+    section[data-testid="stSidebar"] div[data-testid="stRadio"] div[role="radiogroup"] label {
+        background: #F8FAFC !important;
+        border: 1px solid var(--border-primary) !important;
+        border-radius: var(--radius-sm) !important;
+        padding: 8px 12px !important;
+        margin: 0 !important;
+        cursor: pointer !important;
+        transition: all 150ms ease !important;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02) !important;
+    }
+    
+    section[data-testid="stSidebar"] div[data-testid="stRadio"] div[role="radiogroup"] label:hover {
+        border-color: var(--brand-gold) !important;
+        background: #FFFFFF !important;
+    }
+    
+    section[data-testid="stSidebar"] div[data-testid="stRadio"] div[role="radiogroup"] label:has(input:checked) {
+        background: var(--brand-primary) !important;
+        border-color: var(--brand-primary) !important;
+        box-shadow: 0 2px 6px rgba(11, 25, 44, 0.18) !important;
+    }
+    
+    section[data-testid="stSidebar"] div[data-testid="stRadio"] div[role="radiogroup"] label:has(input:checked) p {
+        color: #FFFFFF !important;
+        font-weight: 600 !important;
+    }
+    
+    section[data-testid="stSidebar"] div[data-testid="stRadio"] div[role="radiogroup"] label:not(:has(input:checked)) p {
+        color: var(--text-secondary) !important;
+        font-weight: 500 !important;
+        font-size: 12px !important;
+    }
+    
+    /* Hide the radio circle dot inside sidebar */
+    section[data-testid="stSidebar"] div[data-testid="stRadio"] div[role="radiogroup"] label > div:first-child {
+        display: none !important;
+    }
+
+    /* SIDEBAR SELECTBOX & WIDGET CARD STYLING */
+    section[data-testid="stSidebar"] div[data-baseweb="select"] > div {
+        background-color: #F8FAFC !important;
+        border: 1px solid var(--border-primary) !important;
+        border-radius: var(--radius-sm) !important;
+        font-size: 12px !important;
+        color: var(--text-primary) !important;
+    }
+    
+    section[data-testid="stSidebar"] div[data-baseweb="select"] > div:hover {
+        border-color: var(--brand-gold) !important;
+    }
+    
+    section[data-testid="stSidebar"] label {
+        font-size: 11.5px !important;
+        font-weight: 600 !important;
+        color: var(--text-secondary) !important;
+        margin-bottom: 4px !important;
+    }
+
+    /* SIDEBAR INFO & FOOTER CARDS */
+    .sidebar-info-card {
+        background: #F8FAFC;
+        border: 1px solid var(--border-primary);
+        border-radius: var(--radius-md);
+        padding: 12px 14px;
+        margin-top: 12px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+    }
+    
+    .sidebar-footer-card {
+        margin-top: 18px;
+        padding: 12px 14px;
+        background: #F8FAFC;
+        border: 1px solid var(--border-primary);
+        border-radius: var(--radius-md);
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
     }
 
     /* STREAMLIT TAB STYLING OVERRIDE (Clean, Seamless, No Red Underline) */
@@ -1314,8 +1437,34 @@ st.markdown(f"""
 </div>
 """, unsafe_allow_html=True)
 
+# SIDEBAR: EXECUTIVE INTELLIGENCE CONSOLE
+st.sidebar.markdown(f"""
+<div class="sidebar-brand-card">
+    <div style="display: flex; align-items: center; gap: 10px;">
+        <div style="background: rgba(197, 160, 89, 0.15); border: 1px solid rgba(197, 160, 89, 0.35); border-radius: 8px; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; color: var(--brand-gold);">
+            {get_icon('shield', 18, 'var(--brand-gold)')}
+        </div>
+        <div>
+            <div style="font-size: 12px; font-weight: 800; letter-spacing: 0.08em; color: #FFFFFF; line-height: 1.15;">NATIONAL BONDS</div>
+            <div style="font-size: 8.5px; font-weight: 600; color: #94A3B8; letter-spacing: 0.04em; text-transform: uppercase;">Intelligence Console</div>
+        </div>
+    </div>
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px; padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.08); font-size: 10.5px;">
+        <span style="color: #94A3B8;">Platform v3.0</span>
+        <span style="color: #10B981; font-weight: 600; display: flex; align-items: center; gap: 4px;">
+            <span style="width: 6px; height: 6px; border-radius: 50%; background: #10B981; display: inline-block;"></span> Nominal
+        </span>
+    </div>
+</div>
+""", unsafe_allow_html=True)
+
 # TOP LEVEL ROLE / OPERATING MODE SWITCHER
-st.sidebar.markdown("<div class='sidebar-section-title'>Workspace</div>", unsafe_allow_html=True)
+st.sidebar.markdown(f"""
+<div class="sidebar-section-title">
+    <span>{get_icon('layers', 12, 'var(--text-tertiary)')}</span> Workspace Mode
+</div>
+""", unsafe_allow_html=True)
+
 operating_view = st.sidebar.radio(
     "Transformation Operating View",
     options=["Executive Cockpit", "Frontline Knowledge Assistant"],
@@ -1324,33 +1473,103 @@ operating_view = st.sidebar.radio(
 )
 
 if "Frontline" in operating_view:
+    st.sidebar.markdown(f"""
+    <div class="sidebar-info-card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; border-bottom: 1px solid var(--border-primary); padding-bottom: 6px;">
+            <span style="font-size: 11px; font-weight: 700; color: var(--text-primary); text-transform: uppercase;">Active Persona</span>
+            <span style="font-size: 10px; font-weight: 600; background: #ECFDF5; color: #059669; padding: 2px 6px; border-radius: 4px;">Certified</span>
+        </div>
+        <div style="font-size: 12px; font-weight: 700; color: var(--text-primary);">Ahmed &bull; Relationship Mgr</div>
+        <div style="font-size: 11px; color: var(--text-secondary); margin-top: 2px;">Direct Sales & Branch Network</div>
+        <div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--border-primary); font-size: 11px; color: var(--text-secondary); display: flex; justify-content: space-between;">
+            <span>Grounding SLA</span>
+            <span style="font-weight: 600; color: #059669;">Zero Hallucination</span>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    st.sidebar.markdown(f"""
+    <div class="sidebar-footer-card">
+        <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 4px;">
+            <span style="color: #059669;">{get_icon('shield', 13, '#059669')}</span>
+            <span style="font-size: 10.5px; font-weight: 700; color: var(--text-primary); text-transform: uppercase;">Knowledge Governance</span>
+        </div>
+        <div style="font-size: 11px; color: var(--text-secondary); line-height: 1.4;">
+            10 Official Product Circulars<br>
+            Sharia Fatwas & Approved Manuals
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+    
     render_frontline_portal(jd_agent)
 else:
     # SIDEBAR CONTROLS (Compact, Shifted Up, No Scrollbar)
-    st.sidebar.markdown("<div class='sidebar-section-title'>Analysis Context</div>", unsafe_allow_html=True)
+    st.sidebar.markdown(f"""
+    <div class="sidebar-section-title">
+        <span>{get_icon('filter', 12, 'var(--text-tertiary)')}</span> Analysis Context
+    </div>
+    """, unsafe_allow_html=True)
+    
     products_list = list(kpi_df['product_name'].unique())
-    selected_product = st.sidebar.selectbox("Select Pilot Product", products_list, index=1)
+    selected_product = st.sidebar.selectbox("Pilot Product Family", products_list, index=1)
     
     available_months = sorted(list(kpi_df['month'].unique()))
     selected_cycle = st.sidebar.select_slider(
-        "Monitoring Cycle",
+        "Reporting Cycle Horizon",
         options=available_months,
         value=available_months[-1]
     )
     
-    st.sidebar.markdown("<div class='sidebar-section-title'>Governance Thresholds</div>", unsafe_allow_html=True)
-    warning_threshold = st.sidebar.slider("Early Warning Deficit (%)", -25, 0, -8, step=1)
-    breach_threshold = st.sidebar.slider("Material Breach Deficit (%)", -35, -5, -15, step=1)
+    st.sidebar.markdown(f"""
+    <div class="sidebar-section-title">
+        <span>{get_icon('target', 12, 'var(--text-tertiary)')}</span> Governance Tolerances
+    </div>
+    """, unsafe_allow_html=True)
+    
+    warning_threshold = st.sidebar.slider("Early Warning Threshold (%)", -25, 0, -8, step=1)
+    breach_threshold = st.sidebar.slider("Material Breach Limit (%)", -35, -5, -15, step=1)
     
     # Dynamic Product Metadata
     spec = PRODUCT_SPECS.get(selected_product, PRODUCT_SPECS['Saving Bonds'])
     
-    st.sidebar.markdown("<div class='sidebar-section-title'>Product Profile</div>", unsafe_allow_html=True)
-    st.sidebar.caption(f"""
-    * **Class:** {spec['type']}
-    * **Target:** {spec['target_segment']}
-    * **Channels:** {', '.join(spec['key_channels'][:2])}
-    """)
+    st.sidebar.markdown(f"""
+    <div class="sidebar-info-card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; border-bottom: 1px solid var(--border-primary); padding-bottom: 6px;">
+            <span style="font-size: 11px; font-weight: 700; color: var(--text-primary); text-transform: uppercase; letter-spacing: 0.04em;">Product Profile</span>
+            <span style="font-size: 10px; font-weight: 600; background: var(--brand-subtle); color: var(--brand-primary); padding: 2px 7px; border-radius: 4px;">{spec['type']}</span>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 6px; font-size: 11.5px;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span style="color: var(--text-tertiary);">Segment:</span>
+                <span style="font-weight: 600; color: var(--text-primary);">{spec['target_segment']}</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span style="color: var(--text-tertiary);">Channels:</span>
+                <span style="font-weight: 600; color: var(--text-primary);">{', '.join(spec['key_channels'][:2])}</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span style="color: var(--text-tertiary);">Macro Sensitivity:</span>
+                <span style="font-weight: 600; color: #059669;">{spec.get('macro_sensitivity', 'Direct Impact').split(' ')[0]}</span>
+            </div>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    st.sidebar.markdown(f"""
+    <div class="sidebar-footer-card">
+        <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 4px;">
+            <span style="color: #059669;">{get_icon('check-circle', 13, '#059669')}</span>
+            <span style="font-size: 10.5px; font-weight: 700; color: var(--text-primary); letter-spacing: 0.03em; text-transform: uppercase;">Central Bank Ground Truth</span>
+        </div>
+        <div style="font-size: 11px; color: var(--text-secondary); line-height: 1.4;">
+            154,000 Verified Accounts<br>
+            Sharia Fatwa Compliant
+        </div>
+        <div style="font-size: 9.5px; color: var(--text-tertiary); margin-top: 6px; padding-top: 6px; border-top: 1px solid var(--border-primary);">
+            H1 2026 Close &middot; Audited Source
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
     
     # Extract Records for Selected Month & Product
     month_data = kpi_df[kpi_df['month'] == selected_cycle]
