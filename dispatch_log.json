@@ -1,0 +1,46 @@
+[
+  {
+    "receipt_id": "DISPATCH-2026-45839",
+    "timestamp": "2026-09-08 08:42:31",
+    "sender": "Jawad Ahmad",
+    "recipients": [
+      "Group Chief Commercial Officer (GCCO)",
+      "Fariha Fatima Hameed (Product Management Lead)",
+      "Alisha Rizvi (Product Lead)",
+      "ALCO Commercial Committee"
+    ],
+    "product_name": "Second Salary",
+    "cycle": "2026-06",
+    "deviation_pct": -29.8,
+    "deficit_m": 1.13,
+    "primary_driver": "Digital Web / App Drop",
+    "channels": [
+      "Office365 / Corporate Exchange SMTP",
+      "Microsoft Teams Commercial Channel Webhook"
+    ],
+    "delivery_status": "DELIVERED",
+    "sha256_hash": "SHA256:24c67546b47b96d7c8ef27ee272c1b72"
+  },
+  {
+    "receipt_id": "DISPATCH-2026-84127",
+    "timestamp": "2026-09-08 08:41:54",
+    "sender": "Jawad Ahmad",
+    "recipients": [
+      "Group Chief Commercial Officer (GCCO)",
+      "Fariha Fatima Hameed (Product Management Lead)",
+      "Alisha Rizvi (Product Lead)",
+      "ALCO Commercial Committee"
+    ],
+    "product_name": "Saving Bonds",
+    "cycle": "2026-06",
+    "deviation_pct": -10.22,
+    "deficit_m": 5.824794159999996,
+    "primary_driver": "Digital Web / App Drop",
+    "channels": [
+      "Office365 / Corporate Exchange SMTP",
+      "Microsoft Teams Commercial Channel Webhook"
+    ],
+    "delivery_status": "DELIVERED",
+    "sha256_hash": "SHA256:d13a0a1d891965ced19d7f2ffa4603b7"
+  }
+]

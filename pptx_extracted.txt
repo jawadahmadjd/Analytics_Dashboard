@@ -1,0 +1,285 @@
+=== SLIDE 1 ===
+  [TEXT] EXECUTIVE PROPOSAL
+  [TEXT] AI-Enabled Product Management
+  [TEXT] Transformation Roadmap
+  [TEXT] From product knowledge to continuous, proactive product intelligence
+  [TEXT] Presented to: Group Chief Commercial Officer
+  [TEXT] Presented by: Fariha Fatima Hameed | Product Management
+  [TEXT] 31 August 2026
+  [NOTES] [Sources]
+- Visual on this slide was generated with Microsoft Copilot.
+
+=== SLIDE 2 ===
+  [TEXT] EXECUTIVE PROPOSITION
+  [TEXT] Three connected initiatives. One intelligent operating model.
+  [TEXT] Two practical deliverables create immediate value while a focused agentic pilot builds the future capability.
+  [TEXT] 1  KNOWLEDGE
+  [TEXT] Product Knowledge AI Assistant
+  [TEXT] Controlled answers from approved product content
+  [TEXT] Fewer repetitive queries
+  [TEXT] Faster, consistent access
+  [TEXT] →
+  [TEXT] 2  INTELLIGENCE
+  [TEXT] Bi-Weekly Product & Market Intelligence
+  [TEXT] Internal + external signals
+  [TEXT] Management-level interpretation
+  [TEXT] Earlier risks and opportunities
+  [TEXT] →
+  [TEXT] 3  AGENTIC
+  [TEXT] Agentic Product Intelligence &Early Warning System
+  [TEXT] Continuous monitoring
+  [TEXT] Multi-step investigation
+  [TEXT] Proactive alerts and recommendations
+  [TEXT] Recommended positioning: Deliver • Deliver • Transform
+  [TEXT] 2
+  [NOTES] [Sources]
+- Content is based on the proposal provided by Fariha Fatima Hameed.
+
+=== SLIDE 3 ===
+  [TEXT] STRATEGIC CASE
+  [TEXT] The shift is not just automation. It is a better management system.
+  [TEXT] TODAY
+  [TEXT] Periodic • Manual • Retrospective
+  [TEXT] Product knowledge is fragmented
+  [TEXT] Teams depend on Product Management for routine answers
+  [TEXT] Insights are assembled from disconnected sources
+  [TEXT] Material changes may surface late
+  [TEXT] TARGET STATE
+  [TEXT] Accessible • Intelligent • Proactive
+  [TEXT] 3
+  [NOTES] [Sources]
+- Visual on this slide was generated with Microsoft Copilot.
+
+=== SLIDE 4 ===
+  [TEXT] INITIATIVE 1 | QUICK WIN
+  [TEXT] Product Knowledge AI Assistant
+  [TEXT] A controlled single source of product truth for internal teams.
+  [TEXT] Business outcome
+  [TEXT] Reduce dependency on Product Management for routine queries while improving speed, consistency and accessibility.
+  [TEXT] MVP capabilities
+  [TEXT] Answer product questions
+  [TEXT] Search approved documents
+  [TEXT] Provide source references
+  [TEXT] Flag conflicts / outdated content
+  [TEXT] Escalate unanswered queries
+  [TEXT] Initial users
+  [TEXT] Sales & Business Development
+  [TEXT] Customer Service & Relationships
+  [TEXT] Operations & Digital
+  [TEXT] Marketing & new employees
+  [TEXT] Relevant support functions
+  [TEXT] Design principle: if information is unavailable or unclear, the Assistant does not assume. It escalates.
+  [TEXT] 4
+  [NOTES] [Sources]
+- Visual on this slide was generated with Microsoft Copilot.
+
+=== SLIDE 5 ===
+  [TEXT] INITIATIVE 1 | DELIVERY MODEL
+  [TEXT] Build the knowledge foundation before the assistant
+  [TEXT] AI quality will only be as good as the approved information it can access.
+  [TEXT] 01
+  [TEXT] Inventory
+  [TEXT] Product descriptions, T&Cs, FAQs, brochures, policies, procedures, circulars
+  [TEXT] 02
+  [TEXT] Approved knowledge base
+  [TEXT] Ownership, version control, review dates and clear source references
+  [TEXT] 03
+  [TEXT] Assistant MVP
+  [TEXT] Priority journeys, source-grounded answers, conflict flags and escalation
+  [TEXT] 04
+  [TEXT] Governance
+  [TEXT] Approvals, access controls, monitoring, disclaimers and audit trail
+  [TEXT] Indicative end-to-end timeline: 4–5 months, including controlled pilot and refinement
+  [TEXT] 5
+  [NOTES] [Sources]
+- Content is based on the proposal provided by Fariha Fatima Hameed.
+
+=== SLIDE 6 ===
+  [TEXT] INITIATIVE 2 | VERY HIGH PRIORITY
+  [TEXT] Bi-Weekly Product & Market Intelligence Report
+  [TEXT] Move management insight from “what happened?” to “what is changing, why, and what needs attention?”
+  [TEXT] Internal lens
+  [TEXT] Portfolio performance
+  [TEXT] Customer indicators
+  [TEXT] Product and channel trends
+  [TEXT] Targets, inflows and redemptions
+  [TEXT] External lens
+  [TEXT] UAE macro conditions
+  [TEXT] Savings and investment environment
+  [TEXT] Consumer behaviour
+  [TEXT] Competitive activity
+  [TEXT] AI VALUE
+  [TEXT] Aggregate → Detect → Correlate → Interpret
+  [TEXT] Concise 3–5 page management report with opportunities, risks, watch items and management considerations.
+  [TEXT] 6
+  [NOTES] [Sources]
+- Visual on this slide was generated with Microsoft Copilot.
+
+=== SLIDE 7 ===
+  [TEXT] INITIATIVE 2 | OPERATING RHYTHM
+  [TEXT] A repeatable insight cycle every two weeks
+  [TEXT] Bi-weekly cadence better reflects the speed of market change and product movement.
+  [TEXT] 1
+  [TEXT] INGEST
+  [TEXT] Approved internal KPIs + external indicators
+  [TEXT] ›
+  [TEXT] 2
+  [TEXT] DETECT
+  [TEXT] Material movements against defined thresholds
+  [TEXT] ›
+  [TEXT] 3
+  [TEXT] CONNECT
+  [TEXT] Cross-indicator patterns and potential drivers
+  [TEXT] ›
+  [TEXT] 4
+  [TEXT] SYNTHESISE
+  [TEXT] Executive summary, opportunities and watch items
+  [TEXT] ›
+  [TEXT] 5
+  [TEXT] DISCUSS
+  [TEXT] Management consideration and owner follow-up
+  [TEXT] First live report targeted in 8–10 weeks, followed by a minimum of 3 reporting cycles for refinement
+  [TEXT] 7
+  [NOTES] [Sources]
+- Content is based on the proposal provided by Fariha Fatima Hameed.
+
+=== SLIDE 8 ===
+  [TEXT] INITIATIVE 3 | STRATEGIC TRANSFORMATION
+  [TEXT] Agentic Product Intelligence & Early Warning System
+  [TEXT] From a dashboard people inspect to a capability that continuously monitors, investigates and alerts.
+  [TEXT] OBJECTIVE
+  [TEXT] Continuously monitor the health of the product portfolio and proactively identify material risks or opportunities.
+  [TEXT] Focused pilot, not full autonomy
+  [TEXT] Start with 2–3 priority products, selected KPIs, clear performance ranges, warning thresholds and approved data sources.
+  [TEXT] 8
+  [NOTES] [Sources]
+- Visual on this slide was generated with Microsoft Copilot.
+
+=== SLIDE 9 ===
+  [TEXT] INITIATIVE 3 | AGENTIC WORKFLOW
+  [TEXT] Six steps from signal to accountable action
+  [TEXT] 1
+  [TEXT] MONITOR
+  [TEXT] KPIs
+  [TEXT] →
+  [TEXT] 2
+  [TEXT] DETECT
+  [TEXT] Deviation
+  [TEXT] →
+  [TEXT] 3
+  [TEXT] INVESTIGATE
+  [TEXT] Drivers
+  [TEXT] →
+  [TEXT] 4
+  [TEXT] ANALYSE
+  [TEXT] Explanation
+  [TEXT] →
+  [TEXT] 5
+  [TEXT] RECOMMEND
+  [TEXT] Options
+  [TEXT] →
+  [TEXT] 6
+  [TEXT] ESCALATE
+  [TEXT] Alert
+  [TEXT] Example alert  |  Material deviation in Product X: new subscriptions and net inflows affected. Potential drivers: channel underperformance and external market movement. Recommended next step: product review.
+  [TEXT] 9
+  [NOTES] [Sources]
+- Content is based on the proposal provided by Fariha Fatima Hameed.
+
+=== SLIDE 10 ===
+  [TEXT] INITIATIVE 3 | SOLUTION CONCEPT
+  [TEXT] Specialist agents with human-controlled outputs
+  [TEXT] Product Performance Agent
+  [TEXT] Monitors internal product KPIs
+  [TEXT] Market Intelligence Agent
+  [TEXT] Monitors approved macro and market indicators
+  [TEXT] Investigation Agent
+  [TEXT] Tests relationships and contributing factors
+  [TEXT] Alert & Recommendation Agent
+  [TEXT] Generates alerts and management considerations
+  [TEXT] Future phase: Product Intelligence Orchestrator
+  [TEXT] Outputs remain advisory: AI analyses and recommends; accountable leaders approve and decide.
+  [TEXT] 10
+  [NOTES] [Sources]
+- Content is based on the proposal provided by Fariha Fatima Hameed.
+
+=== SLIDE 11 ===
+  [TEXT] INTEGRATED ROADMAP
+  [TEXT] Sequence value delivery while building the strategic foundation
+  [TEXT] NOW
+  [TEXT] NEXT
+  [TEXT] SCALE
+  [TEXT] Knowledge Assistant
+  [TEXT] 4–5 months
+  [TEXT] Inventory → knowledge base → MVP → pilot
+  [TEXT] Intelligence Report
+  [TEXT] First report in 8–10 weeks
+  [TEXT] Framework → prototype → 3 bi-weekly cycles
+  [TEXT] Agentic Early Warning
+  [TEXT] Design + pilot within the year
+  [TEXT] Design → build → pilot → evaluate & scale
+  [TEXT] Common enablers: approved data • governance • security • business ownership • change adoption
+  [TEXT] 11
+  [NOTES] [Sources]
+- Content is based on the proposal provided by Fariha Fatima Hameed.
+
+=== SLIDE 12 ===
+  [TEXT] GOVERNANCE
+  [TEXT] AI analyses and recommends. Humans approve and decide.
+  [TEXT] HUMAN APPROVAL REQUIRED FOR
+  [TEXT] Product changes
+  [TEXT] Customer communications
+  [TEXT] Financial recommendations
+  [TEXT] External communications
+  [TEXT] Risk decisions
+  [TEXT] CONTROL FUNCTIONS
+  [TEXT] Technology / Data
+  [TEXT] Information Security
+  [TEXT] Risk & Compliance
+  [TEXT] Legal & Sharia
+  [TEXT] Internal Audit
+  [TEXT] Core controls: approved sources • role-based access • versioning • monitoring • escalation • audit trail
+  [TEXT] 12
+  [NOTES] [Sources]
+- Visual on this slide was generated with Microsoft Copilot.
+
+=== SLIDE 13 ===
+  [TEXT] VALUE REALISATION
+  [TEXT] Measure adoption, efficiency, insight quality and decision impact
+  [TEXT] KNOWLEDGE
+  [TEXT] Routine query reduction
+  [TEXT] Response time
+  [TEXT] Resolution rate & accuracy
+  [TEXT] Active users & satisfaction
+  [TEXT] INTELLIGENCE
+  [TEXT] Preparation time saved
+  [TEXT] Actionable insights
+  [TEXT] Early risks / opportunities
+  [TEXT] Decisions informed
+  [TEXT] AGENTIC PILOT
+  [TEXT] Alert precision
+  [TEXT] Investigation relevance
+  [TEXT] Lead time gained
+  [TEXT] Business value & scalability
+  [TEXT] Success is not the volume of AI output. It is faster access, earlier insight and better management action.
+  [TEXT] 13
+  [NOTES] [Sources]
+- Content is based on the proposal provided by Fariha Fatima Hameed.
+
+=== SLIDE 14 ===
+  [TEXT] DECISION REQUIRED
+  [TEXT] Recommended GCCO endorsement
+  [TEXT] 1
+  [TEXT] Sponsor the integrated roadmap
+  [TEXT] 2
+  [TEXT] Approve the Product Knowledge Assistant pilot
+  [TEXT] 3
+  [TEXT] Approve launch of the bi-weekly intelligence report
+  [TEXT] 4
+  [TEXT] Endorse design and limited pilot of the agentic early warning system
+  [TEXT] 5
+  [TEXT] Nominate cross-functional stakeholders and data owners
+  [TEXT] Two visible deliverables. One strategic transformation. One connected Product Management AI roadmap.
+  [NOTES] [Sources]
+- Visual on this slide was generated with Microsoft Copilot.
+

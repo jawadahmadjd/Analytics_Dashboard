@@ -1,0 +1,62 @@
+[
+  {
+    "timestamp": "2026-09-08 11:27:52",
+    "user_role": "Direct Sales / Branch Network",
+    "query": "Can Booster Plan milestone bonus combine with 7% certificate profit, and what is the withdrawal notice period?",
+    "citations": [
+      "Product Circular 2026/04"
+    ],
+    "escalated": false,
+    "latency_sec": 1.2
+  },
+  {
+    "timestamp": "2026-09-08 11:22:01",
+    "user_role": "Direct Sales / Branch Network",
+    "query": "Can Booster Plan milestone bonus combine with 7% certificate profit, and what is the withdrawal notice period?",
+    "citations": [
+      "Product Circular 2026/04"
+    ],
+    "escalated": false,
+    "latency_sec": 1.2
+  },
+  {
+    "timestamp": "2026-09-08 08:42:31",
+    "user_role": "Sales / Relationship Manager",
+    "query": "Can Booster Plan milestone bonus combine with 7% certificate profit, and what is the withdrawal notice period?",
+    "citations": [
+      "Product Circular 2026/04"
+    ],
+    "escalated": false,
+    "latency_sec": 1.2
+  },
+  {
+    "timestamp": "2026-09-07 20:47:58",
+    "user_role": "Direct Sales / Branch Network",
+    "query": "Can Booster Plan milestone bonus combine with 7% certificate profit, and what is the withdrawal notice period?",
+    "citations": [
+      "Product Circular 2026/04"
+    ],
+    "escalated": false,
+    "latency_sec": 1.2
+  },
+  {
+    "timestamp": "2026-09-07 20:26:11",
+    "user_role": "Sales / Relationship Manager",
+    "query": "Can we offer the extra 1.5% promo bonus on Booster Plan for fresh money?",
+    "citations": [
+      "Draft Circular 2026/Promo-X"
+    ],
+    "escalated": true,
+    "latency_sec": 1.2
+  },
+  {
+    "timestamp": "2026-09-07 20:26:11",
+    "user_role": "Sales / Relationship Manager",
+    "query": "Can Booster Plan milestone bonus combine with 7% certificate profit, and what is the withdrawal notice period?",
+    "citations": [
+      "Product Circular 2026/04"
+    ],
+    "escalated": false,
+    "latency_sec": 1.2
+  }
+]

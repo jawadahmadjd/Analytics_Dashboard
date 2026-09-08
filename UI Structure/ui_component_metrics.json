@@ -1,0 +1,616 @@
+[
+  {
+    "name": "App Header Bar",
+    "selector": ".header-container",
+    "found": true,
+    "rect": {
+      "x": 396,
+      "y": 19,
+      "width": 1428,
+      "height": 99
+    },
+    "computedStyle": {
+      "fontFamily": "\"Source Sans\", sans-serif",
+      "fontSize": "16px",
+      "fontWeight": "400",
+      "lineHeight": "25.6px",
+      "letterSpacing": "normal",
+      "color": "rgb(49, 51, 63)",
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "border": "",
+      "borderRadius": "0px",
+      "padding": "0px 0px 12px",
+      "margin": "0px 0px 14px",
+      "boxShadow": "none",
+      "display": "flex",
+      "flexDirection": "row",
+      "alignItems": "center",
+      "justifyContent": "space-between",
+      "gap": "normal",
+      "zIndex": "auto"
+    }
+  },
+  {
+    "name": "App Header Title",
+    "selector": ".header-title",
+    "found": true,
+    "rect": {
+      "x": 454,
+      "y": 19,
+      "width": 397,
+      "height": 64
+    },
+    "computedStyle": {
+      "fontFamily": "\"Source Sans\", sans-serif",
+      "fontSize": "23px",
+      "fontWeight": "800",
+      "lineHeight": "27.6px",
+      "letterSpacing": "-0.69px",
+      "color": "rgb(15, 23, 42)",
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(15, 23, 42)",
+      "borderRadius": "0px",
+      "padding": "20px 0px 16px",
+      "margin": "0px",
+      "boxShadow": "none",
+      "display": "block",
+      "flexDirection": "row",
+      "alignItems": "normal",
+      "justifyContent": "normal",
+      "gap": "normal",
+      "zIndex": "auto"
+    }
+  },
+  {
+    "name": "App Header Subtitle",
+    "selector": ".header-subtitle",
+    "found": true,
+    "rect": {
+      "x": 454,
+      "y": 85,
+      "width": 397,
+      "height": 21
+    },
+    "computedStyle": {
+      "fontFamily": "\"Source Sans\", sans-serif",
+      "fontSize": "13px",
+      "fontWeight": "600",
+      "lineHeight": "20.8px",
+      "letterSpacing": "normal",
+      "color": "rgb(100, 116, 139)",
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(100, 116, 139)",
+      "borderRadius": "0px",
+      "padding": "0px",
+      "margin": "2px 0px 0px",
+      "boxShadow": "none",
+      "display": "block",
+      "flexDirection": "row",
+      "alignItems": "normal",
+      "justifyContent": "normal",
+      "gap": "normal",
+      "zIndex": "auto"
+    }
+  },
+  {
+    "name": "Sidebar Container",
+    "selector": "section[data-testid=\"stSidebar\"]",
+    "found": true,
+    "rect": {
+      "x": 0,
+      "y": 0,
+      "width": 300,
+      "height": 1080
+    },
+    "computedStyle": {
+      "fontFamily": "\"Plus Jakarta Sans\", -apple-system, BlinkMacSystemFont, sans-serif",
+      "fontSize": "16px",
+      "fontWeight": "400",
+      "lineHeight": "25.6px",
+      "letterSpacing": "normal",
+      "color": "rgb(49, 51, 63)",
+      "backgroundColor": "rgb(240, 242, 246)",
+      "border": "0px none rgb(49, 51, 63)",
+      "borderRadius": "0px",
+      "padding": "0px",
+      "margin": "0px",
+      "boxShadow": "none",
+      "display": "block",
+      "flexDirection": "row",
+      "alignItems": "normal",
+      "justifyContent": "normal",
+      "gap": "normal",
+      "zIndex": "999991"
+    }
+  },
+  {
+    "name": "Sidebar Transformation Mode Radio",
+    "selector": "div[data-testid=\"stRadio\"]",
+    "found": true,
+    "rect": {
+      "x": 30,
+      "y": 106,
+      "width": 240,
+      "height": 90
+    },
+    "computedStyle": {
+      "fontFamily": "\"Plus Jakarta Sans\", -apple-system, BlinkMacSystemFont, sans-serif",
+      "fontSize": "16px",
+      "fontWeight": "400",
+      "lineHeight": "25.6px",
+      "letterSpacing": "normal",
+      "color": "rgb(49, 51, 63)",
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(49, 51, 63)",
+      "borderRadius": "0px",
+      "padding": "0px",
+      "margin": "0px",
+      "boxShadow": "none",
+      "display": "block",
+      "flexDirection": "row",
+      "alignItems": "normal",
+      "justifyContent": "normal",
+      "gap": "normal",
+      "zIndex": "auto"
+    }
+  },
+  {
+    "name": "Sidebar Product Selectbox",
+    "selector": "section[data-testid=\"stSidebar\"] div[data-baseweb=\"select\"]",
+    "found": false
+  },
+  {
+    "name": "Sidebar Monitoring Cycle Slider",
+    "selector": "section[data-testid=\"stSidebar\"] div[data-testid=\"stSlider\"]",
+    "found": true,
+    "rect": {
+      "x": 30,
+      "y": 340,
+      "width": 240,
+      "height": 40
+    },
+    "computedStyle": {
+      "fontFamily": "\"Plus Jakarta Sans\", -apple-system, BlinkMacSystemFont, sans-serif",
+      "fontSize": "16px",
+      "fontWeight": "400",
+      "lineHeight": "25.6px",
+      "letterSpacing": "normal",
+      "color": "rgb(49, 51, 63)",
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(49, 51, 63)",
+      "borderRadius": "0px",
+      "padding": "0px",
+      "margin": "0px",
+      "boxShadow": "none",
+      "display": "block",
+      "flexDirection": "row",
+      "alignItems": "normal",
+      "justifyContent": "normal",
+      "gap": "normal",
+      "zIndex": "auto"
+    }
+  },
+  {
+    "name": "AUM Global Ticker Strip",
+    "selector": ".aum-ticker-container",
+    "found": false
+  },
+  {
+    "name": "AUM Stat Item Card",
+    "selector": ".aum-stat-item",
+    "found": true,
+    "rect": {
+      "x": 419,
+      "y": 150,
+      "width": 424,
+      "height": 72
+    },
+    "computedStyle": {
+      "fontFamily": "\"Source Sans\", sans-serif",
+      "fontSize": "16px",
+      "fontWeight": "400",
+      "lineHeight": "25.6px",
+      "letterSpacing": "normal",
+      "color": "rgb(49, 51, 63)",
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(49, 51, 63)",
+      "borderRadius": "0px",
+      "padding": "0px",
+      "margin": "0px",
+      "boxShadow": "none",
+      "display": "flex",
+      "flexDirection": "column",
+      "alignItems": "normal",
+      "justifyContent": "center",
+      "gap": "normal",
+      "zIndex": "auto"
+    }
+  },
+  {
+    "name": "AUM Stat Label",
+    "selector": ".aum-label",
+    "found": true,
+    "rect": {
+      "x": 419,
+      "y": 150,
+      "width": 424,
+      "height": 18
+    },
+    "computedStyle": {
+      "fontFamily": "\"Source Sans\", sans-serif",
+      "fontSize": "11px",
+      "fontWeight": "700",
+      "lineHeight": "17.6px",
+      "letterSpacing": "0.66px",
+      "color": "rgb(100, 116, 139)",
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(100, 116, 139)",
+      "borderRadius": "0px",
+      "padding": "0px",
+      "margin": "0px 0px 3px",
+      "boxShadow": "none",
+      "display": "flex",
+      "flexDirection": "row",
+      "alignItems": "center",
+      "justifyContent": "normal",
+      "gap": "5px",
+      "zIndex": "auto"
+    }
+  },
+  {
+    "name": "AUM Stat Value",
+    "selector": ".aum-value",
+    "found": true,
+    "rect": {
+      "x": 419,
+      "y": 170,
+      "width": 424,
+      "height": 24
+    },
+    "computedStyle": {
+      "fontFamily": "\"Source Sans\", sans-serif",
+      "fontSize": "22px",
+      "fontWeight": "800",
+      "lineHeight": "24.2px",
+      "letterSpacing": "-0.44px",
+      "color": "rgb(15, 23, 42)",
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(15, 23, 42)",
+      "borderRadius": "0px",
+      "padding": "0px",
+      "margin": "0px",
+      "boxShadow": "none",
+      "display": "block",
+      "flexDirection": "row",
+      "alignItems": "normal",
+      "justifyContent": "normal",
+      "gap": "normal",
+      "zIndex": "auto"
+    }
+  },
+  {
+    "name": "Executive Alert Banner",
+    "selector": ".exec-alert-card",
+    "found": true,
+    "rect": {
+      "x": 0,
+      "y": 0,
+      "width": 0,
+      "height": 0
+    },
+    "computedStyle": {
+      "fontFamily": "\"Source Sans\", sans-serif",
+      "fontSize": "16px",
+      "fontWeight": "400",
+      "lineHeight": "25.6px",
+      "letterSpacing": "normal",
+      "color": "rgb(49, 51, 63)",
+      "backgroundColor": "rgba(217, 119, 6, 0.04)",
+      "border": "",
+      "borderRadius": "10px",
+      "padding": "12px 18px",
+      "margin": "10px 0px 16px",
+      "boxShadow": "rgba(0, 0, 0, 0.04) 0px 2px 6px -1px",
+      "display": "block",
+      "flexDirection": "row",
+      "alignItems": "normal",
+      "justifyContent": "normal",
+      "gap": "normal",
+      "zIndex": "auto"
+    }
+  },
+  {
+    "name": "Alert Action Button",
+    "selector": ".exec-alert-btn",
+    "found": false
+  },
+  {
+    "name": "Overview KPI Card",
+    "selector": ".kpi-card",
+    "found": true,
+    "rect": {
+      "x": 396,
+      "y": 386,
+      "width": 345,
+      "height": 132
+    },
+    "computedStyle": {
+      "fontFamily": "\"Source Sans\", sans-serif",
+      "fontSize": "16px",
+      "fontWeight": "400",
+      "lineHeight": "25.6px",
+      "letterSpacing": "normal",
+      "color": "rgb(49, 51, 63)",
+      "backgroundColor": "rgb(255, 255, 255)",
+      "border": "1px solid rgb(226, 232, 240)",
+      "borderRadius": "14px",
+      "padding": "18px 20px",
+      "margin": "0px",
+      "boxShadow": "rgba(0, 0, 0, 0.05) 0px 4px 20px -2px",
+      "display": "flex",
+      "flexDirection": "column",
+      "alignItems": "normal",
+      "justifyContent": "space-between",
+      "gap": "normal",
+      "zIndex": "auto"
+    }
+  },
+  {
+    "name": "Overview KPI Header",
+    "selector": ".kpi-card-header",
+    "found": true,
+    "rect": {
+      "x": 417,
+      "y": 405,
+      "width": 303,
+      "height": 26
+    },
+    "computedStyle": {
+      "fontFamily": "\"Source Sans\", sans-serif",
+      "fontSize": "16px",
+      "fontWeight": "400",
+      "lineHeight": "25.6px",
+      "letterSpacing": "normal",
+      "color": "rgb(49, 51, 63)",
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(49, 51, 63)",
+      "borderRadius": "0px",
+      "padding": "0px",
+      "margin": "0px 0px 8px",
+      "boxShadow": "none",
+      "display": "flex",
+      "flexDirection": "row",
+      "alignItems": "center",
+      "justifyContent": "space-between",
+      "gap": "normal",
+      "zIndex": "auto"
+    }
+  },
+  {
+    "name": "Overview KPI Value",
+    "selector": ".kpi-card-value",
+    "found": true,
+    "rect": {
+      "x": 417,
+      "y": 438,
+      "width": 303,
+      "height": 29
+    },
+    "computedStyle": {
+      "fontFamily": "\"Source Sans\", sans-serif",
+      "fontSize": "26px",
+      "fontWeight": "800",
+      "lineHeight": "28.6px",
+      "letterSpacing": "-0.52px",
+      "color": "rgb(15, 23, 42)",
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(15, 23, 42)",
+      "borderRadius": "0px",
+      "padding": "0px",
+      "margin": "0px 0px 6px",
+      "boxShadow": "none",
+      "display": "block",
+      "flexDirection": "row",
+      "alignItems": "normal",
+      "justifyContent": "normal",
+      "gap": "normal",
+      "zIndex": "auto"
+    }
+  },
+  {
+    "name": "Overview KPI Footer",
+    "selector": ".kpi-card-footer",
+    "found": true,
+    "rect": {
+      "x": 417,
+      "y": 473,
+      "width": 303,
+      "height": 26
+    },
+    "computedStyle": {
+      "fontFamily": "\"Source Sans\", sans-serif",
+      "fontSize": "12px",
+      "fontWeight": "600",
+      "lineHeight": "19.2px",
+      "letterSpacing": "normal",
+      "color": "rgb(71, 85, 105)",
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "border": "",
+      "borderRadius": "0px",
+      "padding": "6px 0px 0px",
+      "margin": "0px",
+      "boxShadow": "none",
+      "display": "flex",
+      "flexDirection": "row",
+      "alignItems": "center",
+      "justifyContent": "normal",
+      "gap": "6px",
+      "zIndex": "auto"
+    }
+  },
+  {
+    "name": "Status Pill Badge",
+    "selector": ".status-pill",
+    "found": true,
+    "rect": {
+      "x": 1682,
+      "y": 273,
+      "width": 121,
+      "height": 26
+    },
+    "computedStyle": {
+      "fontFamily": "\"Source Sans\", sans-serif",
+      "fontSize": "11.5px",
+      "fontWeight": "700",
+      "lineHeight": "18.4px",
+      "letterSpacing": "0.345px",
+      "color": "rgb(239, 68, 68)",
+      "backgroundColor": "rgba(239, 68, 68, 0.12)",
+      "border": "1px solid rgba(239, 68, 68, 0.3)",
+      "borderRadius": "20px",
+      "padding": "3px 10px",
+      "margin": "0px",
+      "boxShadow": "none",
+      "display": "flex",
+      "flexDirection": "row",
+      "alignItems": "center",
+      "justifyContent": "normal",
+      "gap": "5px",
+      "zIndex": "auto"
+    }
+  },
+  {
+    "name": "Navigation Tab Bar Container",
+    "selector": "div[data-testid=\"stTabs\"]",
+    "found": true,
+    "rect": {
+      "x": 396,
+      "y": 551,
+      "width": 1428,
+      "height": 2378
+    },
+    "computedStyle": {
+      "fontFamily": "\"Plus Jakarta Sans\", -apple-system, BlinkMacSystemFont, sans-serif",
+      "fontSize": "16px",
+      "fontWeight": "400",
+      "lineHeight": "25.6px",
+      "letterSpacing": "normal",
+      "color": "rgb(49, 51, 63)",
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(49, 51, 63)",
+      "borderRadius": "0px",
+      "padding": "0px",
+      "margin": "0px",
+      "boxShadow": "none",
+      "display": "block",
+      "flexDirection": "row",
+      "alignItems": "normal",
+      "justifyContent": "normal",
+      "gap": "normal",
+      "zIndex": "auto"
+    }
+  },
+  {
+    "name": "Navigation Tab Item",
+    "selector": "div[data-testid=\"stTab\"]",
+    "found": true,
+    "rect": {
+      "x": 396,
+      "y": 551,
+      "width": 168,
+      "height": 40
+    },
+    "computedStyle": {
+      "fontFamily": "\"Plus Jakarta Sans\", -apple-system, BlinkMacSystemFont, sans-serif",
+      "fontSize": "14px",
+      "fontWeight": "400",
+      "lineHeight": "22.4px",
+      "letterSpacing": "normal",
+      "color": "rgb(255, 75, 75)",
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(255, 75, 75)",
+      "borderRadius": "0px",
+      "padding": "0px",
+      "margin": "0px",
+      "boxShadow": "none",
+      "display": "flex",
+      "flexDirection": "row",
+      "alignItems": "center",
+      "justifyContent": "normal",
+      "gap": "normal",
+      "zIndex": "auto"
+    }
+  },
+  {
+    "name": "PowerBI Hero Banner",
+    "selector": "div[style*=\"background: linear-gradient(135deg, rgba(15, 23, 42\"]",
+    "found": true,
+    "rect": {
+      "x": 396,
+      "y": 607,
+      "width": 1428,
+      "height": 171
+    },
+    "computedStyle": {
+      "fontFamily": "\"Source Sans\", sans-serif",
+      "fontSize": "16px",
+      "fontWeight": "400",
+      "lineHeight": "25.6px",
+      "letterSpacing": "normal",
+      "color": "rgb(49, 51, 63)",
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "border": "1px solid rgba(2, 132, 199, 0.4)",
+      "borderRadius": "12px",
+      "padding": "18px 24px",
+      "margin": "0px 0px 20px",
+      "boxShadow": "rgba(0, 0, 0, 0.25) 0px 8px 32px 0px",
+      "display": "block",
+      "flexDirection": "row",
+      "alignItems": "normal",
+      "justifyContent": "normal",
+      "gap": "normal",
+      "zIndex": "auto"
+    }
+  },
+  {
+    "name": "PowerBI Slicer Ribbon",
+    "selector": "div[data-testid=\"stVerticalBlock\"] > div[style*=\"background: rgba\"]",
+    "found": false
+  },
+  {
+    "name": "JD Floating Avatar Button",
+    "selector": "div[data-testid=\"stPopover\"] button",
+    "found": false
+  },
+  {
+    "name": "Main Content Block Container",
+    "selector": "div.block-container",
+    "found": true,
+    "rect": {
+      "x": 316,
+      "y": 0,
+      "width": 1588,
+      "height": 2953
+    },
+    "computedStyle": {
+      "fontFamily": "\"Plus Jakarta Sans\", -apple-system, BlinkMacSystemFont, sans-serif",
+      "fontSize": "16px",
+      "fontWeight": "400",
+      "lineHeight": "25.6px",
+      "letterSpacing": "normal",
+      "color": "rgb(49, 51, 63)",
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "border": "0px none rgb(49, 51, 63)",
+      "borderRadius": "0px",
+      "padding": "3.2px 80px 24px",
+      "margin": "0px",
+      "boxShadow": "none",
+      "display": "block",
+      "flexDirection": "row",
+      "alignItems": "normal",
+      "justifyContent": "normal",
+      "gap": "normal",
+      "zIndex": "auto"
+    }
+  }
+]
