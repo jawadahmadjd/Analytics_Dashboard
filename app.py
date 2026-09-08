@@ -33,83 +33,175 @@ import powerbi_analytics_hub
 importlib.reload(powerbi_analytics_hub)
 from powerbi_analytics_hub import render_powerbi_studio
 
+from icons import ICONS, get_icon
+
 # Page Configuration
 st.set_page_config(
-    page_title="National Bonds | Executive Intelligence & Early Warning System",
-    page_icon="🏛️",
+    page_title="National Bonds | Executive Intelligence Platform",
+    page_icon="📊",
     layout="wide",
     initial_sidebar_state="expanded"
 )
 
-# Custom Styling for Executive Cockpit & Floating JD Chatbot
+# Custom Styling for Executive Cockpit & Floating Intelligence Copilot
 st.markdown("""
 <style>
-    /* Google Fonts */
-    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap');
+    /* Inter & JetBrains Mono Fonts */
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap');
     
-    html, body, [class*="css"] {
-        font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif !important;
+    /* UNIVERSAL INTER FONT ENFORCEMENT - Eliminates Source Sans Fallback */
+    html, body, [class*="css"], .stMarkdown, .stText, 
+    [data-testid="stMarkdownContainer"] p, 
+    [data-testid="stMarkdownContainer"] span,
+    [data-testid="stMarkdownContainer"] li,
+    [data-testid="stMarkdownContainer"] td,
+    [data-testid="stMarkdownContainer"] th,
+    div, span, p, h1, h2, h3, h4, h5, h6, label, 
+    input, textarea, select, button, a, td, th {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
     }
     
-    code, pre {
+    /* Preserve Streamlit Material Symbols Iconography */
+    .material-symbols-rounded,
+    .material-symbols-outlined,
+    .material-symbols-sharp,
+    [class*="material-symbols"],
+    [data-testid="stIconMaterial"],
+    span[data-testid="stIconMaterial"],
+    [data-testid="stSidebarCollapseButton"] span,
+    [data-testid="stSidebarCollapsedControl"] span {
+        font-family: 'Material Symbols Rounded', 'Material Icons', sans-serif !important;
+        letter-spacing: normal !important;
+        text-transform: none !important;
+        white-space: nowrap !important;
+        word-wrap: normal !important;
+        direction: ltr !important;
+    }
+    
+    code, pre, .stCode, [data-testid="stCode"] {
         font-family: 'JetBrains Mono', monospace !important;
     }
 
-    /* THEME-AWARE BASE TOKENS */
+    /* DESIGN SYSTEM TOKENS (Restrained Enterprise Palette) */
     :root {
-        --bg-main: #f8fafc;
-        --text-primary: #0f172a;
-        --text-secondary: #475569;
-        --text-muted: #64748b;
-        --card-bg: #ffffff;
-        --card-border: #e2e8f0;
-        --card-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05);
-        --brand-blue: #0284c7;
-        --brand-cyan: #0ea5e9;
-        --brand-navy: #0f172a;
-        --accent-gold: #f59e0b;
-        --accent-emerald: #10b981;
-        --accent-rose: #f43f5e;
-    }
-    
-    @media (prefers-color-scheme: dark) {
-        :root {
-            --bg-main: #0b0f19;
-            --text-primary: #f8fafc;
-            --text-secondary: #cbd5e1;
-            --text-muted: #94a3b8;
-            --card-bg: #131b2e;
-            --card-border: #1e293b;
-            --card-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.35);
-        }
+        /* === NEUTRALS (Primary Palette — 90% of interface) === */
+        --surface-primary: #FFFFFF;
+        --surface-secondary: #F8F9FB;
+        --surface-tertiary: #F1F3F6;
+        --surface-elevated: #FFFFFF;
+        
+        --border-primary: #E8ECF1;
+        --border-secondary: #F1F3F6;
+        --border-interactive: #C5CDD8;
+        
+        --text-primary: #1A1F36;
+        --text-secondary: #4A5468;
+        --text-tertiary: #8492A6;
+        --text-quaternary: #B0BAC9;
+        
+        /* === BRAND (Minimal Usage — Key Affordances) === */
+        --brand-primary: #1B6EF3;
+        --brand-primary-hover: #1559CC;
+        --brand-subtle: #EBF2FE;
+        --brand-text: #1556B8;
+        
+        /* === SEMANTIC STATUS === */
+        --status-positive: #0D9B5C;
+        --status-positive-bg: #EDFAF3;
+        --status-positive-border: #B4E4CC;
+        
+        --status-warning: #D4850A;
+        --status-warning-bg: #FFF8EB;
+        --status-warning-border: #F5D98C;
+        
+        --status-critical: #D4380D;
+        --status-critical-bg: #FFF1EE;
+        --status-critical-border: #F5B09A;
+        
+        --status-info: #1B6EF3;
+        --status-info-bg: #EBF2FE;
+        
+        /* === DATA VISUALIZATION PALETTE === */
+        --chart-primary: #1B6EF3;
+        --chart-secondary: #8492A6;
+        --chart-tertiary: #C5CDD8;
+        --chart-positive: #0D9B5C;
+        --chart-negative: #D4380D;
+        --chart-accent-1: #6E56CF;
+        --chart-accent-2: #D4850A;
+        
+        /* === ELEVATION === */
+        --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.04);
+        --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.03);
+        --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.05);
+        --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.07);
+        
+        /* === SPACING SCALE (8px base grid) === */
+        --space-1: 4px;
+        --space-2: 8px;
+        --space-3: 12px;
+        --space-4: 16px;
+        --space-5: 20px;
+        --space-6: 24px;
+        --space-8: 32px;
+        --space-10: 40px;
+        
+        /* === BORDER RADIUS === */
+        --radius-sm: 6px;
+        --radius-md: 8px;
+        --radius-lg: 12px;
+        --radius-full: 9999px;
+
+        /* Backward-compatible aliases */
+        --bg-main: var(--surface-secondary);
+        --card-bg: var(--surface-primary);
+        --card-border: var(--border-primary);
+        --card-shadow: var(--shadow-sm);
+        --text-muted: var(--text-tertiary);
+        --brand-blue: var(--brand-primary);
+        --brand-cyan: #38bdf8;
+        --brand-navy: #1A1F36;
+        --accent-gold: var(--status-warning);
+        --accent-emerald: var(--status-positive);
+        --accent-rose: var(--status-critical);
     }
 
-    /* ELIMINATE ALL TOP WHITESPACE & FIX SIDEBAR EXPAND/COLLAPSE POSITION */
+    /* ELIMINATE STREAMLIT NATIVE CHROME (Fixes Chrome Clutter Defect) */
+    #MainMenu { display: none !important; }
+    footer { display: none !important; }
     header[data-testid="stHeader"] {
         background: transparent !important;
         height: 0px !important;
         pointer-events: none !important;
         z-index: 999 !important;
     }
+    header[data-testid="stToolbar"] { display: none !important; }
+    div[data-testid="stToolbar"] { display: none !important; }
+    [data-testid="stDeployButton"], .stAppDeployButton { display: none !important; }
     
+    /* CLEAN SIDEBAR COLLAPSE TOGGLE */
     header[data-testid="stHeader"] [data-testid="stSidebarCollapsedControl"],
     button[data-testid="stSidebarCollapsedControl"],
     [data-testid="stSidebarCollapseButton"],
     [data-testid="stSidebarCollapsedControl"] button,
     div[data-testid="stSidebarCollapsedControl"] {
         position: fixed !important;
-        top: 10px !important;
-        left: 10px !important;
+        top: 14px !important;
+        left: 14px !important;
         pointer-events: auto !important;
         display: flex !important;
         visibility: visible !important;
         opacity: 1 !important;
-        color: var(--text-primary, #0f172a) !important;
-        background-color: var(--card-bg, #ffffff) !important;
-        border: 1px solid var(--card-border, #e2e8f0) !important;
-        border-radius: 8px !important;
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08) !important;
+        color: var(--text-secondary) !important;
+        background-color: var(--surface-primary) !important;
+        border: 1px solid var(--border-primary) !important;
+        border-radius: var(--radius-sm) !important;
+        box-shadow: var(--shadow-xs) !important;
         z-index: 999999 !important;
+        width: 32px !important;
+        height: 32px !important;
+        align-items: center !important;
+        justify-content: center !important;
     }
     
     header[data-testid="stHeader"] [data-testid="stSidebarCollapsedControl"] svg,
@@ -117,32 +209,157 @@ st.markdown("""
         display: block !important;
         fill: currentColor !important;
     }
+
+    /* MAIN CONTAINER & PAGE CANVAS */
+    .stApp {
+        background-color: var(--surface-secondary) !important;
+    }
     
     .main .block-container,
     div[data-testid="stAppViewBlockContainer"],
     div.block-container {
-        padding-top: 0.2rem !important;
-        padding-bottom: 1.5rem !important;
-        max-width: 98% !important;
+        padding-top: 0.5rem !important;
+        padding-bottom: 2rem !important;
+        padding-left: 2rem !important;
+        padding-right: 2rem !important;
+        max-width: 1480px !important;
+        margin: 0 auto !important;
+    }
+    
+    /* SIDEBAR STYLING */
+    section[data-testid="stSidebar"] {
+        background-color: var(--surface-secondary) !important;
+        border-right: 1px solid var(--border-primary) !important;
+        width: 280px !important;
     }
     
     section[data-testid="stSidebar"] > div {
-        padding-top: 0.5rem !important;
+        padding-top: 0.75rem !important;
     }
     
     section[data-testid="stSidebar"] .block-container {
-        padding-top: 0.5rem !important;
-        padding-bottom: 0.5rem !important;
+        padding-top: 0.75rem !important;
+        padding-bottom: 1.5rem !important;
+        padding-left: 1rem !important;
+        padding-right: 1rem !important;
     }
 
-    /* APP HEADER */
+    /* SIDEBAR SECTION LABELS */
+    .sidebar-section-title {
+        font-size: 11px !important;
+        font-weight: 600 !important;
+        letter-spacing: 0.08em !important;
+        color: var(--text-tertiary) !important;
+        text-transform: uppercase !important;
+        margin: 18px 0 6px 0 !important;
+    }
+    
+    .sidebar-section-title:first-child {
+        margin-top: 0 !important;
+    }
+
+    /* STREAMLIT TAB STYLING OVERRIDE */
+    div[data-testid="stTabs"] {
+        margin-top: 10px;
+    }
+    
+    div[data-baseweb="tab-list"] {
+        gap: 4px !important;
+        border-bottom: 1px solid var(--border-primary) !important;
+        background: transparent !important;
+    }
+    
+    button[data-baseweb="tab"] {
+        font-family: 'Inter', sans-serif !important;
+        font-size: 13px !important;
+        font-weight: 500 !important;
+        color: var(--text-tertiary) !important;
+        border-bottom: 2px solid transparent !important;
+        padding: 10px 18px !important;
+        background: transparent !important;
+        border-top: none !important;
+        border-left: none !important;
+        border-right: none !important;
+        border-radius: 0 !important;
+        transition: color 150ms ease, border-color 150ms ease !important;
+    }
+    
+    button[data-baseweb="tab"]:hover {
+        color: var(--text-primary) !important;
+    }
+    
+    button[data-baseweb="tab"][aria-selected="true"] {
+        font-weight: 600 !important;
+        color: var(--text-primary) !important;
+        border-bottom-color: var(--brand-primary) !important;
+    }
+
+    div[data-baseweb="tab-highlight"] {
+        background-color: var(--brand-primary) !important;
+    }
+
+    /* STREAMLIT SLIDER CONTROLS */
+    div[data-testid="stSlider"] [role="slider"] {
+        background-color: var(--brand-primary) !important;
+        border-color: var(--brand-primary) !important;
+    }
+    
+    div[data-testid="stSlider"] [data-testid="stThumbValue"] {
+        color: var(--brand-primary) !important;
+        font-weight: 600 !important;
+        font-size: 11px !important;
+    }
+
+    /* DATAFRAME STYLING */
+    [data-testid="stDataFrame"] {
+        border: 1px solid var(--border-primary) !important;
+        border-radius: var(--radius-md) !important;
+        background-color: var(--surface-primary) !important;
+    }
+
+    /* BUTTONS */
+    button[kind="primary"],
+    .stButton > button[kind="primary"] {
+        background-color: var(--brand-primary) !important;
+        color: #FFFFFF !important;
+        border: none !important;
+        border-radius: var(--radius-sm) !important;
+        font-weight: 600 !important;
+        font-size: 13px !important;
+        padding: 8px 16px !important;
+        transition: background-color 150ms ease !important;
+    }
+    
+    button[kind="primary"]:hover,
+    .stButton > button[kind="primary"]:hover {
+        background-color: var(--brand-primary-hover) !important;
+    }
+
+    button[kind="secondary"],
+    .stButton > button[kind="secondary"] {
+        background-color: var(--surface-primary) !important;
+        color: var(--text-primary) !important;
+        border: 1px solid var(--border-primary) !important;
+        border-radius: var(--radius-sm) !important;
+        font-weight: 500 !important;
+        font-size: 13px !important;
+        padding: 8px 16px !important;
+    }
+    
+    button[kind="secondary"]:hover,
+    .stButton > button[kind="secondary"]:hover {
+        background-color: var(--surface-tertiary) !important;
+        border-color: var(--border-interactive) !important;
+    }
+
+    /* APP HEADER (Clean, Restrained) */
     .header-container {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding: 0 0 12px 0;
-        border-bottom: 1px solid rgba(148, 163, 184, 0.2);
-        margin-bottom: 14px;
+        padding: 6px 0 14px 0;
+        border-bottom: 1px solid var(--border-primary);
+        margin-bottom: 16px;
     }
     
     .header-title-group {
@@ -152,57 +369,45 @@ st.markdown("""
     }
     
     .header-logo-badge {
-        background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+        background: var(--brand-primary);
         color: #ffffff;
-        font-size: 26px;
-        width: 46px;
-        height: 46px;
+        font-size: 18px;
+        width: 36px;
+        height: 36px;
         display: flex;
         align-items: center;
         justify-content: center;
-        border-radius: 12px;
-        box-shadow: 0 6px 14px -4px rgba(2, 132, 199, 0.35);
+        border-radius: var(--radius-sm);
     }
     
     .header-title {
         color: var(--text-primary) !important;
-        font-size: 23px !important;
-        font-weight: 800 !important;
-        letter-spacing: -0.03em !important;
+        font-size: 18px !important;
+        font-weight: 700 !important;
+        letter-spacing: -0.02em !important;
         margin: 0 !important;
         line-height: 1.2 !important;
     }
     
     .header-subtitle {
-        color: var(--text-muted) !important;
-        font-size: 13px !important;
-        font-weight: 600 !important;
+        color: var(--text-tertiary) !important;
+        font-size: 12px !important;
+        font-weight: 500 !important;
         margin: 2px 0 0 0 !important;
     }
 
-    /* EXECUTIVE AUM TOP BANNER - UNIVERSAL THEME-AWARE */
+    /* TOP INLINE METRICS (Replaces Rainbow AUM Banner) */
     .aum-banner {
-        background: var(--card-bg) !important;
-        border: 1px solid var(--card-border) !important;
-        border-radius: 14px;
-        padding: 16px 22px;
-        margin-bottom: 18px;
+        background: var(--surface-primary) !important;
+        border: 1px solid var(--border-primary) !important;
+        border-radius: var(--radius-md);
+        padding: 14px 20px;
+        margin-bottom: 16px;
         display: grid;
-        grid-template-columns: 1.4fr 1fr 1fr 1fr;
-        gap: 16px;
-        box-shadow: var(--card-shadow) !important;
+        grid-template-columns: 1.3fr 1fr 1fr 1fr;
+        gap: 20px;
+        box-shadow: var(--shadow-xs) !important;
         position: relative;
-        overflow: hidden;
-    }
-    
-    .aum-banner::before {
-        content: "";
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 3px;
-        background: linear-gradient(90deg, #0284c7, #38bdf8, #10b981, #f59e0b);
     }
     
     .aum-stat-item {
@@ -213,28 +418,29 @@ st.markdown("""
     
     .aum-label {
         font-size: 11px;
-        font-weight: 700;
-        color: var(--text-muted) !important;
+        font-weight: 600;
+        color: var(--text-tertiary) !important;
         text-transform: uppercase;
         letter-spacing: 0.06em;
         margin-bottom: 3px;
         display: flex;
         align-items: center;
-        gap: 5px;
+        gap: 6px;
     }
     
     .aum-value {
-        font-size: 22px;
-        font-weight: 800;
+        font-size: 20px;
+        font-weight: 700;
         color: var(--text-primary) !important;
-        letter-spacing: -0.02em;
-        line-height: 1.1;
+        letter-spacing: -0.01em;
+        line-height: 1.2;
+        font-variant-numeric: tabular-nums;
     }
     
     .aum-subtext {
         font-size: 12px;
-        font-weight: 600;
-        margin-top: 4px;
+        font-weight: 500;
+        margin-top: 3px;
         display: flex;
         align-items: center;
         gap: 6px;
@@ -242,29 +448,23 @@ st.markdown("""
     }
     
     .badge-success-chip {
-        background: rgba(16, 185, 129, 0.12) !important;
-        color: #059669 !important;
+        background: var(--status-positive-bg) !important;
+        color: var(--status-positive) !important;
         font-size: 11px;
-        font-weight: 700;
-        padding: 2px 7px;
-        border-radius: 6px;
-        border: 1px solid rgba(16, 185, 129, 0.25);
-    }
-    
-    @media (prefers-color-scheme: dark) {
-        .badge-success-chip {
-            color: #34d399 !important;
-        }
+        font-weight: 600;
+        padding: 2px 6px;
+        border-radius: var(--radius-sm);
+        border: 1px solid var(--status-positive-border);
     }
 
-    /* EXECUTIVE KPI CARDS */
+    /* REFINED KPI CARDS */
     .kpi-card {
-        background: var(--card-bg);
-        border: 1px solid var(--card-border);
-        border-radius: 14px;
-        padding: 18px 20px;
-        box-shadow: var(--card-shadow);
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        background: var(--surface-primary);
+        border: 1px solid var(--border-primary);
+        border-radius: var(--radius-md);
+        padding: 16px 18px;
+        box-shadow: var(--shadow-xs);
+        transition: border-color 150ms ease;
         position: relative;
         height: 100%;
         display: flex;
@@ -273,216 +473,202 @@ st.markdown("""
     }
     
     .kpi-card:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 12px 28px -4px rgba(0, 0, 0, 0.1);
+        border-color: var(--border-interactive);
     }
     
     .kpi-card-header {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: 8px;
+        margin-bottom: 6px;
     }
     
     .kpi-card-title {
-        font-size: 11.5px;
-        font-weight: 700;
+        font-size: 11px;
+        font-weight: 600;
         text-transform: uppercase;
-        letter-spacing: 0.05em;
-        color: var(--text-muted);
+        letter-spacing: 0.06em;
+        color: var(--text-tertiary);
     }
     
     .kpi-card-icon {
-        font-size: 16px;
-        opacity: 0.85;
+        color: var(--text-tertiary);
+        display: flex;
+        align-items: center;
     }
     
     .kpi-card-value {
-        font-size: 26px;
-        font-weight: 800;
+        font-size: 22px;
+        font-weight: 700;
         color: var(--text-primary);
-        letter-spacing: -0.02em;
-        line-height: 1.1;
-        margin-bottom: 6px;
+        letter-spacing: -0.01em;
+        line-height: 1.2;
+        margin-bottom: 4px;
+        font-variant-numeric: tabular-nums;
     }
     
     .kpi-card-footer {
         font-size: 12px;
-        font-weight: 600;
+        font-weight: 400;
         color: var(--text-secondary);
         display: flex;
         align-items: center;
         gap: 6px;
         padding-top: 6px;
-        border-top: 1px solid var(--card-border);
+        border-top: 1px solid var(--border-secondary);
     }
 
-    /* EARLY WARNING STATUS BADGES */
+    /* STATUS LABELS */
     .status-pill {
         display: inline-flex;
         align-items: center;
-        gap: 5px;
-        padding: 3px 10px;
-        border-radius: 20px;
-        font-size: 11.5px;
-        font-weight: 700;
-        letter-spacing: 0.03em;
+        gap: 4px;
+        padding: 2px 8px;
+        border-radius: var(--radius-sm);
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.04em;
     }
     
     .status-breach {
-        background: rgba(239, 68, 68, 0.12);
-        color: #ef4444;
-        border: 1px solid rgba(239, 68, 68, 0.3);
+        background: var(--status-critical-bg);
+        color: var(--status-critical);
+        border: 1px solid var(--status-critical-border);
     }
     
     .status-warning {
-        background: rgba(245, 158, 11, 0.12);
-        color: #f59e0b;
-        border: 1px solid rgba(245, 158, 11, 0.3);
+        background: var(--status-warning-bg);
+        color: var(--status-warning);
+        border: 1px solid var(--status-warning-border);
     }
     
     .status-healthy {
-        background: rgba(16, 185, 129, 0.12);
-        color: #10b981;
-        border: 1px solid rgba(16, 185, 129, 0.3);
+        background: var(--status-positive-bg);
+        color: var(--status-positive);
+        border: 1px solid var(--status-positive-border);
     }
 
-    /* INSTITUTIONAL WORKFLOW STEPPER RIBBON */
+    /* WORKFLOW STEPPER RIBBON */
     .workflow-stepper {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        background: var(--card-bg, #ffffff);
-        border: 1px solid var(--card-border, #e2e8f0);
-        border-radius: 12px;
+        background: var(--surface-primary);
+        border: 1px solid var(--border-primary);
+        border-radius: var(--radius-md);
         padding: 10px 18px;
-        margin-bottom: 18px;
-        box-shadow: 0 2px 8px -2px rgba(0, 0, 0, 0.04);
+        margin-bottom: 16px;
+        box-shadow: var(--shadow-xs);
     }
     
     .step-item {
         display: flex;
         align-items: center;
-        gap: 8px;
+        gap: 6px;
         font-size: 12px;
-        font-weight: 700;
-        color: var(--text-muted, #64748b);
-        letter-spacing: 0.02em;
+        font-weight: 500;
+        color: var(--text-tertiary);
     }
     
     .step-item.step-active {
-        color: #0284c7;
+        color: var(--brand-primary);
+        font-weight: 600;
     }
     
     .step-num {
-        background: rgba(2, 132, 199, 0.1);
-        color: #0284c7;
         font-size: 11px;
-        font-weight: 800;
-        padding: 2px 7px;
-        border-radius: 6px;
+        font-weight: 700;
+        color: var(--text-tertiary);
+    }
+    
+    .step-active .step-num {
+        color: var(--brand-primary);
     }
     
     .step-divider {
         flex: 1;
         height: 1px;
-        background: var(--card-border, #e2e8f0);
-        margin: 0 10px;
-        max-width: 36px;
+        background: var(--border-primary);
+        margin: 0 8px;
+        max-width: 32px;
     }
 
-    /* CLEAN EXECUTIVE SECTION HEADERS */
+    /* CLEAN SECTION HEADERS */
     .exec-section-header {
-        font-size: 13.5px;
-        font-weight: 800;
-        color: var(--text-primary, #0f172a);
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-        margin: 14px 0 8px 0;
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--text-primary);
+        letter-spacing: -0.01em;
+        margin: 16px 0 8px 0;
         display: flex;
         align-items: center;
         gap: 8px;
     }
-    .exec-section-header::before {
-        content: "";
-        width: 3px;
-        height: 14px;
-        background: #0284c7;
-        border-radius: 2px;
-    }
 
-    /* DE-CLUTTERED EXECUTIVE ALERT BOX */
+    /* ALERT DETECTION BOX */
     .exec-alert-card {
-        background: var(--card-bg, #ffffff);
-        border: 1px solid var(--card-border, #e2e8f0);
-        border-left: 4px solid #0284c7;
-        border-radius: 10px;
-        padding: 12px 18px;
-        margin: 10px 0 16px 0;
-        box-shadow: 0 2px 6px -1px rgba(0, 0, 0, 0.04);
+        background: var(--surface-primary);
+        border: 1px solid var(--border-primary);
+        border-left: 3px solid var(--brand-primary);
+        border-radius: var(--radius-md);
+        padding: 12px 16px;
+        margin: 10px 0 14px 0;
     }
     .alert-card-breach {
-        border-left-color: #dc2626 !important;
-        background: rgba(220, 38, 38, 0.04);
+        border-left-color: var(--status-critical) !important;
+        background: var(--status-critical-bg);
     }
     .alert-card-warning {
-        border-left-color: #d97706 !important;
-        background: rgba(217, 119, 6, 0.04);
+        border-left-color: var(--status-warning) !important;
+        background: var(--status-warning-bg);
     }
     .alert-card-healthy {
-        border-left-color: #16a34a !important;
-        background: rgba(22, 163, 74, 0.04);
+        border-left-color: var(--status-positive) !important;
+        background: var(--status-positive-bg);
     }
 
-    /* MINIMALIST DIAGNOSTIC FINDING ROWS */
+    /* DIAGNOSTIC FINDING ROWS */
     .driver-card {
-        background: var(--card-bg, #ffffff);
-        border: 1px solid var(--card-border, #e2e8f0);
-        border-radius: 10px;
-        padding: 11px 14px;
+        background: var(--surface-primary);
+        border: 1px solid var(--border-primary);
+        border-radius: var(--radius-sm);
+        padding: 10px 14px;
         margin-bottom: 8px;
         display: flex;
         gap: 12px;
         align-items: flex-start;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.02);
     }
     .driver-tag {
         font-size: 10.5px;
-        font-weight: 800;
-        padding: 2px 7px;
-        border-radius: 4px;
-        background: #f1f5f9;
-        color: #475569;
+        font-weight: 700;
+        padding: 2px 6px;
+        border-radius: var(--radius-sm);
+        background: var(--surface-tertiary);
+        color: var(--text-secondary);
         white-space: nowrap;
     }
 
-    /* UNIFIED RECOMMENDATION ACTION CARDS */
+    /* RECOMMENDATION ACTION CARDS */
     .rec-action-card {
-        background: var(--card-bg, #ffffff);
-        border: 1px solid var(--card-border, #e2e8f0);
-        border-top: 3px solid #0284c7 !important;
-        border-radius: 12px;
+        background: var(--surface-primary);
+        border: 1px solid var(--border-primary);
+        border-radius: var(--radius-md);
         padding: 16px 18px;
         height: 100%;
         display: flex;
         flex-direction: column;
         justify-content: space-between;
-        box-shadow: 0 2px 8px -2px rgba(0, 0, 0, 0.04);
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
-    }
-    .rec-action-card:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 18px -4px rgba(0, 0, 0, 0.08);
+        box-shadow: var(--shadow-xs);
     }
     
     .rec-lift-badge {
-        background: rgba(2, 132, 199, 0.06);
-        border: 1px solid rgba(2, 132, 199, 0.2);
-        color: #0369a1;
-        font-weight: 700;
+        background: var(--surface-tertiary);
+        border: 1px solid var(--border-primary);
+        color: var(--brand-text);
+        font-weight: 600;
         font-size: 12px;
         padding: 6px 10px;
-        border-radius: 8px;
+        border-radius: var(--radius-sm);
         display: flex;
         align-items: center;
         justify-content: space-between;
@@ -491,27 +677,27 @@ st.markdown("""
 
     /* GOVERNANCE DISPATCH ACTION BAR */
     .escalate-action-bar {
-        background: var(--card-bg, #ffffff);
-        border: 1px solid var(--card-border, #e2e8f0);
-        border-radius: 12px;
-        padding: 14px 20px;
-        margin-top: 18px;
+        background: var(--surface-primary);
+        border: 1px solid var(--border-primary);
+        border-radius: var(--radius-md);
+        padding: 14px 18px;
+        margin-top: 16px;
         display: flex;
         align-items: center;
         justify-content: space-between;
-        box-shadow: 0 2px 8px -2px rgba(0, 0, 0, 0.04);
+        box-shadow: var(--shadow-xs);
     }
 
-    /* FLOATING CHAT TRIGGER BUTTON (AVATAR 100% CENTERED) */
+    /* FLOATING CHAT TRIGGER BUTTON (JD COPILOT) */
     div[data-testid="stPopover"],
     div.stPopover,
     .stPopover {
         position: fixed !important;
-        bottom: 25px !important;
-        right: 25px !important;
+        bottom: 24px !important;
+        right: 24px !important;
         z-index: 9999999 !important;
-        width: 60px !important;
-        height: 60px !important;
+        width: 48px !important;
+        height: 48px !important;
         padding: 0 !important;
         margin: 0 !important;
     }
@@ -525,20 +711,20 @@ st.markdown("""
     button.stPopoverButton,
     div[data-testid="stPopover"] button[kind="secondary"],
     div[data-testid="stPopover"] button[data-testid="stBaseButton-secondary"] {
-        width: 60px !important;
-        height: 60px !important;
-        min-width: 60px !important;
-        min-height: 60px !important;
-        max-width: 60px !important;
-        max-height: 60px !important;
+        width: 48px !important;
+        height: 48px !important;
+        min-width: 48px !important;
+        min-height: 48px !important;
+        max-width: 48px !important;
+        max-height: 48px !important;
         border-radius: 50% !important;
-        background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%) !important;
-        background-color: #0284c7 !important;
+        background-color: var(--brand-primary) !important;
+        background: var(--brand-primary) !important;
         color: #ffffff !important;
-        border: 2px solid #38bdf8 !important;
+        border: 2px solid #ffffff !important;
         padding: 0 !important;
         margin: 0 !important;
-        box-shadow: 0 8px 24px -2px rgba(2, 132, 199, 0.6) !important;
+        box-shadow: var(--shadow-md) !important;
         cursor: pointer !important;
         display: flex !important;
         align-items: center !important;
@@ -549,10 +735,17 @@ st.markdown("""
         gap: 0 !important;
         line-height: 1 !important;
         box-sizing: border-box !important;
-        transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        transition: transform 150ms ease, opacity 150ms ease !important;
     }
 
-    /* Completely hide any extra icon or chevron span in the popover button */
+    div[data-testid="stPopover"] button:hover,
+    div.stPopover button:hover,
+    .stPopover button:hover {
+        transform: scale(1.05) !important;
+        opacity: 0.95 !important;
+        border-color: #ffffff !important;
+    }
+
     div[data-testid="stPopover"] button > *:not(:first-child),
     div[data-testid="stPopover"] button svg,
     div[data-testid="stPopover"] button [data-testid="stIconMaterial"],
@@ -568,203 +761,122 @@ st.markdown("""
         pointer-events: none !important;
     }
 
-    div[data-testid="stPopover"] button *,
-    .stPopover button * {
-        margin: 0 !important;
-        padding: 0 !important;
-        box-sizing: border-box !important;
-    }
-
-    /* Pin markdown container to full 60x60 button area */
-    div[data-testid="stPopover"] button > div:first-child,
-    div[data-testid="stPopover"] button div[data-testid="stMarkdownContainer"],
     div[data-testid="stPopover"] button [data-testid="stMarkdownContainer"],
     .stPopover button [data-testid="stMarkdownContainer"] {
-        position: absolute !important;
-        top: 0 !important;
-        left: 0 !important;
-        right: 0 !important;
-        bottom: 0 !important;
-        width: 100% !important;
-        height: 100% !important;
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
-        text-align: center !important;
-        margin: 0 !important;
-        padding: 0 !important;
+        width: 100% !important;
+        height: 100% !important;
     }
 
     div[data-testid="stPopover"] button [data-testid="stMarkdownContainer"] p,
     .stPopover button [data-testid="stMarkdownContainer"] p {
-        position: absolute !important;
-        top: 0 !important;
-        left: 0 !important;
-        right: 0 !important;
-        bottom: 0 !important;
-        width: 100% !important;
-        height: 100% !important;
-        font-size: 32px !important;
-        line-height: 56px !important;
-        letter-spacing: 0 !important;
-        word-spacing: 0 !important;
-        text-indent: 0 !important;
-        display: flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-        text-align: center !important;
         margin: 0 !important;
         padding: 0 !important;
+        font-size: 13px !important;
+        font-weight: 700 !important;
+        color: #ffffff !important;
+        letter-spacing: 0.05em !important;
+        text-align: center !important;
     }
 
-    div[data-testid="stPopover"] button:hover,
-    div.stPopover button:hover,
-    .stPopover button:hover {
-        transform: translateY(-4px) scale(1.08) !important;
-        box-shadow: 0 16px 32px -4px rgba(56, 189, 248, 0.9), 0 6px 12px -2px rgba(0, 0, 0, 0.4) !important;
-        border-color: #ffffff !important;
-    }
-
-    /* FLOATING CHAT DIALOG WINDOW - THEME-AWARE (WHITE IN LIGHT MODE) */
+    /* FLOATING CHAT DIALOG WINDOW (Fixes Height Defect) */
     div[data-testid="stPopoverBody"] {
         position: fixed !important;
-        bottom: 95px !important;
-        right: 25px !important;
-        width: 450px !important;
-        max-width: calc(100vw - 35px) !important;
-        height: 610px !important;
-        max-height: calc(100vh - 110px) !important;
-        background-color: var(--card-bg, #ffffff) !important;
-        border: 1px solid var(--card-border, #e2e8f0) !important;
-        border-radius: 16px !important;
-        box-shadow: 0 20px 45px -10px rgba(0, 0, 0, 0.2) !important;
+        bottom: 84px !important;
+        right: 24px !important;
+        width: 420px !important;
+        max-width: calc(100vw - 32px) !important;
+        height: 560px !important;
+        max-height: 80vh !important;
+        overflow-y: auto !important;
+        background-color: var(--surface-primary) !important;
+        border: 1px solid var(--border-primary) !important;
+        border-radius: var(--radius-lg) !important;
+        box-shadow: var(--shadow-lg) !important;
         z-index: 99999999 !important;
-        padding: 12px 16px 14px 16px !important;
-        overflow: hidden !important;
+        padding: 14px 16px !important;
         display: flex !important;
         flex-direction: column !important;
-        color: var(--text-primary, #0f172a) !important;
+        color: var(--text-primary) !important;
         box-sizing: border-box !important;
     }
 
     div[data-testid="stPopoverBody"] p,
     div[data-testid="stPopoverBody"] span,
-    div[data-testid="stPopoverBody"] div,
-    div[data-testid="stPopoverBody"] li,
-    div[data-testid="stPopoverBody"] label,
-    div[data-testid="stPopoverBody"] [data-testid="stMarkdownContainer"] * {
-        color: var(--text-primary, #0f172a) !important;
-    }
-
-    div[data-testid="stPopoverBody"] strong,
-    div[data-testid="stPopoverBody"] b {
-        color: #0284c7 !important;
+    div[data-testid="stPopoverBody"] div {
+        color: var(--text-primary) !important;
     }
 
     div[data-testid="stPopoverBody"] [data-testid="stChatMessage"] {
-        background-color: var(--bg-main, #f8fafc) !important;
-        border: 1px solid var(--card-border, #e2e8f0) !important;
-        border-radius: 12px !important;
-        padding: 10px 14px !important;
+        background-color: var(--surface-secondary) !important;
+        border: 1px solid var(--border-primary) !important;
+        border-radius: var(--radius-sm) !important;
+        padding: 8px 12px !important;
         margin-bottom: 8px !important;
     }
-
-    div[data-testid="stPopoverBody"] [data-testid="stChatMessage"] p,
-    div[data-testid="stPopoverBody"] [data-testid="stChatMessage"] li {
-        color: var(--text-primary, #0f172a) !important;
-        font-size: 13.5px !important;
-        line-height: 1.45 !important;
+    
+    div[data-testid="stPopoverBody"] [data-testid="stChatMessage"] p {
+        color: var(--text-primary) !important;
+        font-size: 13px !important;
+        line-height: 1.5 !important;
     }
 
-    /* JD Inquiry Buttons */
     div[data-testid="stPopoverBody"] button {
-        background-color: var(--card-bg, #ffffff) !important;
-        border: 1px solid var(--card-border, #cbd5e1) !important;
-        color: var(--text-primary, #0f172a) !important;
-        border-radius: 8px !important;
+        background-color: var(--surface-primary) !important;
+        border: 1px solid var(--border-interactive) !important;
+        border-radius: var(--radius-sm) !important;
         font-size: 12px !important;
-        font-weight: 700 !important;
-        transition: all 0.2s ease !important;
+        font-weight: 600 !important;
+        color: var(--text-primary) !important;
+        transition: background-color 150ms ease !important;
     }
-    div[data-testid="stPopoverBody"] button p,
-    div[data-testid="stPopoverBody"] button span {
-        color: var(--text-primary, #0f172a) !important;
-        font-size: 12px !important;
-        font-weight: 700 !important;
-    }
+    
     div[data-testid="stPopoverBody"] button:hover {
-        background-color: rgba(2, 132, 199, 0.08) !important;
-        border-color: #0284c7 !important;
-        color: #0284c7 !important;
-    }
-    div[data-testid="stPopoverBody"] button:hover p,
-    div[data-testid="stPopoverBody"] button:hover span {
-        color: #0284c7 !important;
+        background-color: var(--surface-tertiary) !important;
     }
 
-    .chat-header-badge {
-        background: rgba(16, 185, 129, 0.12) !important;
-        color: #059669 !important;
-        font-size: 11px !important;
-        font-weight: 700 !important;
-        padding: 2px 8px !important;
-        border-radius: 12px !important;
-        border: 1px solid rgba(16, 185, 129, 0.25) !important;
-        letter-spacing: 0.05em !important;
-    }
-
-    /* Chat Input Area */
     div[data-testid="stPopoverBody"] [data-testid="stChatInput"] {
-        background-color: var(--card-bg, #ffffff) !important;
-        border: 1.5px solid var(--card-border, #cbd5e1) !important;
-        border-radius: 10px !important;
-        margin-top: 4px !important;
+        background-color: var(--surface-primary) !important;
+        border: 1px solid var(--border-interactive) !important;
+        border-radius: var(--radius-sm) !important;
     }
-
+    
     div[data-testid="stPopoverBody"] [data-testid="stChatInput"] textarea {
-        color: var(--text-primary, #0f172a) !important;
-        background-color: transparent !important;
+        color: var(--text-primary) !important;
+        font-family: 'Inter', sans-serif !important;
+        font-size: 13px !important;
     }
 
-    @media (prefers-color-scheme: dark) {
+    /* RESPONSIVE BREAKPOINTS */
+    @media (max-width: 1440px) {
+        .main .block-container,
+        div[data-testid="stAppViewBlockContainer"],
+        div.block-container {
+            max-width: 100% !important;
+            padding-left: 1.5rem !important;
+            padding-right: 1.5rem !important;
+        }
+    }
+
+    @media (max-width: 992px) {
+        .aum-banner {
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+    }
+
+    @media (max-width: 640px) {
+        .aum-banner {
+            grid-template-columns: 1fr;
+            gap: 12px;
+        }
         div[data-testid="stPopoverBody"] {
-            background-color: #0f172a !important;
-            border-color: #334155 !important;
-        }
-        div[data-testid="stPopoverBody"] p,
-        div[data-testid="stPopoverBody"] span,
-        div[data-testid="stPopoverBody"] div,
-        div[data-testid="stPopoverBody"] li,
-        div[data-testid="stPopoverBody"] label,
-        div[data-testid="stPopoverBody"] [data-testid="stMarkdownContainer"] * {
-            color: #f8fafc !important;
-        }
-        div[data-testid="stPopoverBody"] strong,
-        div[data-testid="stPopoverBody"] b {
-            color: #38bdf8 !important;
-        }
-        div[data-testid="stPopoverBody"] [data-testid="stChatMessage"] {
-            background-color: #1e293b !important;
-            border-color: #334155 !important;
-        }
-        div[data-testid="stPopoverBody"] [data-testid="stChatMessage"] p,
-        div[data-testid="stPopoverBody"] [data-testid="stChatMessage"] li {
-            color: #f1f5f9 !important;
-        }
-        div[data-testid="stPopoverBody"] button {
-            background-color: #1e293b !important;
-            border-color: #334155 !important;
-        }
-        div[data-testid="stPopoverBody"] button p,
-        div[data-testid="stPopoverBody"] button span {
-            color: #f8fafc !important;
-        }
-        div[data-testid="stPopoverBody"] [data-testid="stChatInput"] {
-            background-color: #1e293b !important;
-            border-color: #334155 !important;
-        }
-        div[data-testid="stPopoverBody"] [data-testid="stChatInput"] textarea {
-            color: #ffffff !important;
+            width: calc(100vw - 20px) !important;
+            right: 10px !important;
+            bottom: 74px !important;
+            max-height: 75vh !important;
         }
     }
 </style>
@@ -921,112 +1033,145 @@ def get_jd_agent():
 
 jd_agent = get_jd_agent()
 
-def apply_chart_style(fig, height=280):
+def apply_premium_chart_style(fig, height=280):
     fig.update_layout(
         paper_bgcolor='rgba(0,0,0,0)',
         plot_bgcolor='rgba(0,0,0,0)',
         height=height,
-        margin=dict(l=15, r=15, t=30, b=20),
-        font=dict(family='Plus Jakarta Sans, sans-serif', color='#64748b'),
+        margin=dict(l=16, r=16, t=36, b=36),
+        font=dict(family='Inter, -apple-system, BlinkMacSystemFont, sans-serif', color='#8492A6', size=11),
+        title=dict(
+            font=dict(family='Inter, -apple-system, BlinkMacSystemFont, sans-serif', size=13, color='#1A1F36'),
+            x=0.0, xanchor='left', y=0.98, yanchor='top'
+        ),
         xaxis=dict(
             showgrid=True,
-            gridcolor='rgba(148, 163, 184, 0.18)',
-            zerolinecolor='rgba(148, 163, 184, 0.25)',
-            tickfont=dict(color='#64748b', size=11)
+            gridcolor='#F1F3F6',
+            gridwidth=1,
+            zerolinecolor='#E8ECF1',
+            tickfont=dict(color='#8492A6', size=11, family='Inter, -apple-system, BlinkMacSystemFont, sans-serif'),
+            title_font=dict(color='#4A5468', size=11)
         ),
         yaxis=dict(
             showgrid=True,
-            gridcolor='rgba(148, 163, 184, 0.18)',
-            zerolinecolor='rgba(148, 163, 184, 0.25)',
-            tickfont=dict(color='#64748b', size=11)
+            gridcolor='#F1F3F6',
+            gridwidth=1,
+            zerolinecolor='#E8ECF1',
+            tickfont=dict(color='#8492A6', size=11, family='Inter, -apple-system, BlinkMacSystemFont, sans-serif'),
+            title_font=dict(color='#4A5468', size=11)
         ),
         legend=dict(
             orientation="h",
-            yanchor="bottom",
-            y=1.02,
-            xanchor="right",
-            x=1,
-            font=dict(color='#64748b', size=11)
-        )
+            yanchor="top",
+            y=-0.18,
+            xanchor="left",
+            x=0,
+            font=dict(color='#4A5468', size=11, family='Inter, -apple-system, BlinkMacSystemFont, sans-serif'),
+            bgcolor='rgba(0,0,0,0)',
+            borderwidth=0
+        ),
+        hoverlabel=dict(
+            bgcolor='#1A1F36',
+            font_size=11,
+            font_family='Inter, -apple-system, BlinkMacSystemFont, sans-serif',
+            font_color='#FFFFFF',
+            bordercolor='#1A1F36'
+        ),
+        colorway=['#1B6EF3', '#8492A6', '#0D9B5C', '#D4850A', '#6E56CF', '#D4380D']
     )
     return fig
 
+apply_chart_style = apply_premium_chart_style
+
 # HEADER
-st.markdown("""
+st.markdown(f"""
 <div class="header-container">
     <div class="header-title-group">
-        <div class="header-logo-badge">🏛️</div>
+        <div class="header-logo-badge" style="background: var(--brand-primary); color: #fff; width: 34px; height: 34px; border-radius: 6px; display: flex; align-items: center; justify-content: center;">
+            {get_icon('shield', 18, '#ffffff')}
+        </div>
         <div>
-            <h1 class="header-title">National Bonds Corporation</h1>
-            <p class="header-subtitle">AI Product Management Transformation | Agentic Early Warning System</p>
+            <h1 class="header-title" style="font-size: 17px; font-weight: 700; color: var(--text-primary); margin: 0; line-height: 1.2;">National Bonds Corporation</h1>
+            <p class="header-subtitle" style="font-size: 12px; color: var(--text-tertiary); margin: 2px 0 0 0; font-weight: 500;">Executive Intelligence & Early Warning System</p>
+        </div>
+    </div>
+    <div style="display: flex; align-items: center; gap: 20px;">
+        <div style="text-align: right;">
+            <div style="font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-tertiary);">Total AUM</div>
+            <div style="font-size: 15px; font-weight: 700; color: var(--text-primary); font-variant-numeric: tabular-nums;">AED 18.34B</div>
+        </div>
+        <div style="width: 1px; height: 26px; background: var(--border-primary);"></div>
+        <div style="text-align: right;">
+            <div style="font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-tertiary);">Active Savers</div>
+            <div style="font-size: 15px; font-weight: 700; color: var(--text-primary); font-variant-numeric: tabular-nums;">154,000</div>
+        </div>
+        <div style="width: 1px; height: 26px; background: var(--border-primary);"></div>
+        <div style="text-align: right;">
+            <div style="font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-tertiary);">H1 Fresh Sales</div>
+            <div style="font-size: 15px; font-weight: 700; color: var(--brand-primary); font-variant-numeric: tabular-nums;">AED 7.51B</div>
         </div>
     </div>
 </div>
 """, unsafe_allow_html=True)
 
 # EXECUTIVE TOP-LINE BANNER (AUDITED SLIDE 3 GROUND TRUTH)
-st.markdown("""
+st.markdown(f"""
 <div class="aum-banner">
     <div class="aum-stat-item">
-        <div class="aum-label">🏛️ Total Company AUM</div>
+        <div class="aum-label">{get_icon('bar-chart', 13, 'var(--text-tertiary)')} Total Company AUM</div>
         <div class="aum-value">AED 18.34 Billion</div>
-        <div class="aum-subtext"><span class="badge-success-chip">208% of Target / +AED 1.63B Net Growth</span></div>
+        <div class="aum-subtext"><span class="badge-success-chip">208% of Target</span> &middot; +AED 1.63B Net Growth</div>
     </div>
     <div class="aum-stat-item">
-        <div class="aum-label">👥 Total Verified Savers</div>
+        <div class="aum-label">{get_icon('users', 13, 'var(--text-tertiary)')} Total Verified Savers</div>
         <div class="aum-value">154,000 Accounts</div>
-        <div class="aum-subtext"><span class="badge-success-chip">+11% YoY &middot; 28.1% Emirati</span></div>
+        <div class="aum-subtext"><span class="badge-success-chip">+11% YoY</span> &middot; 28.1% Emirati Cohort</div>
     </div>
     <div class="aum-stat-item">
-        <div class="aum-label">📈 H1 2026 Fresh Sales</div>
+        <div class="aum-label">{get_icon('trending-up', 13, 'var(--text-tertiary)')} H1 2026 Fresh Sales</div>
         <div class="aum-value">AED 7.51 Billion</div>
-        <div class="aum-subtext"><span class="badge-success-chip">167% of Target</span></div>
+        <div class="aum-subtext"><span class="badge-success-chip">167% of Target</span> &middot; Strong Run-Rate</div>
     </div>
     <div class="aum-stat-item">
-        <div class="aum-label">🔄 Gross H1 Volume</div>
+        <div class="aum-label">{get_icon('refresh', 13, 'var(--text-tertiary)')} Gross H1 Volume</div>
         <div class="aum-value">AED 14.77 Billion</div>
-        <div class="aum-subtext">Redemptions: AED 5.88B</div>
+        <div class="aum-subtext">Redemptions: AED 5.88B (39.8%)</div>
     </div>
 </div>
 """, unsafe_allow_html=True)
 
 # TOP LEVEL ROLE / OPERATING MODE SWITCHER
-st.sidebar.markdown("<p style='font-size: 11px; font-weight: 800; letter-spacing: 0.05em; color: #0284c7; text-transform: uppercase; margin: 0 0 4px 0;'>Transformation Operating View</p>", unsafe_allow_html=True)
+st.sidebar.markdown("<div class='sidebar-section-title'>Workspace</div>", unsafe_allow_html=True)
 operating_view = st.sidebar.radio(
     "Transformation Operating View",
-    options=["🏛️ Executive Cockpit (Initiative 3 & 2)", "💼 Frontline Knowledge Assistant (Initiative 1)"],
+    options=["Executive Cockpit", "Frontline Knowledge Assistant"],
     index=0,
     label_visibility="collapsed"
 )
-st.sidebar.markdown("<hr style='margin: 8px 0; border-color: rgba(148, 163, 184, 0.2);'>", unsafe_allow_html=True)
 
-if operating_view == "💼 Frontline Knowledge Assistant (Initiative 1)":
+if "Frontline" in operating_view:
     render_frontline_portal(jd_agent)
 else:
     # SIDEBAR CONTROLS (Compact, Shifted Up, No Scrollbar)
-    st.sidebar.markdown("<p style='font-size: 13px; font-weight: 700; margin: 0 0 4px 0;'>Select Pilot Product</p>", unsafe_allow_html=True)
+    st.sidebar.markdown("<div class='sidebar-section-title'>Analysis Context</div>", unsafe_allow_html=True)
     products_list = list(kpi_df['product_name'].unique())
-    selected_product = st.sidebar.selectbox("Select Pilot Product", products_list, index=1, label_visibility="collapsed")
+    selected_product = st.sidebar.selectbox("Select Pilot Product", products_list, index=1)
     
     available_months = sorted(list(kpi_df['month'].unique()))
-    st.sidebar.markdown("<p style='font-size: 13px; font-weight: 700; margin: 8px 0 2px 0;'>Monitoring Cycle (Month)</p>", unsafe_allow_html=True)
     selected_cycle = st.sidebar.select_slider(
-        "Monitoring Cycle (Month)",
+        "Monitoring Cycle",
         options=available_months,
-        value=available_months[-1],
-        label_visibility="collapsed"
+        value=available_months[-1]
     )
     
-    st.sidebar.markdown("<hr style='margin: 8px 0; border-color: rgba(148, 163, 184, 0.2);'>", unsafe_allow_html=True)
-    st.sidebar.markdown("<p style='font-size: 13px; font-weight: 700; margin: 0 0 2px 0;'>⚙️ Governance Thresholds</p>", unsafe_allow_html=True)
+    st.sidebar.markdown("<div class='sidebar-section-title'>Governance Thresholds</div>", unsafe_allow_html=True)
     warning_threshold = st.sidebar.slider("Early Warning Deficit (%)", -25, 0, -8, step=1)
     breach_threshold = st.sidebar.slider("Material Breach Deficit (%)", -35, -5, -15, step=1)
     
     # Dynamic Product Metadata
     spec = PRODUCT_SPECS.get(selected_product, PRODUCT_SPECS['Saving Bonds'])
     
-    st.sidebar.markdown("<hr style='margin: 8px 0; border-color: rgba(148, 163, 184, 0.2);'>", unsafe_allow_html=True)
-    st.sidebar.markdown("<p style='font-size: 13px; font-weight: 700; margin: 0 0 2px 0;'>📋 Product Profile</p>", unsafe_allow_html=True)
+    st.sidebar.markdown("<div class='sidebar-section-title'>Product Profile</div>", unsafe_allow_html=True)
     st.sidebar.caption(f"""
     * **Class:** {spec['type']}
     * **Target:** {spec['target_segment']}
@@ -1050,17 +1195,17 @@ else:
     # Real-time state determination
     if dev <= breach_threshold:
         state_key = 'breach'
-        dev_color = "#ef4444"
+        dev_color = "#D4380D"
         status_label = "MATERIAL BREACH"
         status_pill_class = "status-breach"
     elif dev <= warning_threshold:
         state_key = 'warning'
-        dev_color = "#f59e0b"
+        dev_color = "#D4850A"
         status_label = "EARLY WARNING"
         status_pill_class = "status-warning"
     else:
         state_key = 'healthy'
-        dev_color = "#10b981"
+        dev_color = "#0D9B5C"
         status_label = "OPTIMAL"
         status_pill_class = "status-healthy"
     
@@ -1075,7 +1220,7 @@ else:
         <div class="kpi-card">
             <div class="kpi-card-header">
                 <span class="kpi-card-title">Active Savers</span>
-                <span class="kpi-card-icon">👥</span>
+                <span class="kpi-card-icon">{get_icon('users', 15, 'var(--text-tertiary)')}</span>
             </div>
             <div class="kpi-card-value">{prod_data['active_customers']:,}</div>
             <div class="kpi-card-footer">
@@ -1089,7 +1234,7 @@ else:
         <div class="kpi-card">
             <div class="kpi-card-header">
                 <span class="kpi-card-title">Actual Net Inflow</span>
-                <span class="kpi-card-icon">💵</span>
+                <span class="kpi-card-icon">{get_icon('dollar-sign', 15, 'var(--text-tertiary)')}</span>
             </div>
             <div class="kpi-card-value">AED {net_inflow_aed/1e6:.2f}M</div>
             <div class="kpi-card-footer">
@@ -1103,7 +1248,7 @@ else:
         <div class="kpi-card">
             <div class="kpi-card-header">
                 <span class="kpi-card-title">Target Plan</span>
-                <span class="kpi-card-icon">🎯</span>
+                <span class="kpi-card-icon">{get_icon('target', 15, 'var(--text-tertiary)')}</span>
             </div>
             <div class="kpi-card-value">AED {target_inflow_aed/1e6:.2f}M</div>
             <div class="kpi-card-footer">
@@ -1113,29 +1258,30 @@ else:
         """, unsafe_allow_html=True)
     
     with col_k4:
+        delta_icon = get_icon('trending-up', 14, dev_color) if dev >= 0 else get_icon('trending-down', 14, dev_color)
         st.markdown(f"""
         <div class="kpi-card">
             <div class="kpi-card-header">
                 <span class="kpi-card-title">Governance Status</span>
-                <span class="kpi-card-icon">🛡️</span>
+                <span class="kpi-card-icon">{get_icon('shield', 15, 'var(--text-tertiary)')}</span>
             </div>
-            <div class="kpi-card-value" style="color: {dev_color};">{dev:+.1f}%</div>
+            <div class="kpi-card-value" style="color: {dev_color}; display: flex; align-items: center; gap: 6px;">
+                {delta_icon} {dev:+.1f}%
+            </div>
             <div class="kpi-card-footer">
                 <span class="status-pill {status_pill_class}">{status_label}</span>
             </div>
         </div>
         """, unsafe_allow_html=True)
     
-    st.markdown("<br>", unsafe_allow_html=True)
-    
     tab_pbi, tab_workflow, tab_portfolio, tab_diagnostics, tab_simulator, tab_biweekly, tab_export = st.tabs([
-        "📊 PowerBI Analytics Studio",
-        "⚡ 6-Step Agentic Workflow", 
-        "📈 5-Product Portfolio Matrix", 
-        "🔍 Dynamic Diagnostic Engine", 
-        "🎯 Live Action Simulator",
-        "📑 Bi-Weekly Intelligence Report (Initiative 2)",
-        "📋 GCCO Escalation Briefing"
+        "Analytics",
+        "Workflow", 
+        "Portfolio", 
+        "Diagnostics", 
+        "Simulator",
+        "Intelligence",
+        "Escalation"
     ])
     
     # ==========================================
@@ -1152,27 +1298,27 @@ else:
         st.markdown("""
         <div class="workflow-stepper">
             <div class="step-item step-active">
-                <span class="step-num">01</span> MONITOR
+                <span class="step-num">01</span> Monitor
             </div>
             <div class="step-divider"></div>
             <div class="step-item step-active">
-                <span class="step-num">02</span> DETECT
+                <span class="step-num">02</span> Detect
             </div>
             <div class="step-divider"></div>
             <div class="step-item step-active">
-                <span class="step-num">03</span> INVESTIGATE
+                <span class="step-num">03</span> Investigate
             </div>
             <div class="step-divider"></div>
             <div class="step-item step-active">
-                <span class="step-num">04</span> ANALYSE
+                <span class="step-num">04</span> Analyse
             </div>
             <div class="step-divider"></div>
             <div class="step-item step-active">
-                <span class="step-num">05</span> RECOMMEND
+                <span class="step-num">05</span> Recommend
             </div>
             <div class="step-divider"></div>
             <div class="step-item step-active">
-                <span class="step-num">06</span> ESCALATE
+                <span class="step-num">06</span> Escalate
             </div>
         </div>
         """, unsafe_allow_html=True)
@@ -1180,45 +1326,48 @@ else:
         # ==========================================
         # STEP 1: MONITOR — Continuous Performance Trajectory
         # ==========================================
-        st.markdown("<div class='exec-section-header'>1. MONITOR: Continuous Performance Trajectory</div>", unsafe_allow_html=True)
+        st.markdown("<div class='exec-section-header'>1. Monitor: Continuous Performance Trajectory</div>", unsafe_allow_html=True)
         history_df = kpi_df[kpi_df['product_name'] == selected_product].sort_values('month')
         
         fig = go.Figure()
         fig.add_trace(go.Scatter(
             x=history_df['month'], y=history_df['target_inflows_aed']/1e6,
-            mode='lines', name='Budget Target Plan',
-            line=dict(color='#94a3b8', dash='dash', width=2, shape='spline'),
+            mode='lines', name='Target Plan',
+            line=dict(color='#8492A6', dash='dash', width=2, shape='spline'),
             hovertemplate="<b>%{x} Target:</b> AED %{y:.2f}M<extra></extra>"
         ))
         fig.add_trace(go.Scatter(
             x=history_df['month'], y=history_df['net_inflows_aed']/1e6,
             mode='lines+markers', name='Actual Net Inflow',
-            line=dict(color='#0284c7', width=3, shape='spline'),
-            marker=dict(size=6, color='#0284c7'),
+            line=dict(color='#1B6EF3', width=2.5, shape='spline'),
+            marker=dict(size=5, color='#1B6EF3'),
             fill='tozeroy',
-            fillcolor='rgba(2, 132, 199, 0.08)',
+            fillcolor='rgba(27, 110, 243, 0.08)',
             hovertemplate="<b>%{x} Actual:</b> AED %{y:.2f}M<extra></extra>"
         ))
         fig.add_vline(
-            x=selected_cycle, line_width=2, line_dash="dot", line_color="#f59e0b"
+            x=selected_cycle, line_width=1.5, line_dash="dot", line_color="#D4850A"
         )
         fig = apply_chart_style(fig, height=270)
-        fig.update_layout(hovermode="x unified", legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1))
+        fig.update_layout(hovermode="x unified", legend=dict(orientation="h", yanchor="top", y=-0.18, xanchor="left", x=0))
         st.plotly_chart(fig, use_container_width=True)
     
         # ==========================================
         # STEP 2: DETECT — Deviation & Anomaly Recognition
         # ==========================================
-        st.markdown("<div class='exec-section-header'>2. DETECT: Deviation & Anomaly Recognition</div>", unsafe_allow_html=True)
+        st.markdown("<div class='exec-section-header'>2. Detect: Deviation & Anomaly Recognition</div>", unsafe_allow_html=True)
         if state_key == 'breach':
             st.markdown(f"""
             <div class="exec-alert-card alert-card-breach">
                 <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px;">
-                    <strong style="color: #dc2626; font-size: 13.5px; letter-spacing: 0.02em;">🚨 MATERIAL DEFICIT BREACH DETECTED</strong>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        {get_icon('alert-circle', 16, '#D4380D')}
+                        <strong style="color: var(--status-critical); font-size: 13px; letter-spacing: 0.01em;">Material Deficit Breach Detected</strong>
+                    </div>
                     <span class="status-pill status-breach">SHORTFALL {abs(dev):.1f}%</span>
                 </div>
-                <div style="font-size: 13px; color: var(--text-primary); line-height: 1.5;">
-                    <b>{selected_product}</b> breached corporate tolerance in <b>{selected_cycle}</b> with Actual Net <b>AED {net_inflow_aed/1e6:.2f}M</b> vs Target <b>AED {target_inflow_aed/1e6:.2f}M</b> (Deficit: <b style="color: #dc2626;">AED {deficit_aed/1e6:.2f}M</b>). Autonomous multi-agent diagnostic triggered.
+                <div style="font-size: 13px; color: var(--text-primary); line-height: 1.5; margin-left: 24px;">
+                    <b>{selected_product}</b> breached corporate tolerance in <b>{selected_cycle}</b> with Actual Net <b>AED {net_inflow_aed/1e6:.2f}M</b> vs Target <b>AED {target_inflow_aed/1e6:.2f}M</b> (Deficit: <b style="color: var(--status-critical);">AED {deficit_aed/1e6:.2f}M</b>). Autonomous multi-agent diagnostic triggered.
                 </div>
             </div>
             """, unsafe_allow_html=True)
@@ -1226,10 +1375,13 @@ else:
             st.markdown(f"""
             <div class="exec-alert-card alert-card-warning">
                 <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px;">
-                    <strong style="color: #d97706; font-size: 13.5px; letter-spacing: 0.02em;">⚠️ EARLY WARNING DEFICIT TRIGGERED</strong>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        {get_icon('alert-triangle', 16, '#D4850A')}
+                        <strong style="color: var(--status-warning); font-size: 13px; letter-spacing: 0.01em;">Early Warning Deficit Notice</strong>
+                    </div>
                     <span class="status-pill status-warning">DEVIATION {abs(dev):.1f}%</span>
                 </div>
-                <div style="font-size: 13px; color: var(--text-primary); line-height: 1.5;">
+                <div style="font-size: 13px; color: var(--text-primary); line-height: 1.5; margin-left: 24px;">
                     <b>{selected_product}</b> net inflow is trending below tolerance limit in <b>{selected_cycle}</b> (Actual: <b>AED {net_inflow_aed/1e6:.2f}M</b> vs Target: <b>AED {target_inflow_aed/1e6:.2f}M</b>). Preemptive diagnostic initiated.
                 </div>
             </div>
@@ -1238,10 +1390,13 @@ else:
             st.markdown(f"""
             <div class="exec-alert-card alert-card-healthy">
                 <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px;">
-                    <strong style="color: #16a34a; font-size: 13.5px; letter-spacing: 0.02em;">✅ OPTIMAL PERFORMANCE ON TRACK</strong>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        {get_icon('check-circle', 16, '#0D9B5C')}
+                        <strong style="color: var(--status-positive); font-size: 13px; letter-spacing: 0.01em;">Performance Stable & On Track</strong>
+                    </div>
                     <span class="status-pill status-healthy">AHEAD +{dev:.1f}%</span>
                 </div>
-                <div style="font-size: 13px; color: var(--text-primary); line-height: 1.5;">
+                <div style="font-size: 13px; color: var(--text-primary); line-height: 1.5; margin-left: 24px;">
                     <b>{selected_product}</b> is exceeding target with positive trajectory in <b>{selected_cycle}</b> (Actual: <b>AED {net_inflow_aed/1e6:.2f}M</b> vs Target: <b>AED {target_inflow_aed/1e6:.2f}M</b>).
                 </div>
             </div>
@@ -1268,10 +1423,10 @@ else:
         # ==========================================
         # STEP 3: INVESTIGATE — Channel Flow Variance Attribution
         # ==========================================
-        st.markdown("<div class='exec-section-header'>3. INVESTIGATE: Channel Flow Variance Attribution</div>", unsafe_allow_html=True)
+        st.markdown("<div class='exec-section-header'>3. Investigate: Channel Flow Variance Attribution</div>", unsafe_allow_html=True)
         st.caption(f"Channel distribution attribution for **{selected_product}** — Primary variance driver: **{worst_channel}** ({worst_var:+.1f}%)")
         
-        bar_colors = ['#dc2626' if v < 0 else '#0284c7' for v in chan_summary['Channel Variance (%)']]
+        bar_colors = ['#D4380D' if v < 0 else '#1B6EF3' for v in chan_summary['Channel Variance (%)']]
         min_v = float(chan_summary['Channel Variance (%)'].min())
         max_v = float(chan_summary['Channel Variance (%)'].max())
         y_min = min(min_v * 1.35, -5.0)
@@ -1284,13 +1439,14 @@ else:
             text=[f"{v:+.1f}%" for v in chan_summary['Channel Variance (%)']],
             textposition='outside',
             cliponaxis=False,
-            textfont=dict(size=12, color='#0f172a', family='sans-serif'),
+            textfont=dict(size=11, color='#1A1F36', family='Inter, sans-serif'),
             hovertemplate="<b>%{x}</b><br>Variance: %{y:+.1f}%<extra></extra>"
         ))
         fig_ch = apply_chart_style(fig_ch, height=250)
         fig_ch.update_layout(
             yaxis_title="Variance (%)",
-            yaxis=dict(range=[y_min, y_max], zeroline=True, zerolinecolor='#cbd5e1'),
+            yaxis=dict(range=[y_min, y_max], zeroline=True, zerolinecolor='#E8ECF1', gridcolor='#F1F3F6'),
+            xaxis=dict(tickfont=dict(family='Inter, sans-serif', size=11)),
             margin=dict(t=35, b=25, l=40, r=20),
             showlegend=False
         )
@@ -1299,7 +1455,7 @@ else:
         # ==========================================
         # STEP 4: ANALYSE — Specialist Agent Intelligence Findings
         # ==========================================
-        st.markdown("<div class='exec-section-header'>4. ANALYSE: Specialist Agent Intelligence Findings</div>", unsafe_allow_html=True)
+        st.markdown("<div class='exec-section-header'>4. Analyse: Specialist Agent Intelligence Findings</div>", unsafe_allow_html=True)
         st.caption(f"Audited multi-agent intelligence synthesis for **{selected_product}** ({selected_cycle})")
         
         agent_drivers = spec['drivers'][state_key]
@@ -1314,11 +1470,11 @@ else:
                 """, unsafe_allow_html=True)
         with col_find2:
             st.markdown(f"""
-            <div class="driver-card" style="border-left: 3px solid #0284c7; height: calc(100% - 8px);">
+            <div class="driver-card" style="border-left: 3px solid var(--brand-primary); height: calc(100% - 8px);">
                 <div style="display: flex; flex-direction: column; gap: 6px;">
-                    <span class="driver-tag" style="background: rgba(2, 132, 199, 0.12); color: #0284c7; align-self: flex-start;">Macro Sensitivity</span>
+                    <span class="driver-tag" style="background: var(--brand-subtle); color: var(--brand-text); align-self: flex-start;">Macro Sensitivity</span>
                     <span style="font-size: 12.5px; color: var(--text-primary); line-height: 1.45;">{spec['macro_sensitivity']}</span>
-                    <span style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">Audited Source: H1 2026 Executive Performance Review (Slides 30-48).</span>
+                    <span style="font-size: 11px; color: var(--text-tertiary); margin-top: 4px;">Audited Source: H1 2026 Executive Performance Review (Slides 30-48).</span>
                 </div>
             </div>
             """, unsafe_allow_html=True)
@@ -1326,7 +1482,7 @@ else:
         # ==========================================
         # STEP 5: RECOMMEND — Actionable Management Options & Projected Recovery
         # ==========================================
-        st.markdown("<div class='exec-section-header'>5. RECOMMEND: Actionable Management Options & Projected Recovery</div>", unsafe_allow_html=True)
+        st.markdown("<div class='exec-section-header'>5. Recommend: Actionable Management Options & Projected Recovery</div>", unsafe_allow_html=True)
         st.caption("Strategic Q3 intervention pipeline calibrated to recover targeted deficit pool")
         
         rec_options = spec['options_template']
@@ -1342,10 +1498,10 @@ else:
                 <div class="rec-action-card">
                     <div>
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                            <span style="color: #0284c7; font-weight: 800; font-size: 13.5px; letter-spacing: 0.03em;">OPTION {chr(65+i)}</span>
-                            <span style="font-size: 10.5px; font-weight: 700; background: rgba(148, 163, 184, 0.12); padding: 2px 7px; border-radius: 4px; color: var(--text-muted);">{opt.get('risk', 'Standard')}</span>
+                            <span style="color: var(--brand-primary); font-weight: 700; font-size: 12px; letter-spacing: 0.04em;">OPTION {chr(65+i)}</span>
+                            <span style="font-size: 10.5px; font-weight: 600; background: var(--surface-tertiary); padding: 2px 6px; border-radius: 4px; color: var(--text-secondary);">{opt.get('risk', 'Standard')}</span>
                         </div>
-                        <strong style="color: var(--text-primary); font-size: 13.5px; display: block; margin-bottom: 6px; line-height: 1.35;">{opt['title']}</strong>
+                        <strong style="color: var(--text-primary); font-size: 13px; display: block; margin-bottom: 6px; line-height: 1.35;">{opt['title']}</strong>
                         <p style="font-size: 12px; color: var(--text-secondary); line-height: 1.45; margin: 0;">
                             {opt['desc']}
                         </p>
@@ -1360,12 +1516,13 @@ else:
         # ==========================================
         # STEP 6: ESCALATE — Executive Governance & Accountable Decision
         # ==========================================
-        st.markdown("<div class='exec-section-header'>6. ESCALATE: Executive Governance & Accountable Decision</div>", unsafe_allow_html=True)
+        st.markdown("<div class='exec-section-header'>6. Escalate: Executive Governance & Accountable Decision</div>", unsafe_allow_html=True)
         
         st.markdown(f"""
         <div class="escalate-action-bar">
-            <div style="font-size: 12.5px; color: var(--text-secondary); line-height: 1.45;">
-                🛡️ <b>Human-in-the-Loop Governance:</b> AI autonomously identifies anomalies and synthesizes Q3 intervention options for <b>{selected_product}</b>. The Group Chief Commercial Officer retains exclusive approval authority.
+            <div style="display: flex; align-items: center; gap: 8px; font-size: 12.5px; color: var(--text-secondary); line-height: 1.45;">
+                {get_icon('shield', 16, 'var(--brand-primary)')}
+                <span><b>Human-in-the-Loop Governance:</b> Autonomous multi-agent synthesis completed for <b>{selected_product}</b>. Executive sign-off required from GCCO.</span>
             </div>
         </div>
         """, unsafe_allow_html=True)
@@ -1375,16 +1532,16 @@ else:
 
         col_esc_btn, col_esc_space = st.columns([1.2, 1.8])
         with col_esc_btn:
-            if st.button("🚀 Dispatch Real-Time Alert to GCCO & Steering Committee", type="primary", use_container_width=True, key="btn_gcco_dispatch_tab1"):
+            if st.button("Dispatch Real-Time Alert to GCCO & Steering Committee", type="primary", use_container_width=True, key="btn_gcco_dispatch_tab1"):
                 receipt = dispatch_alert_memo(selected_product, selected_cycle, dev, deficit_aed/1e6, user_name="Jawad Ahmad")
-                st.success(f"✅ Alert Dispatched! Receipt: `{receipt['receipt_id']}` | Delivery Status: {receipt['delivery_status']} (Email & MS Teams)")
+                st.success(f"Alert Dispatched! Receipt: `{receipt['receipt_id']}` | Status: {receipt['delivery_status']} (Corporate SMTP & Teams)")
     
     # ==========================================
-    # TAB 2: 5-PRODUCT PORTFOLIO MATRIX
+    # TAB 2: PORTFOLIO MATRIX
     # ==========================================
     with tab_portfolio:
-        st.markdown("### 📊 5-Product Pilot Overview Matrix (H1 2026 Official Trajectory)")
-        st.caption(f"Status of all 5 pilot products for cycle: {selected_cycle} (Total Company AUM: AED 18.34B)")
+        st.markdown("<div class='exec-section-header'>Portfolio Performance Matrix (H1 2026 Trajectory)</div>", unsafe_allow_html=True)
+        st.caption(f"Commercial trajectory of all 5 pilot products for cycle: {selected_cycle} (Total Company AUM: AED 18.34B)")
         
         cycle_matrix = month_data[['product_name', 'active_customers', 'gross_inflows_aed', 'redemptions_aed', 'net_inflows_aed', 'target_inflows_aed', 'deviation_pct', 'status']]
         
@@ -1409,7 +1566,7 @@ else:
                 barmode='group',
                 title="Actual Net Inflow vs Target Inflow across Pilot Products (AED)",
                 labels={'value': 'AED Volume', 'product_name': 'Product', 'variable': 'Metric'},
-                color_discrete_sequence=['#0284c7', '#94a3b8']
+                color_discrete_sequence=['#1B6EF3', '#8492A6']
             )
             fig_comp = apply_chart_style(fig_comp, height=280)
             st.plotly_chart(fig_comp, use_container_width=True)
@@ -1424,7 +1581,7 @@ else:
                 aum_shares, values='AUM_Billion', names='Product',
                 title="Company AUM Concentration by Product",
                 hole=0.45,
-                color_discrete_sequence=['#0284c7', '#38bdf8', '#10b981', '#f59e0b', '#7c3aed']
+                color_discrete_sequence=['#1B6EF3', '#38bdf8', '#0D9B5C', '#D4850A', '#6E56CF']
             )
             fig_donut = apply_chart_style(fig_donut, height=280)
             st.plotly_chart(fig_donut, use_container_width=True)
@@ -1432,7 +1589,6 @@ else:
         # Row 2 of Portfolio Charts
         col_p3, col_p4 = st.columns([1.1, 1.1])
         with col_p3:
-            # Liquidity Velocity vs Redemption Ratio Scatter Plot
             cycle_matrix_calc = cycle_matrix.copy()
             cycle_matrix_calc['redemption_ratio'] = (cycle_matrix_calc['redemptions_aed'] / cycle_matrix_calc['gross_inflows_aed']) * 100
             cycle_matrix_calc['gross_m'] = cycle_matrix_calc['gross_inflows_aed'] / 1e6
@@ -1447,15 +1603,14 @@ else:
                 text='short_name',
                 title="Gross Liquidity Velocity vs Redemption Outflow Ratio (%)",
                 labels={'gross_m': 'Gross Inflow Volume (AED M)', 'redemption_ratio': 'Redemption % of Gross', 'status': 'Status'},
-                color_discrete_map={'HEALTHY': '#10b981', 'WARNING': '#f59e0b', 'BREACH': '#ef4444'}
+                color_discrete_map={'HEALTHY': '#0D9B5C', 'WARNING': '#D4850A', 'BREACH': '#D4380D'}
             )
             fig_scat.update_traces(textposition='top center')
             fig_scat = apply_chart_style(fig_scat, height=280)
             st.plotly_chart(fig_scat, use_container_width=True)
 
         with col_p4:
-            # Target Plan Achievement Variance Bar Chart
-            bar_colors = ['#ef4444' if d <= -15 else ('#f59e0b' if d <= -8 else '#10b981') for d in cycle_matrix['deviation_pct']]
+            bar_colors = ['#D4380D' if d <= -15 else ('#D4850A' if d <= -8 else '#0D9B5C') for d in cycle_matrix['deviation_pct']]
             short_p_names = [p.split(" (")[0] for p in cycle_matrix['product_name']]
             fig_var = go.Figure(go.Bar(
                 x=short_p_names,
@@ -1464,18 +1619,18 @@ else:
                 text=[f"{d:+.1f}%" for d in cycle_matrix['deviation_pct']],
                 textposition='outside'
             ))
-            fig_var.add_hline(y=0, line_dash="solid", line_color="#94a3b8", line_width=1)
-            fig_var.add_hline(y=warning_threshold, line_dash="dash", line_color="#f59e0b", annotation_text="Warning Threshold")
-            fig_var.add_hline(y=breach_threshold, line_dash="dash", line_color="#ef4444", annotation_text="Breach Threshold")
+            fig_var.add_hline(y=0, line_dash="solid", line_color="#8492A6", line_width=1)
+            fig_var.add_hline(y=warning_threshold, line_dash="dash", line_color="#D4850A", annotation_text="Warning Threshold")
+            fig_var.add_hline(y=breach_threshold, line_dash="dash", line_color="#D4380D", annotation_text="Breach Threshold")
             fig_var.update_layout(title="Budget Target Variance Gap by Product (%)", yaxis_title="Variance (%)")
             fig_var = apply_chart_style(fig_var, height=280)
             st.plotly_chart(fig_var, use_container_width=True)
     
     # ==========================================
-    # TAB 3: DYNAMIC DIAGNOSTIC DRILLDOWN
+    # TAB 3: DIAGNOSTICS
     # ==========================================
     with tab_diagnostics:
-        st.markdown(f"### 🔍 Deep-Dive Customer Analytics: *{selected_product}*")
+        st.markdown(f"<div class='exec-section-header'>Customer Analytics: {selected_product}</div>", unsafe_allow_html=True)
         st.caption(f"Calibrated with verified customer database (154,000 Verified Accounts)")
         
         col_d1, col_d2 = st.columns(2)
@@ -1486,9 +1641,11 @@ else:
                 seg_dist, values=selected_product, names='customer_segment',
                 title=f"Holders by Customer Segment: {selected_product}",
                 hole=0.42,
-                color_discrete_sequence=['#0284c7', '#38bdf8', '#10b981', '#f59e0b', '#7c3aed']
+                color_discrete_sequence=['#1B6EF3', '#38bdf8', '#0D9B5C', '#D4850A', '#6E56CF']
             )
             fig_seg = apply_chart_style(fig_seg, height=280)
+            # Position legend cleanly below chart to avoid collision (Audit Defect #1)
+            fig_seg.update_layout(legend=dict(orientation="h", yanchor="top", y=-0.15, xanchor="left", x=0))
             st.plotly_chart(fig_seg, use_container_width=True)
             
         with col_d2:
@@ -1496,49 +1653,48 @@ else:
                 chan_summary, x='Channel', y='Active_Holders',
                 title=f"Active Account Distribution by Channel: {selected_product}",
                 color='Channel',
-                color_discrete_sequence=['#0284c7', '#38bdf8', '#10b981', '#f59e0b', '#7c3aed']
+                color_discrete_sequence=['#1B6EF3', '#38bdf8', '#0D9B5C', '#D4850A', '#6E56CF']
             )
             fig_chan_all = apply_chart_style(fig_chan_all, height=280)
+            fig_chan_all.update_layout(showlegend=False)
             st.plotly_chart(fig_chan_all, use_container_width=True)
     
         col_d3, col_d4 = st.columns(2)
         with col_d3:
-            # Demographic Age Profile matching Slide 41-45
             fig_age = px.histogram(
                 adopters_df, x='age', nbins=25,
                 title=f"Age Distribution for {selected_product} Base (Peak: 35-45 yrs)",
-                color_discrete_sequence=['#0284c7']
+                color_discrete_sequence=['#1B6EF3']
             )
             fig_age = apply_chart_style(fig_age, height=260)
             st.plotly_chart(fig_age, use_container_width=True)
 
         with col_d4:
-            # Income Box Plot by Segment
             fig_box = px.box(
                 adopters_df, x='customer_segment', y='income_aed',
                 color='customer_segment',
                 title=f"Monthly Income Distribution by Segment (AED)",
-                color_discrete_sequence=['#0284c7', '#10b981', '#f59e0b']
+                color_discrete_sequence=['#1B6EF3', '#0D9B5C', '#D4850A']
             )
             fig_box = apply_chart_style(fig_box, height=260)
             fig_box.update_layout(showlegend=False)
             st.plotly_chart(fig_box, use_container_width=True)
     
     # ==========================================
-    # TAB 4: LIVE WHAT-IF ACTION SIMULATOR
+    # TAB 4: SIMULATOR
     # ==========================================
     with tab_simulator:
-        st.markdown(f"### 🎯 Interactive Governance & Recovery Action Simulator")
+        st.markdown(f"<div class='exec-section-header'>Governance & Recovery Action Simulator</div>", unsafe_allow_html=True)
         st.caption("Simulate the impact of executing approved Q3 management interventions before submitting to GCCO.")
         
         col_sim_ctrl, col_sim_view = st.columns([1, 1])
         
         with col_sim_ctrl:
-            st.markdown(f"**Select Interventions to Execute for *{selected_product}*:**")
+            st.markdown(f"<p style='font-size: 13px; font-weight: 600; color: var(--text-primary); margin-bottom: 8px;'>Select Interventions to Execute for {selected_product}:</p>", unsafe_allow_html=True)
             
-            apply_opt_a = st.checkbox(f"Approve Option A: {rec_options[0]['title']}", value=True)
-            apply_opt_b = st.checkbox(f"Approve Option B: {rec_options[1]['title']}", value=False)
-            apply_opt_c = st.checkbox(f"Approve Option C: {rec_options[2]['title']}", value=False)
+            apply_opt_a = st.checkbox(f"Option A: {rec_options[0]['title']}", value=True)
+            apply_opt_b = st.checkbox(f"Option B: {rec_options[1]['title']}", value=False)
+            apply_opt_c = st.checkbox(f"Option C: {rec_options[2]['title']}", value=False)
             
             sim_multiplier = st.slider("Execution Efficiency Factor (%)", 50, 150, 100, step=5)
             
@@ -1553,34 +1709,31 @@ else:
     
         with col_sim_view:
             st.markdown(f"""
-            <div class="kpi-card" style="border: 1px solid #0284c7 !important; background: var(--card-bg);">
+            <div class="kpi-card" style="border: 1px solid var(--border-primary); background: var(--surface-primary);">
                 <div class="kpi-card-header">
                     <span class="kpi-card-title">Projected Next-Cycle Recovery Lift</span>
                     <span class="status-pill status-healthy">Simulation Active</span>
                 </div>
-                <div class="kpi-card-value" style="color: #10b981 !important;">+AED {total_lift/1e6:.2f}M</div>
+                <div class="kpi-card-value" style="color: var(--status-positive) !important;">+AED {total_lift/1e6:.2f}M</div>
                 <div class="kpi-card-footer" style="flex-direction: column; align-items: flex-start; gap: 4px;">
                     <span>Original Actual: <b>AED {net_inflow_aed/1e6:.2f}M ({dev:+.1f}%)</b></span>
                     <span>Simulated Net Inflow: <b>AED {simulated_net_inflow/1e6:.2f}M</b></span>
-                    <span>Projected Variance: <b style="color: {'#10b981' if simulated_variance >= -8 else '#f59e0b'};">{simulated_variance:+.1f}%</b></span>
+                    <span>Projected Variance: <b style="color: {'var(--status-positive)' if simulated_variance >= -8 else 'var(--status-warning)'};">{simulated_variance:+.1f}%</b></span>
                 </div>
             </div>
             """, unsafe_allow_html=True)
             
             fig_sim = go.Figure(data=[
-                go.Bar(name='Current Actual', x=[selected_product], y=[net_inflow_aed/1e6], marker_color='#ef4444' if dev <= breach_threshold else '#f59e0b'),
-                go.Bar(name='Simulated Recovery', x=[selected_product], y=[simulated_net_inflow/1e6], marker_color='#10b981'),
-                go.Bar(name='Target Budget', x=[selected_product], y=[target_inflow_aed/1e6], marker_color='#94a3b8')
+                go.Bar(name='Current Actual', x=[selected_product], y=[net_inflow_aed/1e6], marker_color='#D4380D' if dev <= breach_threshold else '#D4850A'),
+                go.Bar(name='Simulated Recovery', x=[selected_product], y=[simulated_net_inflow/1e6], marker_color='#0D9B5C'),
+                go.Bar(name='Target Budget', x=[selected_product], y=[target_inflow_aed/1e6], marker_color='#8492A6')
             ])
             fig_sim = apply_chart_style(fig_sim, height=240)
             fig_sim.update_layout(barmode='group', title="Projected Inflow vs Target (AED M)")
             st.plotly_chart(fig_sim, use_container_width=True)
     
     # ==========================================
-    # TAB 5: DYNAMIC GCCO ESCALATION BRIEFING
-    # ==========================================
-    # ==========================================
-    # TAB 5: BI-WEEKLY REPORT (INITIATIVE 2)
+    # TAB 5: BI-WEEKLY REPORT
     # ==========================================
     with tab_biweekly:
         render_biweekly_report_tab(selected_cycle)
@@ -1589,93 +1742,92 @@ else:
     # TAB 6: GCCO ESCALATION BRIEFING
     # ==========================================
     with tab_export:
-        st.markdown("### 📑 Dynamically Assembled GCCO Escalation Memo")
-        st.caption("Auto-generated executive briefing referencing audited H1 performance ground truth.")
+        st.markdown("<div class='exec-section-header'>GCCO Escalation Briefing Dossier</div>", unsafe_allow_html=True)
+        st.caption("Executive briefing dossier referencing audited H1 performance ground truth.")
         
         briefing_text = f"""========================================================================================
-    CONFIDENTIAL | NATIONAL BONDS CORPORATION
-    EXECUTIVE EARLY WARNING ALERT & ACTION BRIEFING
-    ========================================================================================
-    DATE: {datetime.now().strftime('%d %B %Y')}
-    TO: Group Chief Commercial Officer (GCCO)
-    FROM: AI Product Intelligence System & Product Management
-    PRODUCT: {selected_product}
-    CYCLE: {selected_cycle}
-    STATUS: {status_label} (Variance: {dev:+.1f}%)
-    
-    1. EXECUTIVE SUMMARY & FINANCIAL STATUS
-    - Product Class:        {spec['type']}
-    - Active Customer Base: {prod_data['active_customers']:,} Accounts (out of 154,000 Verified Company Accounts)
-    - Actual Net Inflow:    AED {net_inflow_aed/1e6:.2f} Million
-    - Budgeted Target:      AED {target_inflow_aed/1e6:.2f} Million
-    - Variance to Plan:     {dev:+.1f}% ({status_label})
-    - Net Deficit / Gap:    AED {deficit_aed/1e6:.2f} Million
-    
-    2. KEY CONTRIBUTING DRIVERS (AUDITED H1 AGENT DIAGNOSTIC)
-    - Primary Underperforming Channel: {worst_channel} ({worst_var:+.1f}% variance)
-    - Diagnostic Finding 1:            {agent_drivers[0]}
-    - Diagnostic Finding 2:            {agent_drivers[1] if len(agent_drivers) > 1 else 'Normal cohort retention maintained.'}
-    - Macro / Campaign Context:        {spec['macro_sensitivity']}
-    
-    3. RECOMMENDED MANAGEMENT INTERVENTIONS (PIPELINE ACTIONS)
-    [Option A] {rec_options[0]['title']}
-               -> {rec_options[0]['desc']}
-               -> Expected Financial Recovery: +AED {(base_recovery_pool * rec_options[0]['pct'])/1e6:.2f}M
-    
-    [Option B] {rec_options[1]['title']}
-               -> {rec_options[1]['desc']}
-               -> Expected Financial Recovery: +AED {(base_recovery_pool * rec_options[1]['pct'])/1e6:.2f}M
-    
-    [Option C] {rec_options[2]['title']}
-               -> {rec_options[2]['desc']}
-               -> Expected Financial Recovery: +AED {(base_recovery_pool * rec_options[2]['pct'])/1e6:.2f}M
-    
-    4. GOVERNANCE & APPROVAL SIGN-OFF
-    [ ] Approve Option A
-    [ ] Approve Option B
-    [ ] Approve Option C
-    [ ] Refer to Product Committee
-    
-    Signature: _____________________________________ (GCCO)
-    Date:      _____________________________________
-    ========================================================================================"""
+CONFIDENTIAL | NATIONAL BONDS CORPORATION
+EXECUTIVE EARLY WARNING ALERT & ACTION BRIEFING
+========================================================================================
+DATE: {datetime.now().strftime('%d %B %Y')}
+TO: Group Chief Commercial Officer (GCCO)
+FROM: AI Product Intelligence System & Product Management
+PRODUCT: {selected_product}
+CYCLE: {selected_cycle}
+STATUS: {status_label} (Variance: {dev:+.1f}%)
+
+1. EXECUTIVE SUMMARY & FINANCIAL STATUS
+- Product Class:        {spec['type']}
+- Active Customer Base: {prod_data['active_customers']:,} Accounts (out of 154,000 Verified Company Accounts)
+- Actual Net Inflow:    AED {net_inflow_aed/1e6:.2f} Million
+- Budgeted Target:      AED {target_inflow_aed/1e6:.2f} Million
+- Variance to Plan:     {dev:+.1f}% ({status_label})
+- Net Deficit / Gap:    AED {deficit_aed/1e6:.2f} Million
+
+2. KEY CONTRIBUTING DRIVERS (AUDITED H1 AGENT DIAGNOSTIC)
+- Primary Underperforming Channel: {worst_channel} ({worst_var:+.1f}% variance)
+- Diagnostic Finding 1:            {agent_drivers[0]}
+- Diagnostic Finding 2:            {agent_drivers[1] if len(agent_drivers) > 1 else 'Normal cohort retention maintained.'}
+- Macro / Campaign Context:        {spec['macro_sensitivity']}
+
+3. RECOMMENDED MANAGEMENT INTERVENTIONS (PIPELINE ACTIONS)
+[Option A] {rec_options[0]['title']}
+           -> {rec_options[0]['desc']}
+           -> Expected Financial Recovery: +AED {(base_recovery_pool * rec_options[0]['pct'])/1e6:.2f}M
+
+[Option B] {rec_options[1]['title']}
+           -> {rec_options[1]['desc']}
+           -> Expected Financial Recovery: +AED {(base_recovery_pool * rec_options[1]['pct'])/1e6:.2f}M
+
+[Option C] {rec_options[2]['title']}
+           -> {rec_options[2]['desc']}
+           -> Expected Financial Recovery: +AED {(base_recovery_pool * rec_options[2]['pct'])/1e6:.2f}M
+
+4. GOVERNANCE & APPROVAL SIGN-OFF
+[ ] Approve Option A
+[ ] Approve Option B
+[ ] Approve Option C
+[ ] Refer to Product Committee
+
+Signature: _____________________________________ (GCCO)
+Date:      _____________________________________
+========================================================================================"""
         
         st.markdown(f"""
-        <div class="gcco-memo-container">
-            <div class="memo-header-grid">
+        <div style="background: var(--surface-primary); border: 1px solid var(--border-primary); border-radius: var(--radius-md); padding: 18px 22px; margin-bottom: 16px;">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 14px; border-bottom: 1px solid var(--border-primary); padding-bottom: 10px;">
                 <div>
-                    <h3 style="margin: 0; color: #0284c7;">NATIONAL BONDS CORPORATION</h3>
-                    <span style="font-size: 12px; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Executive Early Warning & Remediation Briefing</span>
+                    <h3 style="margin: 0; color: var(--text-primary); font-size: 15px; font-weight: 700; letter-spacing: -0.01em;">NATIONAL BONDS CORPORATION</h3>
+                    <span style="font-size: 11px; font-weight: 600; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.05em;">Executive Early Warning & Remediation Briefing</span>
                 </div>
                 <div style="text-align: right;">
-                    <span style="font-size: 12px; font-weight: 600; color: var(--text-muted);">{datetime.now().strftime('%d %B %Y')}</span><br>
+                    <span style="font-size: 12px; font-weight: 500; color: var(--text-tertiary);">{datetime.now().strftime('%d %B %Y')}</span><br>
                     <span class="status-pill {status_pill_class}">{status_label}</span>
                 </div>
             </div>
-            <table class="memo-meta-table">
+            <table style="width: 100%; border-collapse: collapse; font-size: 12.5px;">
                 <tr>
-                    <td class="memo-meta-label">TO:</td>
-                    <td class="memo-meta-value">Group Chief Commercial Officer (GCCO)</td>
-                    <td class="memo-meta-label">PRODUCT:</td>
-                    <td class="memo-meta-value">{selected_product}</td>
+                    <td style="padding: 4px 8px 4px 0; color: var(--text-tertiary); font-weight: 600; width: 12%;">TO:</td>
+                    <td style="padding: 4px 16px 4px 0; color: var(--text-primary); font-weight: 500; width: 38%;">Group Chief Commercial Officer (GCCO)</td>
+                    <td style="padding: 4px 8px 4px 0; color: var(--text-tertiary); font-weight: 600; width: 14%;">PRODUCT:</td>
+                    <td style="padding: 4px 0; color: var(--text-primary); font-weight: 600; width: 36%;">{selected_product}</td>
                 </tr>
                 <tr>
-                    <td class="memo-meta-label">FROM:</td>
-                    <td class="memo-meta-value">AI Product Intelligence & Early Warning</td>
-                    <td class="memo-meta-label">CYCLE:</td>
-                    <td class="memo-meta-value">{selected_cycle}</td>
+                    <td style="padding: 4px 8px 4px 0; color: var(--text-tertiary); font-weight: 600;">FROM:</td>
+                    <td style="padding: 4px 16px 4px 0; color: var(--text-primary); font-weight: 500;">AI Product Intelligence & Early Warning</td>
+                    <td style="padding: 4px 8px 4px 0; color: var(--text-tertiary); font-weight: 600;">CYCLE:</td>
+                    <td style="padding: 4px 0; color: var(--text-primary); font-weight: 600;">{selected_cycle}</td>
                 </tr>
                 <tr>
-                    <td class="memo-meta-label">ACTUAL NET:</td>
-                    <td class="memo-meta-value">AED {net_inflow_aed/1e6:.2f}M (Target: AED {target_inflow_aed/1e6:.2f}M)</td>
-                    <td class="memo-meta-label">VARIANCE GAP:</td>
-                    <td class="memo-meta-value" style="color: {dev_color}; font-weight: 800;">{dev:+.1f}% (Deficit: AED {deficit_aed/1e6:.2f}M)</td>
+                    <td style="padding: 4px 8px 4px 0; color: var(--text-tertiary); font-weight: 600;">ACTUAL NET:</td>
+                    <td style="padding: 4px 16px 4px 0; color: var(--text-primary); font-weight: 600; font-variant-numeric: tabular-nums;">AED {net_inflow_aed/1e6:.2f}M (Target: AED {target_inflow_aed/1e6:.2f}M)</td>
+                    <td style="padding: 4px 8px 4px 0; color: var(--text-tertiary); font-weight: 600;">VARIANCE GAP:</td>
+                    <td style="padding: 4px 0; color: {dev_color}; font-weight: 700; font-variant-numeric: tabular-nums;">{dev:+.1f}% (Deficit: AED {deficit_aed/1e6:.2f}M)</td>
                 </tr>
             </table>
         </div>
         """, unsafe_allow_html=True)
         
-        st.markdown("<br>", unsafe_allow_html=True)
         st.text(briefing_text)
         
         col_exp1, col_exp2 = st.columns([1.2, 1])
@@ -1691,14 +1843,14 @@ else:
                 briefing_text=briefing_text
             )
             st.download_button(
-                label="📥 Download Boardroom PDF Escalation Dossier",
+                label="Download Boardroom PDF Escalation Dossier",
                 data=pdf_memo_bytes,
                 file_name=f"GCCO_Escalation_Dossier_{selected_product.replace(' ', '_')}_{selected_cycle}.pdf",
                 mime="application/pdf",
                 type="primary",
                 use_container_width=True
             )
-            with st.expander("📄 Export Raw Text / Markdown (.txt)", expanded=False):
+            with st.expander("Export Raw Text / Markdown (.txt)", expanded=False):
                 st.download_button(
                     label="Download Raw Text (.txt)",
                     data=briefing_text,
@@ -1707,98 +1859,96 @@ else:
                     use_container_width=True
                 )
         with col_exp2:
-            if st.button("🚀 Dispatch Official Escalation to GCCO", type="primary", use_container_width=True, key="btn_dispatch_tab_export"):
+            if st.button("Dispatch Official Escalation to GCCO", type="primary", use_container_width=True, key="btn_dispatch_tab_export"):
                 receipt = dispatch_alert_memo(selected_product, selected_cycle, dev, deficit_aed/1e6, user_name="Jawad Ahmad")
-                st.success(f"✅ Dispatched via Secure Exchange & MS Teams! Receipt: `{receipt['receipt_id']}`")
+                st.success(f"Dispatched via Secure Exchange & MS Teams! Receipt: `{receipt['receipt_id']}`")
     
     # ==============================================================================
-# FLOATING CHAT BUBBLE AT BOTTOM RIGHT: "JD" (AVATAR 🦹🏻‍♂️)
+# FLOATING INTELLIGENCE COPILOT ("JD")
 # ==============================================================================
 
 # Initialize Chat Session State
 if "chat_messages" not in st.session_state:
     st.session_state.chat_messages = [
-        {"role": "assistant", "content": "👋 Salam! I am **JD**, your National Bonds Business Intelligence assistant. Ask me anything about our **Portfolio Performance, Product KPIs, Early Warnings, or Q3 Management Interventions**!"}
+        {"role": "assistant", "content": "Hello! I am **JD**, your National Bonds Financial Intelligence Assistant. Ask me anything about Portfolio Performance, Product KPIs, Early Warnings, or Q3 Management Interventions."}
     ]
 
 has_started = len(st.session_state.chat_messages) > 1
 
-# Render Floating Chat Trigger using Streamlit Popover (Avatar 🦹🏻‍♂️)
-with st.popover("🦹🏻‍♂️", help="Click to chat with JD Business Intelligence"):
-    # Header Bar with Status and Compact Reset Button (No Smiley)
+# Render Floating Chat Trigger using Streamlit Popover
+with st.popover("AI", help="Click to open Financial Intelligence Assistant"):
+    # Header Bar with Status and Compact Reset Button
     col_h1, col_h2 = st.columns([3, 1])
     with col_h1:
         st.markdown("""
         <div style="display: flex; align-items: center; gap: 8px; padding: 2px 0;">
-            <span style="font-weight: 800; font-size: 14.5px; color: #0284c7;">JD Business Intelligence</span>
-            <span class="chat-header-badge">LIVE AI</span>
+            <span style="font-weight: 700; font-size: 14px; color: var(--brand-primary);">Financial Intelligence Assistant</span>
         </div>
         """, unsafe_allow_html=True)
     with col_h2:
-        if st.button("🔄 Reset", key="chat_reset_btn", help="Clear conversation and start fresh", use_container_width=True):
+        if st.button("Reset", key="chat_reset_btn", help="Clear conversation and start fresh", use_container_width=True):
             st.session_state.chat_messages = [
-                {"role": "assistant", "content": "Conversation reset. How can I help you analyze National Bonds' data today?"}
+                {"role": "assistant", "content": "Conversation reset. How can I help you analyze National Bonds data today?"}
             ]
             st.rerun()
             
-    st.markdown("<hr style='margin: 6px 0 8px 0; border-color: rgba(148, 163, 184, 0.2);'>", unsafe_allow_html=True)
+    st.markdown("<hr style='margin: 6px 0 8px 0; border: none; border-top: 1px solid var(--border-primary);'>", unsafe_allow_html=True)
     
     # Show Preset Questions ONLY before customer asks first question
     if not has_started:
-        st.markdown("<p style='font-size: 12.5px; font-weight: 700; color: var(--text-muted); margin: 0 0 6px 0;'>Suggested Inquiries:</p>", unsafe_allow_html=True)
+        st.markdown("<p style='font-size: 12px; font-weight: 600; color: var(--text-tertiary); margin: 0 0 6px 0;'>Suggested Inquiries:</p>", unsafe_allow_html=True)
         col_q1, col_q2 = st.columns(2)
         with col_q1:
-            if st.button("🏛️ Portfolio Budget?", use_container_width=True, key="btn_q1"):
+            if st.button("Portfolio Budget Performance", use_container_width=True, key="btn_q1"):
                 query = "How much portfolio budget did we have achieved?"
                 st.session_state.chat_messages.append({"role": "user", "content": query})
                 reply = jd_agent.answer(query, api_key=st.session_state.get('llm_api_key'))
                 st.session_state.chat_messages.append({"role": "assistant", "content": reply})
                 st.rerun()
-            if st.button("⚠️ Saving Bonds Gap?", use_container_width=True, key="btn_q2"):
+            if st.button("Saving Bonds Variance", use_container_width=True, key="btn_q2"):
                 query = "Why did Saving Bonds drop -26% YoY?"
                 st.session_state.chat_messages.append({"role": "user", "content": query})
                 reply = jd_agent.answer(query, api_key=st.session_state.get('llm_api_key'))
                 st.session_state.chat_messages.append({"role": "assistant", "content": reply})
                 st.rerun()
-            if st.button("💼 Second Salary Status?", use_container_width=True, key="btn_q3"):
+            if st.button("Second Salary Overview", use_container_width=True, key="btn_q3"):
                 query = "What is the status and average ticket of Second Salary?"
                 st.session_state.chat_messages.append({"role": "user", "content": query})
                 reply = jd_agent.answer(query, api_key=st.session_state.get('llm_api_key'))
                 st.session_state.chat_messages.append({"role": "assistant", "content": reply})
                 st.rerun()
         with col_q2:
-            if st.button("📊 Total AUM & Sales?", use_container_width=True, key="btn_q4"):
+            if st.button("Total AUM & Fresh Sales", use_container_width=True, key="btn_q4"):
                 query = "What is our Total AUM and H1 Sales breakdown?"
                 st.session_state.chat_messages.append({"role": "user", "content": query})
                 reply = jd_agent.answer(query, api_key=st.session_state.get('llm_api_key'))
                 st.session_state.chat_messages.append({"role": "assistant", "content": reply})
                 st.rerun()
-            if st.button("📈 Term Sukuk Surge?", use_container_width=True, key="btn_q5"):
+            if st.button("Term Sukuk Growth", use_container_width=True, key="btn_q5"):
                 query = "How did Term Sukuk perform in H1 2026?"
                 st.session_state.chat_messages.append({"role": "user", "content": query})
                 reply = jd_agent.answer(query, api_key=st.session_state.get('llm_api_key'))
                 st.session_state.chat_messages.append({"role": "assistant", "content": reply})
                 st.rerun()
-            if st.button("👥 Demographics Mix?", use_container_width=True, key="btn_q6"):
+            if st.button("Customer Demographics Mix", use_container_width=True, key="btn_q6"):
                 query = "What is the Emirati vs Expat customer demographic mix?"
                 st.session_state.chat_messages.append({"role": "user", "content": query})
                 reply = jd_agent.answer(query, api_key=st.session_state.get('llm_api_key'))
                 st.session_state.chat_messages.append({"role": "assistant", "content": reply})
                 st.rerun()
-        st.markdown("<hr style='margin: 6px 0; border-color: rgba(148, 163, 184, 0.2);'>", unsafe_allow_html=True)
+        st.markdown("<hr style='margin: 6px 0; border: none; border-top: 1px solid var(--border-primary);'>", unsafe_allow_html=True)
 
-    # Message History Rendering (0 scrollbars before first chat; perfectly sized active container)
+    # Message History Rendering
     if not has_started:
         for msg in st.session_state.chat_messages:
-            with st.chat_message(msg["role"], avatar="🦹🏻‍♂️" if msg["role"] == "assistant" else "👤"):
+            with st.chat_message(msg["role"], avatar="assistant" if msg["role"] == "assistant" else "user"):
                 st.markdown(msg["content"])
     else:
         chat_container = st.container(height=390)
         with chat_container:
             for msg in st.session_state.chat_messages:
-                with st.chat_message(msg["role"], avatar="🦹🏻‍♂️" if msg["role"] == "assistant" else "👤"):
+                with st.chat_message(msg["role"], avatar="assistant" if msg["role"] == "assistant" else "user"):
                     st.markdown(msg["content"])
-            # Bottom Anchor Marker
             st.markdown("<div id='chat-end-marker' style='height: 1px; margin-top: 4px;'></div>", unsafe_allow_html=True)
         
     # Auto-Scroll and Layout Alignment JavaScript
@@ -1809,21 +1959,6 @@ with st.popover("🦹🏻‍♂️", help="Click to chat with JD Business Intell
             function enforceLayout() {
                 try {
                     var doc = window.parent.document;
-                    var popoverBtn = doc.querySelector('div[data-testid="stPopover"] button');
-                    if (popoverBtn) {
-                        popoverBtn.style.padding = "0px";
-                        popoverBtn.style.display = "flex";
-                        popoverBtn.style.alignItems = "center";
-                        popoverBtn.style.justifyContent = "center";
-                        var md = popoverBtn.querySelector('[data-testid="stMarkdownContainer"]');
-                        if (md) {
-                            md.style.padding = "0px";
-                            md.style.margin = "0 auto";
-                            md.style.display = "flex";
-                            md.style.alignItems = "center";
-                            md.style.justifyContent = "center";
-                        }
-                    }
                     var popover = doc.querySelector('div[data-testid="stPopoverBody"]');
                     if (popover) {
                         var scrollables = popover.querySelectorAll('[data-testid="stVerticalBlockBorderWrapper"], [data-testid="stVerticalBlock"]');
@@ -1848,7 +1983,7 @@ with st.popover("🦹🏻‍♂️", help="Click to chat with JD Business Intell
     )
 
     # Chat Input Box
-    if user_prompt := st.chat_input("Ask JD Business Intelligence a question..."):
+    if user_prompt := st.chat_input("Ask Financial Intelligence Assistant a question..."):
         st.session_state.chat_messages.append({"role": "user", "content": user_prompt})
         jd_reply = jd_agent.answer(user_prompt, api_key=st.session_state.get('llm_api_key'))
         st.session_state.chat_messages.append({"role": "assistant", "content": jd_reply})
