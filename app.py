@@ -168,7 +168,7 @@ st.markdown("""
         --accent-rose: var(--status-critical);
     }
 
-    /* ELIMINATE STREAMLIT NATIVE CHROME (Fixes Chrome Clutter Defect) */
+    /* ELIMINATE STREAMLIT NATIVE CHROME (Keep expand button, hide deploy/menu) */
     #MainMenu { display: none !important; }
     footer { display: none !important; }
     header[data-testid="stHeader"] {
@@ -179,58 +179,86 @@ st.markdown("""
     header[data-testid="stHeader"] * {
         pointer-events: auto !important;
     }
-    header[data-testid="stToolbar"] { display: none !important; }
-    div[data-testid="stToolbar"] { display: none !important; }
-    [data-testid="stDeployButton"], .stAppDeployButton { display: none !important; }
     
-    /* CLEAN SIDEBAR COLLAPSE & EXPAND CONTROLS */
+    /* Suppress unnecessary chrome without killing the toolbar's expand button */
+    [data-testid="stDeployButton"], .stAppDeployButton,
+    div[data-testid="stToolbarActions"],
+    div[data-testid="stStatusWidget"],
+    button[aria-label="View app actions"],
+    button[aria-label="Manage app"],
+    div[data-testid="stToolbar"] > div:not(:has([data-testid="stExpandSidebarButton"])) {
+        display: none !important;
+    }
+    
+    div[data-testid="stToolbar"] {
+        background: transparent !important;
+        pointer-events: none !important;
+    }
+    
+    /* ALWAYS VISIBLE & ACCESSIBLE SIDEBAR EXPAND BUTTON */
+    [data-testid="stExpandSidebarButton"],
+    button[data-testid="stExpandSidebarButton"],
+    div[data-testid="stToolbar"] [data-testid="stExpandSidebarButton"],
     div[data-testid="stSidebarCollapsedControl"],
-    header[data-testid="stHeader"] div[data-testid="stSidebarCollapsedControl"],
     button[data-testid="stSidebarCollapsedControl"] {
-        position: fixed !important;
-        top: 12px !important;
-        left: 12px !important;
-        z-index: 999999 !important;
         display: flex !important;
         visibility: visible !important;
         opacity: 1 !important;
         pointer-events: auto !important;
-    }
-    
-    div[data-testid="stSidebarCollapsedControl"] button,
-    button[data-testid="stSidebarCollapsedControl"],
-    header[data-testid="stHeader"] [data-testid="stSidebarCollapsedControl"] button {
+        position: fixed !important;
+        top: 14px !important;
+        left: 14px !important;
+        z-index: 999999 !important;
         background-color: #FFFFFF !important;
         border: 1px solid var(--border-primary) !important;
         border-radius: var(--radius-sm) !important;
-        box-shadow: 0 1px 4px rgba(11, 25, 44, 0.08) !important;
-        color: var(--brand-primary) !important;
-        width: 32px !important;
-        height: 32px !important;
-        display: flex !important;
+        box-shadow: 0 2px 6px rgba(11, 25, 44, 0.10) !important;
+        width: 34px !important;
+        height: 34px !important;
         align-items: center !important;
         justify-content: center !important;
+        color: var(--brand-primary) !important;
+        cursor: pointer !important;
         transition: all 150ms ease !important;
-        pointer-events: auto !important;
     }
     
-    div[data-testid="stSidebarCollapsedControl"] button:hover,
+    [data-testid="stExpandSidebarButton"]:hover,
+    button[data-testid="stExpandSidebarButton"]:hover,
+    div[data-testid="stToolbar"] [data-testid="stExpandSidebarButton"]:hover,
+    div[data-testid="stSidebarCollapsedControl"]:hover,
     button[data-testid="stSidebarCollapsedControl"]:hover {
         background-color: #F8FAFC !important;
         border-color: var(--brand-gold) !important;
         color: var(--brand-gold) !important;
+        box-shadow: 0 3px 8px rgba(197, 160, 89, 0.25) !important;
+    }
+    
+    [data-testid="stExpandSidebarButton"] svg,
+    button[data-testid="stExpandSidebarButton"] svg,
+    [data-testid="stSidebarCollapsedControl"] svg {
+        fill: currentColor !important;
+        width: 20px !important;
+        height: 20px !important;
     }
 
-    div[data-testid="stSidebarCollapseButton"] button,
-    button[data-testid="stSidebarCollapseButton"] {
+    /* SIDEBAR COLLAPSE BUTTON (Inside Expanded Sidebar) */
+    [data-testid="stSidebarCollapseButton"],
+    button[data-testid="stSidebarCollapseButton"],
+    [data-testid="stSidebarCollapseButton"] button {
         color: var(--text-tertiary) !important;
         background: transparent !important;
         border: 1px solid transparent !important;
         border-radius: 6px !important;
+        cursor: pointer !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        transition: all 150ms ease !important;
     }
     
-    div[data-testid="stSidebarCollapseButton"] button:hover,
-    button[data-testid="stSidebarCollapseButton"]:hover {
+    [data-testid="stSidebarCollapseButton"]:hover,
+    button[data-testid="stSidebarCollapseButton"]:hover,
+    [data-testid="stSidebarCollapseButton"] button:hover {
         background: #F1F5F9 !important;
         color: var(--brand-primary) !important;
         border-color: var(--border-primary) !important;
