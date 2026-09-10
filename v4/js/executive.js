@@ -558,90 +558,604 @@ window.NBC_EXECUTIVE = {
     }, 50);
   },
 
-  // Tab 6: Bi-Weekly Product & Market Intelligence Report (Initiative 2)
-  renderBiWeeklyReport(container, state) {
-    const pdfUrl = 'docs/National_Bonds_BiWeekly_Intelligence_Report_2024-06.pdf';
-    container.innerHTML = `
-      <div class="chart-card pdf-viewer-card">
-        <div class="chart-card-hdr">
-          <div>
-            <div class="chart-card-title" style="font-size: 17px;">Executive Memorandum: Product & Commercial Intelligence</div>
-            <div class="chart-card-subtitle">Document Ref: <b>NBC-BIWEEKLY-INTEL-2024-06</b> &bull; Classified: CONFIDENTIAL (C-SUITE / ALCO)</div>
-          </div>
-          <div style="display: flex; gap: 10px; align-items: center;">
-            <a href="${pdfUrl}" target="_blank" class="alert-action-btn" style="text-decoration: none; border-color: var(--border-default); background: #ffffff; color: var(--navy-slate-900);">
-              <span class="material-symbols-rounded" style="font-size: 15px; vertical-align: -2px;">open_in_new</span>
-              Open Fullscreen
-            </a>
-            <a href="${pdfUrl}" download class="alert-action-btn" style="text-decoration: none; border-color: var(--brand-primary); background: var(--brand-primary-light); color: var(--brand-primary);">
-              <span class="material-symbols-rounded" style="font-size: 15px; vertical-align: -2px;">download</span>
-              Download PDF
-            </a>
-          </div>
-        </div>
+  // Helper for official certified PDF export with interactive toast
+  downloadOfficialReport(pdfUrl, downloadFilename, reportTitle) {
+    const link = document.createElement('a');
+    link.href = pdfUrl;
+    link.download = downloadFilename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
 
-        <!-- Quick Executive Macro Indicators -->
-        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 14px;">
-          <div style="background: var(--surface-subtle); padding: 9px 14px; border-radius: var(--radius-sm); border: 1px solid var(--border-default); display: flex; justify-content: space-between; align-items: center;">
-            <span style="font-size: 11px; font-weight: 700; color: var(--text-tertiary); text-transform: uppercase;">CBUAE Base</span>
-            <span style="font-size: 15px; font-weight: 800; color: var(--navy-slate-900); font-family: var(--font-mono);">4.65%</span>
-          </div>
-          <div style="background: var(--surface-subtle); padding: 9px 14px; border-radius: var(--radius-sm); border: 1px solid var(--border-default); display: flex; justify-content: space-between; align-items: center;">
-            <span style="font-size: 11px; font-weight: 700; color: var(--text-tertiary); text-transform: uppercase;">3M EIBOR</span>
-            <span style="font-size: 15px; font-weight: 800; color: var(--navy-slate-900); font-family: var(--font-mono);">4.52%</span>
-          </div>
-          <div style="background: var(--surface-subtle); padding: 9px 14px; border-radius: var(--radius-sm); border: 1px solid var(--border-default); display: flex; justify-content: space-between; align-items: center;">
-            <span style="font-size: 11px; font-weight: 700; color: var(--text-tertiary); text-transform: uppercase;">Savings Index</span>
-            <span style="font-size: 15px; font-weight: 800; color: #10b981; font-family: var(--font-mono);">121 Pts</span>
-          </div>
-          <div style="background: var(--surface-subtle); padding: 9px 14px; border-radius: var(--radius-sm); border: 1px solid var(--border-default); display: flex; justify-content: space-between; align-items: center;">
-            <span style="font-size: 11px; font-weight: 700; color: var(--text-tertiary); text-transform: uppercase;">ALCO Status</span>
-            <span class="status-badge healthy" style="font-size: 10px; padding: 2px 7px;">APPROVED</span>
-          </div>
-        </div>
+    // Render interactive executive toast
+    const existing = document.getElementById('dossier-export-toast');
+    if (existing) existing.remove();
 
-        <!-- Embedded Interactive PDF Document -->
-        <div class="pdf-frame-container">
-          <iframe 
-            src="${pdfUrl}#toolbar=1&navpanes=1&scrollbar=1" 
-            title="Bi-Weekly Intelligence Report PDF"
-          ></iframe>
-        </div>
+    const toast = document.createElement('div');
+    toast.id = 'dossier-export-toast';
+    toast.className = 'dossier-toast';
+    toast.innerHTML = `
+      <span class="material-symbols-rounded" style="color: #10b981; font-size: 22px;">task_alt</span>
+      <div>
+        <div style="font-weight: 700; font-size: 13px; color: #ffffff;">Exporting Official Document</div>
+        <div style="font-size: 11px; color: #94a3b8; margin-top: 2px;">Downloaded certified PDF matching current view: <b style="color: #c5a059;">${downloadFilename}</b></div>
       </div>
     `;
+    document.body.appendChild(toast);
+    setTimeout(() => {
+      toast.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
+      toast.style.opacity = '0';
+      toast.style.transform = 'translateY(10px)';
+      setTimeout(() => toast.remove(), 420);
+    }, 3500);
   },
 
-  // Tab 7: GCCO Escalation Briefing
-  renderGccoBriefing(container, state) {
-    const pdfUrl = 'docs/National_Bonds_GCCO_Escalation_Dossier_Booster_Sukuk.pdf';
+  // Tab 6: Bi-Weekly Product & Market Intelligence Report (Native Executive Memorandum)
+  renderBiWeeklyReport(container, state) {
+    const pdfUrl = 'docs/National_Bonds_BiWeekly_Intelligence_Report_2024-06.pdf';
+    const downloadFilename = 'National_Bonds_BiWeekly_Intelligence_Report_2026-06.pdf';
+
     container.innerHTML = `
-      <div class="chart-card pdf-viewer-card">
-        <div class="chart-card-hdr">
-          <div>
-            <div class="chart-card-title" style="font-size: 17px;">Confidential Escalation Dossier & Routing Table</div>
-            <div class="chart-card-subtitle">Audited Ground Truth Submission to Group Chief Commercial Officer (GCCO) &bull; Ref: <b>ESC-2026-GCCO-01</b></div>
+      <div class="dossier-sheet">
+        <!-- Official Document Header -->
+        <div class="dossier-top-bar">
+          <div class="dossier-brand-group">
+            <div class="dossier-logo-badge">NB</div>
+            <div class="dossier-title-block">
+              <h2>National Bonds Corporation &bull; Commercial & Macro Intelligence</h2>
+              <p>Executive Memorandum &bull; Bi-Weekly Cycle Close 2026-06 &bull; Classified: Confidential (ALCO / C-Suite)</p>
+            </div>
           </div>
-          <div style="display: flex; gap: 10px; align-items: center;">
-            <span class="status-badge breach" style="margin-right: 4px;">URGENT COMMERCIAL REVIEW</span>
-            <a href="${pdfUrl}" target="_blank" class="alert-action-btn" style="text-decoration: none; border-color: var(--border-default); background: #ffffff; color: var(--navy-slate-900);">
-              <span class="material-symbols-rounded" style="font-size: 15px; vertical-align: -2px;">open_in_new</span>
-              Open Fullscreen
-            </a>
-            <a href="${pdfUrl}" download class="alert-action-btn" style="text-decoration: none; border-color: var(--brand-primary); background: var(--brand-primary-light); color: var(--brand-primary);">
-              <span class="material-symbols-rounded" style="font-size: 15px; vertical-align: -2px;">download</span>
-              Download Dossier
-            </a>
+          <div class="dossier-actions">
+            <button class="dossier-btn-export" id="btn-export-biweekly">
+              <span class="material-symbols-rounded" style="font-size: 16px;">download</span>
+              Export Official PDF
+            </button>
+            <button class="dossier-btn-print" id="btn-print-biweekly">
+              <span class="material-symbols-rounded" style="font-size: 16px;">print</span>
+              Print / Save PDF
+            </button>
           </div>
         </div>
 
-        <!-- Embedded Interactive PDF Document -->
-        <div class="pdf-frame-container">
-          <iframe 
-            src="${pdfUrl}#toolbar=1&navpanes=1&scrollbar=1" 
-            title="GCCO Escalation Dossier PDF"
-          ></iframe>
+        <!-- Metadata Routing & Governance Table -->
+        <table class="dossier-meta-table">
+          <tr>
+            <td class="meta-label">Addressee</td>
+            <td class="meta-val">Group Executive Committee & ALCO</td>
+            <td class="meta-label">Document Ref</td>
+            <td class="meta-val">NBC-BIWEEKLY-INTEL-202606</td>
+          </tr>
+          <tr>
+            <td class="meta-label">Originating Unit</td>
+            <td class="meta-val">Commercial Intelligence & ALM Risk Strategy</td>
+            <td class="meta-label">Audit Status</td>
+            <td class="meta-val" style="color: #059669;">ALCO Ratified &bull; 100% Sharia Certified</td>
+          </tr>
+          <tr>
+            <td class="meta-label">Publication Date</td>
+            <td class="meta-val">15 June 2026</td>
+            <td class="meta-label">Security Tier</td>
+            <td class="meta-val" style="color: #ef4444;">RESTRICTED (C-SUITE / TREASURY)</td>
+          </tr>
+        </table>
+
+        <!-- Macro Synthesis & Monetary Indicators -->
+        <div class="dossier-section">
+          <div class="dossier-sec-title">
+            <span>01 &bull; Macro Benchmark & Portfolio Synthesis</span>
+            <span style="font-size: 11px; font-weight: 600; color: var(--text-tertiary); text-transform: none;">Central Bank Base Rate Plateau: 4.65%</span>
+          </div>
+          <div class="dossier-kpi-row">
+            <div class="dossier-kpi-box">
+              <span class="dossier-kpi-label">CBUAE Base Rate</span>
+              <span class="dossier-kpi-val">4.65%</span>
+              <span class="dossier-kpi-sub" style="color: #64748b;">Unchanged (Plateau)</span>
+            </div>
+            <div class="dossier-kpi-box">
+              <span class="dossier-kpi-label">3M EIBOR</span>
+              <span class="dossier-kpi-val">4.52%</span>
+              <span class="dossier-kpi-sub" style="color: #64748b;">+4 bps Liquidity Spread</span>
+            </div>
+            <div class="dossier-kpi-box">
+              <span class="dossier-kpi-label">Net Inflows (Actual)</span>
+              <span class="dossier-kpi-val">AED 617.0M</span>
+              <span class="dossier-kpi-sub" style="color: #ef4444;">-9.5% vs Target AED 681.6M</span>
+            </div>
+            <div class="dossier-kpi-box">
+              <span class="dossier-kpi-label">Total Redemptions</span>
+              <span class="dossier-kpi-val">AED 405.7M</span>
+              <span class="dossier-kpi-sub" style="color: #f59e0b;">Run-off Ratio: 39.7%</span>
+            </div>
+          </div>
+          <div class="dossier-narrative-box">
+            <b>Executive Macro Synthesis:</b> The UAE domestic liquidity landscape remains characterized by sustained high base rates (4.65%). While aggregate NBC AUM surpasses <b>AED 18.34B</b>, monthly net inflows closed at <b>AED 617.0M</b> against a budget of <b>AED 681.6M</b>. Liquidity run-off is predominantly concentrated in retail demand accounts, whereas institutional Term Sukuk retention exhibits high resilience with an 87.4% renewal velocity.
+          </div>
+        </div>
+
+        <!-- Section 2: Product Performance vs Budget Allocation -->
+        <div class="dossier-section">
+          <div class="dossier-sec-title">
+            <span>02 &bull; Product Performance vs Approved Budget Allocation (Cycle 2026-06)</span>
+            <span style="font-size: 11px; font-weight: 600; color: var(--text-tertiary); text-transform: none;">Values in AED Millions</span>
+          </div>
+          <div style="background: var(--surface-card); border: 1px solid var(--border-default); border-radius: var(--radius-sm); padding: 18px 20px;">
+            <div id="chart-biweekly-budget" style="min-height: 310px;"></div>
+          </div>
+          <table class="dossier-data-table">
+            <thead>
+              <tr>
+                <th>Product Family</th>
+                <th style="text-align: right;">Actual Net (AED M)</th>
+                <th style="text-align: right;">Target Budget (AED M)</th>
+                <th style="text-align: right;">Variance (AED M)</th>
+                <th style="text-align: right;">Variance (%)</th>
+                <th style="text-align: center;">Governance Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td style="font-weight: 700; color: var(--navy-slate-900);">Term Sukuk (Fixed Income)</td>
+                <td class="num">AED 520.2M</td>
+                <td class="num">AED 582.2M</td>
+                <td class="num" style="color: #ef4444;">-AED 62.0M</td>
+                <td class="num" style="color: #ef4444;">-10.65%</td>
+                <td style="text-align: center;"><span class="status-badge warning" style="font-size: 10px; padding: 2px 8px;">TOLERANCE WATCH</span></td>
+              </tr>
+              <tr>
+                <td style="font-weight: 700; color: var(--navy-slate-900);">Saving Bonds (Retail)</td>
+                <td class="num">AED 51.2M</td>
+                <td class="num">AED 57.0M</td>
+                <td class="num" style="color: #ef4444;">-AED 5.8M</td>
+                <td class="num" style="color: #ef4444;">-10.22%</td>
+                <td style="text-align: center;"><span class="status-badge breach" style="font-size: 10px; padding: 2px 8px;">BREACH / ESCALATED</span></td>
+              </tr>
+              <tr>
+                <td style="font-weight: 700; color: var(--navy-slate-900);">Booster Plan (Loyalty)</td>
+                <td class="num">AED 26.5M</td>
+                <td class="num">AED 21.7M</td>
+                <td class="num" style="color: #10b981;">+AED 4.8M</td>
+                <td class="num" style="color: #10b981;">+22.12%</td>
+                <td style="text-align: center;"><span class="status-badge healthy" style="font-size: 10px; padding: 2px 8px;">OUTPERFORMING</span></td>
+              </tr>
+              <tr>
+                <td style="font-weight: 700; color: var(--navy-slate-900);">MyPlan / Regular Saver</td>
+                <td class="num">AED 16.5M</td>
+                <td class="num">AED 16.8M</td>
+                <td class="num" style="color: #64748b;">-AED 0.3M</td>
+                <td class="num" style="color: #64748b;">-1.79%</td>
+                <td style="text-align: center;"><span class="status-badge healthy" style="font-size: 10px; padding: 2px 8px;">ON TARGET</span></td>
+              </tr>
+              <tr>
+                <td style="font-weight: 700; color: var(--navy-slate-900);">Second Salary (Retirement)</td>
+                <td class="num">AED 2.7M</td>
+                <td class="num">AED 3.8M</td>
+                <td class="num" style="color: #ef4444;">-AED 1.1M</td>
+                <td class="num" style="color: #ef4444;">-28.95%</td>
+                <td style="text-align: center;"><span class="status-badge breach" style="font-size: 10px; padding: 2px 8px;">REMEDIATION</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Section 3: Competitive Market Pulse & Yield Surveillance -->
+        <div class="dossier-section">
+          <div class="dossier-sec-title">03 &bull; Competitive Yield Arbitrage & Liquidity Surveillance</div>
+          <div class="dossier-insights-grid">
+            <div class="dossier-insight-card">
+              <div class="dossier-insight-hdr">
+                <span class="material-symbols-rounded" style="color: #f59e0b; font-size: 18px;">warning</span>
+                Retail Deposit Yield Arbitrage
+              </div>
+              <div class="dossier-insight-text">
+                Neo-banks (Wio Bank at 5.25% promo rate) and digital accounts (FAB iSave at 5.10%) are aggressively bidding for short-term retail liquidity. Yield-sensitive retail cohorts are parking discretionary liquidity into 3-month high-yield promotional deposits, directly dampening Saving Bonds fresh inflows.
+              </div>
+            </div>
+            <div class="dossier-insight-card">
+              <div class="dossier-insight-hdr">
+                <span class="material-symbols-rounded" style="color: #0284c7; font-size: 18px;">verified_user</span>
+                Duration Lock & Institutional Stability
+              </div>
+              <div class="dossier-insight-text">
+                Conversely, Term Sukuk contracts (1Y to 3Y fixed maturities) maintain an 87.4% customer retention rate. Redemptions were primarily concentrated in flexible retail certificates (AED 194.2M out of AED 405.7M total). Matured capital was successfully rolled into structured 2Y Booster tranches at a 74.2% capture rate.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 4: Governance Ratification & Cryptographic Seal -->
+        <div class="dossier-seal-row">
+          <div>
+            <div style="font-weight: 700; color: var(--navy-slate-900);">Group Executive Committee &bull; Asset Liability Management (ALCO)</div>
+            <div style="font-size: 11px; margin-top: 3px;">Signatories: Group Chief Commercial Officer &bull; Head of Treasury & Financial Markets</div>
+          </div>
+          <div class="dossier-stamp">
+            <span class="material-symbols-rounded" style="font-size: 16px;">verified</span>
+            ALCO RATIFIED &bull; SHA-256 AUDITED
+          </div>
         </div>
       </div>
     `;
+
+    // Initialize interactive ApexCharts for Bi-Weekly Report
+    setTimeout(() => {
+      if (window._chartBiweeklyBudget) {
+        window._chartBiweeklyBudget.destroy();
+        window._chartBiweeklyBudget = null;
+      }
+      const el = document.getElementById('chart-biweekly-budget');
+      if (el) {
+        const options = {
+          series: [
+            { name: 'Actual Inflow (AED M)', data: [520.2, 51.2, 26.5, 16.5, 2.7] },
+            { name: 'Target Budget (AED M)', data: [582.2, 57.0, 21.7, 16.8, 3.8] }
+          ],
+          chart: {
+            type: 'bar',
+            height: 290,
+            toolbar: { show: false },
+            fontFamily: 'Plus Jakarta Sans, sans-serif'
+          },
+          plotOptions: {
+            bar: {
+              horizontal: false,
+              columnWidth: '46%',
+              borderRadius: 4
+            }
+          },
+          colors: ['#0b192c', '#c5a059'],
+          dataLabels: { enabled: false },
+          stroke: { show: true, width: 2, colors: ['transparent'] },
+          xaxis: {
+            categories: ['Term Sukuk', 'Saving Bonds', 'Booster Plan', 'MyPlan Saver', 'Second Salary'],
+            labels: { style: { colors: '#64748b', fontSize: '11.5px', fontWeight: 600 } }
+          },
+          yaxis: {
+            labels: {
+              formatter: (val) => `${val.toFixed(0)}M`,
+              style: { colors: '#64748b', fontSize: '11px' }
+            }
+          },
+          legend: {
+            position: 'top',
+            horizontalAlign: 'right',
+            fontSize: '12px',
+            fontWeight: 600,
+            markers: { radius: 3 }
+          },
+          grid: {
+            borderColor: '#f1f5f9',
+            strokeDashArray: 3
+          },
+          tooltip: {
+            y: { formatter: (val) => `AED ${val.toFixed(1)}M` }
+          }
+        };
+        window._chartBiweeklyBudget = new ApexCharts(el, options);
+        window._chartBiweeklyBudget.render();
+      }
+    }, 50);
+
+    // Bind Export Button
+    document.getElementById('btn-export-biweekly')?.addEventListener('click', () => {
+      this.downloadOfficialReport(pdfUrl, downloadFilename, 'Bi-Weekly Intelligence Report');
+    });
+
+    // Bind Print Button
+    document.getElementById('btn-print-biweekly')?.addEventListener('click', () => {
+      window.print();
+    });
+  },
+
+  // Tab 7: GCCO Escalation Briefing (Native Escalation Dossier)
+  renderGccoBriefing(container, state) {
+    const pdfUrl = 'docs/National_Bonds_GCCO_Escalation_Dossier_Booster_Sukuk.pdf';
+    const downloadFilename = 'National_Bonds_GCCO_Escalation_Dossier_2026-06.pdf';
+
+    container.innerHTML = `
+      <div class="dossier-sheet">
+        <!-- Official Document Header -->
+        <div class="dossier-top-bar">
+          <div class="dossier-brand-group">
+            <div class="dossier-logo-badge" style="background: linear-gradient(135deg, #7f1d1d, #b91c1c); color: #ffffff;">NB</div>
+            <div class="dossier-title-block">
+              <h2>Confidential Escalation Dossier & Routing Table</h2>
+              <p style="color: #ef4444;">Strictly Confidential &bull; Group Chief Commercial Officer Direct Action &bull; Ref: ESC-2026-GCCO-01</p>
+            </div>
+          </div>
+          <div class="dossier-actions">
+            <span class="status-badge breach" style="margin-right: 4px;">URGENT GCCO ACTION</span>
+            <button class="dossier-btn-export" id="btn-export-gcco" style="background: #991b1b; border-color: #991b1b;">
+              <span class="material-symbols-rounded" style="font-size: 16px;">download</span>
+              Export Official PDF
+            </button>
+            <button class="dossier-btn-print" id="btn-print-gcco">
+              <span class="material-symbols-rounded" style="font-size: 16px;">print</span>
+              Print / Save PDF
+            </button>
+          </div>
+        </div>
+
+        <!-- Escalation Metadata Routing Table -->
+        <table class="dossier-meta-table">
+          <tr>
+            <td class="meta-label">Addressee</td>
+            <td class="meta-val">Group Chief Commercial Officer (GCCO)</td>
+            <td class="meta-label">Escalation Ref</td>
+            <td class="meta-val">ESC-2026-GCCO-01</td>
+          </tr>
+          <tr>
+            <td class="meta-label">Severity Level</td>
+            <td class="meta-val" style="color: #ef4444; font-weight: 800;">TIER-1 COMMERCIAL BREACH (Deficit &gt; 10%)</td>
+            <td class="meta-label">Incident Cycle</td>
+            <td class="meta-val">Cycle 2026-06 (June Close)</td>
+          </tr>
+          <tr>
+            <td class="meta-label">Underperforming Entity</td>
+            <td class="meta-val">Saving Bonds (Retail Inflows)</td>
+            <td class="meta-label">Deficit Gap</td>
+            <td class="meta-val" style="color: #ef4444; font-weight: 800;">-AED 5.82M (-10.22% Target Shortfall)</td>
+          </tr>
+        </table>
+
+        <!-- Red Alert Notice -->
+        <div class="dossier-alert-box">
+          <b>CRITICAL COMMERCIAL BREACH NOTICE:</b> Saving Bonds monthly net inflows closed at <b>AED 51.18M</b> against an ALCO approved target of <b>AED 57.02M</b> (AED 5.82M net deficit, -10.22% deviation). This marks the second consecutive reporting period wherein variance exceeded the -8.0% tolerance band. Pursuant to Commercial Governance Charter Section 4.2, immediate executive intervention directives are submitted below for GCCO ratification.
+        </div>
+
+        <!-- Section 1: 12-Month Inflow Trajectory & Threshold Breach -->
+        <div class="dossier-section">
+          <div class="dossier-sec-title">
+            <span>01 &bull; 12-Month Inflow Trajectory vs Tolerance Boundary</span>
+            <span style="font-size: 11px; font-weight: 600; color: #ef4444; text-transform: none;">Breached -8.0% Tolerance Band</span>
+          </div>
+          <div style="background: var(--surface-card); border: 1px solid var(--border-default); border-radius: var(--radius-sm); padding: 18px 20px;">
+            <div id="chart-gcco-trajectory" style="min-height: 290px;"></div>
+          </div>
+        </div>
+
+        <!-- Section 2: Channel Diagnosis & Leakage Attribution -->
+        <div class="dossier-section">
+          <div class="dossier-sec-title">02 &bull; Channel Attribution & Leakage Root Cause Deconstruction</div>
+          <div style="display: grid; grid-template-columns: 1.1fr 1fr; gap: 16px;">
+            <div style="background: var(--surface-card); border: 1px solid var(--border-default); border-radius: var(--radius-sm); padding: 16px 18px;">
+              <div style="font-size: 12px; font-weight: 700; color: var(--navy-slate-900); margin-bottom: 10px;">Acquisition Channel Variance vs Baseline (%)</div>
+              <div id="chart-gcco-channel" style="min-height: 210px;"></div>
+            </div>
+            <div class="dossier-insights-grid" style="grid-template-columns: 1fr;">
+              <div class="dossier-insight-card">
+                <div class="dossier-insight-hdr" style="color: #ef4444;">
+                  <span class="material-symbols-rounded" style="font-size: 18px;">phonelink_erase</span>
+                  Mobile App Payment Gateway Friction (-68.4%)
+                </div>
+                <div class="dossier-insight-text">
+                  On June 3rd, the payment gateway migration introduced an authentication retry timeout on recurring direct debits. Checkout drop-off surged from 4.1% to 19.8%, resulting in an estimated <b>AED 3.2M</b> in uncaptured monthly top-ups.
+                </div>
+              </div>
+              <div class="dossier-insight-card">
+                <div class="dossier-insight-hdr" style="color: #f59e0b;">
+                  <span class="material-symbols-rounded" style="font-size: 18px;">trending_down</span>
+                  Neo-Bank Competitor Yield Premium
+                </div>
+                <div class="dossier-insight-text">
+                  Aggressive 5.25% APY promotional campaigns by neo-banks triggered opportunistic withdrawals among Mass Affluent holders (AED 50k - AED 250k tier), leading to an accelerated redemption velocity.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 3: GCCO Action Directives -->
+        <div class="dossier-section">
+          <div class="dossier-sec-title">
+            <span>03 &bull; Mandated Commercial Recovery Directives (GCCO Direct Execution)</span>
+            <span style="font-size: 11px; font-weight: 600; color: var(--text-tertiary); text-transform: none;">SLA: Immediate 72-Hour Deployment</span>
+          </div>
+          <div class="dossier-directives-list">
+            <div class="dossier-directive-item urgent">
+              <div class="dossier-directive-main">
+                <div class="dossier-directive-title">
+                  <span class="material-symbols-rounded" style="color: #ef4444; font-size: 18px;">build_circle</span>
+                  Directive 1: Hotfix Mobile Payment Gateway & Reinstate 1-Click Apple Pay
+                </div>
+                <div class="dossier-directive-desc">
+                  Engineering team to rollback the buggy authentication timeout and restore single-tap Apple Pay recurring authorization.
+                </div>
+              </div>
+              <div class="dossier-directive-meta">
+                <span class="dossier-impact-pill">+AED 3.2M Inflow Recovery</span>
+                <span style="font-size: 11px; color: var(--text-tertiary);">Owner: Digital Product Lead &bull; ETA: 48h</span>
+              </div>
+            </div>
+
+            <div class="dossier-directive-item">
+              <div class="dossier-directive-main">
+                <div class="dossier-directive-title">
+                  <span class="material-symbols-rounded" style="color: var(--brand-primary); font-size: 18px;">campaign</span>
+                  Directive 2: Deploy 5.30% 6-Month Booster Sukuk Flash Tranche
+                </div>
+                <div class="dossier-directive-desc">
+                  Launch targeted promotional yield tranche directly in the mobile app to counter neo-bank churn and recapture liquid balances.
+                </div>
+              </div>
+              <div class="dossier-directive-meta">
+                <span class="dossier-impact-pill">+AED 4.5M New Liquidity</span>
+                <span style="font-size: 11px; color: var(--text-tertiary);">Owner: Commercial Strategy &bull; ETA: 5 Days</span>
+              </div>
+            </div>
+
+            <div class="dossier-directive-item">
+              <div class="dossier-directive-main">
+                <div class="dossier-directive-title">
+                  <span class="material-symbols-rounded" style="color: #059669; font-size: 18px;">support_agent</span>
+                  Directive 3: Direct Relationship Manager Concierge Outreach
+                </div>
+                <div class="dossier-directive-desc">
+                  Assign dedicated RM calls to 420 High Net Worth savers (> AED 250k) identified with high withdrawal intent indicators.
+                </div>
+              </div>
+              <div class="dossier-directive-meta">
+                <span class="dossier-impact-pill">+AED 6.0M Retention Capture</span>
+                <span style="font-size: 11px; color: var(--text-tertiary);">Owner: Wealth Sales Lead &bull; ETA: Immediate</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 4: Governance Ratification & Sign-off -->
+        <div class="dossier-seal-row">
+          <div>
+            <div style="font-weight: 700; color: var(--navy-slate-900);">Commercial Governance & Enterprise Risk Committee</div>
+            <div style="font-size: 11px; margin-top: 3px;">Escalation Authority: Group Chief Commercial Officer &bull; Ref: ESC-2026-GCCO-01-SIGNED</div>
+          </div>
+          <div class="dossier-stamp" style="border-color: #dc2626; color: #dc2626;">
+            <span class="material-symbols-rounded" style="font-size: 16px;">gavel</span>
+            MANDATED FOR EXECUTION
+          </div>
+        </div>
+      </div>
+    `;
+
+    // Initialize interactive ApexCharts for GCCO Briefing
+    setTimeout(() => {
+      // 1. Trajectory Spline Chart
+      if (window._chartGccoTrajectory) {
+        window._chartGccoTrajectory.destroy();
+        window._chartGccoTrajectory = null;
+      }
+      const elTraj = document.getElementById('chart-gcco-trajectory');
+      if (elTraj) {
+        const optionsTraj = {
+          series: [
+            {
+              name: 'Actual Net Inflow',
+              type: 'area',
+              data: [56.2, 57.8, 58.4, 59.1, 57.9, 56.4, 58.2, 57.0, 56.5, 55.8, 54.2, 51.2]
+            },
+            {
+              name: 'ALCO Target Budget (AED 57.0M)',
+              type: 'line',
+              data: [55.0, 55.5, 56.0, 56.5, 57.0, 57.0, 57.0, 57.0, 57.0, 57.0, 57.0, 57.0]
+            },
+            {
+              name: '-8.0% Warning Boundary (AED 52.4M)',
+              type: 'line',
+              data: [50.6, 51.1, 51.5, 52.0, 52.4, 52.4, 52.4, 52.4, 52.4, 52.4, 52.4, 52.4]
+            }
+          ],
+          chart: {
+            height: 290,
+            type: 'line',
+            toolbar: { show: false },
+            fontFamily: 'Plus Jakarta Sans, sans-serif'
+          },
+          stroke: {
+            curve: 'smooth',
+            width: [3, 2, 2],
+            dashArray: [0, 4, 3]
+          },
+          colors: ['#0284c7', '#10b981', '#ef4444'],
+          fill: {
+            type: ['gradient', 'solid', 'solid'],
+            gradient: {
+              shadeIntensity: 1,
+              opacityFrom: 0.3,
+              opacityTo: 0.05,
+              stops: [0, 90, 100]
+            }
+          },
+          xaxis: {
+            categories: ['Jul 25', 'Aug 25', 'Sep 25', 'Oct 25', 'Nov 25', 'Dec 25', 'Jan 26', 'Feb 26', 'Mar 26', 'Apr 26', 'May 26', 'Jun 26'],
+            labels: { style: { colors: '#64748b', fontSize: '11px', fontWeight: 600 } }
+          },
+          yaxis: {
+            labels: {
+              formatter: (val) => `${val.toFixed(0)}M`,
+              style: { colors: '#64748b', fontSize: '11px' }
+            }
+          },
+          legend: {
+            position: 'top',
+            horizontalAlign: 'right',
+            fontSize: '12px',
+            fontWeight: 600
+          },
+          grid: {
+            borderColor: '#f1f5f9',
+            strokeDashArray: 3
+          },
+          tooltip: {
+            y: { formatter: (val) => `AED ${val.toFixed(2)}M` }
+          }
+        };
+        window._chartGccoTrajectory = new ApexCharts(elTraj, optionsTraj);
+        window._chartGccoTrajectory.render();
+      }
+
+      // 2. Channel Horizontal Variance Chart
+      if (window._chartGccoChannel) {
+        window._chartGccoChannel.destroy();
+        window._chartGccoChannel = null;
+      }
+      const elChan = document.getElementById('chart-gcco-channel');
+      if (elChan) {
+        const optionsChan = {
+          series: [{
+            name: 'Variance from Target (%)',
+            data: [-68.4, 2.1, 8.4, -4.2]
+          }],
+          chart: {
+            type: 'bar',
+            height: 200,
+            toolbar: { show: false },
+            fontFamily: 'Plus Jakarta Sans, sans-serif'
+          },
+          plotOptions: {
+            bar: {
+              horizontal: true,
+              borderRadius: 4,
+              barHeight: '52%',
+              colors: {
+                ranges: [
+                  { from: -100, to: -0.01, color: '#ef4444' },
+                  { from: 0, to: 100, color: '#10b981' }
+                ]
+              }
+            }
+          },
+          dataLabels: {
+            enabled: true,
+            formatter: (val) => `${val > 0 ? '+' : ''}${val}%`,
+            style: { fontSize: '11px', fontWeight: 700 }
+          },
+          xaxis: {
+            categories: ['Mobile App Gateway', 'Branch Network', 'Direct Wealth Sales', 'Call Center Telesales'],
+            labels: {
+              formatter: (val) => `${val}%`,
+              style: { colors: '#64748b', fontSize: '11px' }
+            }
+          },
+          grid: {
+            borderColor: '#f1f5f9',
+            strokeDashArray: 3
+          },
+          tooltip: {
+            y: { formatter: (val) => `${val > 0 ? '+' : ''}${val}% vs Target` }
+          }
+        };
+        window._chartGccoChannel = new ApexCharts(elChan, optionsChan);
+        window._chartGccoChannel.render();
+      }
+    }, 50);
+
+    // Bind Export Button
+    document.getElementById('btn-export-gcco')?.addEventListener('click', () => {
+      this.downloadOfficialReport(pdfUrl, downloadFilename, 'GCCO Escalation Dossier');
+    });
+
+    // Bind Print Button
+    document.getElementById('btn-print-gcco')?.addEventListener('click', () => {
+      window.print();
+    });
   }
 };
