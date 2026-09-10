@@ -48,6 +48,8 @@ class V4RequestHandler(SimpleHTTPRequestHandler):
             self.handle_api_live_metrics()
         elif parsed.path == '/api/auth/users':
             self.handle_api_auth_users()
+        elif parsed.path == '/api/escalate' or parsed.path == '/api/tickets':
+            self.handle_api_get_tickets()
         else:
             super().do_GET()
 
@@ -151,18 +153,33 @@ class V4RequestHandler(SimpleHTTPRequestHandler):
             "saved": False
         })
 
+    def handle_api_get_tickets(self):
+        tickets_path = os.path.join(BASE_DIR, 'data', 'escalation_tickets.json')
+        if os.path.exists(tickets_path):
+            try:
+                with open(tickets_path, 'r', encoding='utf-8') as f:
+                    tickets = json.load(f)
+                self.send_json_response({"tickets": tickets, "total": len(tickets)})
+                return
+            except Exception as e:
+                pass
+        self.send_json_response({"tickets": [], "total": 0})
+
     def handle_api_escalate(self, payload):
+        import datetime
+        now_str = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         ticket_id = f"ESC-2026-{os.urandom(2).hex().upper()}"
         new_ticket = {
             "ticket_id": ticket_id,
-            "timestamp": "2026-09-10 00:15:00",
+            "timestamp": now_str,
             "user_name": payload.get("user_name", "Ahmed (RM)"),
-            "user_role": "Relationship Manager",
+            "user_role": payload.get("user_role", "Sales / Relationship Manager"),
             "product_name": payload.get("product_name", "Saving Bonds"),
-            "query": payload.get("query", ""),
-            "reason": payload.get("reason", "Customer inquiry requiring executive policy clarification"),
+            "query": payload.get("query", "Customer inquiry requiring executive policy clarification"),
+            "reason": payload.get("reason", "Policy Exception / Commercial Clarification"),
             "status": "PENDING_PRODUCT_MGMT_REVIEW",
-            "assigned_lead": "Alisha Rizvi / Fariha Fatima Hameed"
+            "priority": payload.get("priority", "HIGH"),
+            "assigned_lead": payload.get("assigned_lead", "Fariha Fatima Hameed (Product Management Lead)")
         }
 
         tickets_path = os.path.join(BASE_DIR, 'data', 'escalation_tickets.json')
@@ -175,9 +192,9 @@ class V4RequestHandler(SimpleHTTPRequestHandler):
             tickets.insert(0, new_ticket)
             with open(tickets_path, 'w', encoding='utf-8') as f:
                 json.dump(tickets, f, indent=2)
-            self.send_json_response({"success": True, "ticket": new_ticket})
+            self.send_json_response({"success": True, "ticket": new_ticket, "total": len(tickets)})
         except Exception as e:
-            self.send_json_response({"success": False, "error": str(e)})
+            self.send_json_response({"success": False, "error": str(e)}, 500)
 
     def handle_api_live_metrics(self):
         csv_path = os.path.join(BASE_DIR, 'cleaned_national_bonds_customers.csv')

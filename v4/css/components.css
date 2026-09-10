@@ -2003,3 +2003,72 @@
   margin-left: auto;
 }
 
+/* ==========================================================================
+   Commercial Governance Escalation Ticket Modal
+   ========================================================================== */
+.escalation-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.65);
+  backdrop-filter: blur(4px);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+
+.escalation-modal-overlay.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.escalation-modal-container {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: var(--radius-lg, 12px);
+  box-shadow: 0 20px 45px -15px rgba(15, 23, 42, 0.3);
+  width: 100%;
+  max-width: 580px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transform: translateY(14px);
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.escalation-modal-overlay.active .escalation-modal-container {
+  transform: translateY(0);
+}
+
+.escalation-modal-header {
+  padding: 18px 24px 16px;
+  border-bottom: 1px solid #f1f5f9;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #f8fafc;
+}
+
+.escalation-modal-body {
+  padding: 20px 24px;
+  max-height: 78vh;
+  overflow-y: auto;
+}
+
+.ticket-row-flash {
+  animation: row-flash-green 2s ease;
+}
+
+@keyframes row-flash-green {
+  0% {
+    background-color: rgba(16, 185, 129, 0.25);
+  }
+  100% {
+    background-color: transparent;
+  }
+}
+
+

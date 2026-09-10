@@ -40,6 +40,7 @@ window.NBC_APP = {
     this.bindInlineFilters();
     this.bindNotificationCenter();
     this.initAuth();
+    this.initEscalationModal();
     this.startLiveTelemetry();
     this.updateOverviewHeader();
     this.renderCurrentView();
@@ -649,6 +650,150 @@ window.NBC_APP = {
 
     fetchTelemetry();
     setInterval(fetchTelemetry, 2000);
+  },
+
+  /* ==========================================================================
+     Frontline Escalation Ticket Modal Controller
+     ========================================================================== */
+  initEscalationModal() {
+    const overlay = document.getElementById('escalation-modal-overlay');
+    const closeBtn = document.getElementById('btn-close-escalation-modal');
+    const cancelBtn = document.getElementById('btn-cancel-escalation');
+    const form = document.getElementById('form-create-escalation');
+
+    const closeModal = () => this.closeEscalationModal();
+    closeBtn?.addEventListener('click', closeModal);
+    cancelBtn?.addEventListener('click', closeModal);
+    overlay?.addEventListener('click', (e) => {
+      if (e.target === overlay) closeModal();
+    });
+
+    form?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const submitBtn = document.getElementById('btn-submit-escalation');
+      const banner = document.getElementById('escalation-feedback-banner');
+
+      const user_name = document.getElementById('esc-user-name')?.value.trim() || 'Ahmed (RM)';
+      const user_role = document.getElementById('esc-user-role')?.value.trim() || 'Sales / Relationship Manager';
+      const product_name = document.getElementById('esc-product')?.value || 'Booster Plan';
+      const priority = document.getElementById('esc-priority')?.value || 'HIGH';
+      const reason = document.getElementById('esc-reason')?.value || 'Policy Exception / Fee Waiver';
+      const query = document.getElementById('esc-query')?.value.trim();
+      const assigned_lead = document.getElementById('esc-assigned')?.value || 'Fariha Fatima Hameed (Product Management Lead)';
+
+      if (!query) {
+        if (banner) {
+          banner.className = 'auth-feedback-banner error';
+          banner.innerHTML = '<span class="material-symbols-rounded">error</span><span>Please describe the commercial inquiry or policy issue.</span>';
+          banner.style.display = 'flex';
+        }
+        return;
+      }
+
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span class="material-symbols-rounded" style="font-size: 18px;">hourglass_empty</span> Submitting Ticket...';
+      }
+
+      try {
+        const res = await fetch('/api/escalate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            user_name,
+            user_role,
+            product_name,
+            priority,
+            reason,
+            query,
+            assigned_lead
+          })
+        });
+
+        const data = await res.json();
+        if (data.success && data.ticket) {
+          const newTicket = { ...data.ticket, isNew: true };
+          if (this.state.ticketsData) {
+            this.state.ticketsData.unshift(newTicket);
+          }
+          if (window.NBC_DATA && window.NBC_DATA.tickets_data) {
+            window.NBC_DATA.tickets_data.unshift(newTicket);
+          }
+
+          if (banner) {
+            banner.className = 'auth-feedback-banner success';
+            banner.innerHTML = `<span class="material-symbols-rounded">check_circle</span><span>Ticket <b>${newTicket.ticket_id}</b> created and routed to ${assigned_lead.split(' (')[0]}!</span>`;
+            banner.style.display = 'flex';
+          }
+
+          if (this.state.mode === 'frontline') {
+            const pane = document.getElementById('frontline-tab-pane');
+            if (pane && window.NBC_FRONTLINE.activeTab === 'tickets') {
+              window.NBC_FRONTLINE.renderTicketsTab(pane, this.state);
+            }
+            const openKpi = document.querySelector('[data-fl-tab="tickets"] .tab-badge');
+            if (openKpi) openKpi.textContent = this.state.ticketsData.length;
+          }
+
+          setTimeout(() => {
+            this.closeEscalationModal();
+            if (submitBtn) {
+              submitBtn.disabled = false;
+              submitBtn.innerHTML = '<span class="material-symbols-rounded" style="font-size: 18px;">send</span> Submit Escalation Ticket';
+            }
+          }, 900);
+        } else {
+          throw new Error(data.error || 'Failed to submit escalation ticket.');
+        }
+      } catch (err) {
+        if (banner) {
+          banner.className = 'auth-feedback-banner error';
+          banner.innerHTML = `<span class="material-symbols-rounded">error</span><span>Error: ${err.message}</span>`;
+          banner.style.display = 'flex';
+        }
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = '<span class="material-symbols-rounded" style="font-size: 18px;">send</span> Submit Escalation Ticket';
+        }
+      }
+    });
+  },
+
+  openEscalationModal(prefillQuery = '', prefillProduct = '') {
+    const overlay = document.getElementById('escalation-modal-overlay');
+    const banner = document.getElementById('escalation-feedback-banner');
+    if (banner) {
+      banner.className = 'auth-feedback-banner';
+      banner.style.display = 'none';
+      banner.innerHTML = '';
+    }
+
+    const savedUserJson = localStorage.getItem('nb_active_user');
+    if (savedUserJson) {
+      try {
+        const u = JSON.parse(savedUserJson);
+        const nameInput = document.getElementById('esc-user-name');
+        const roleInput = document.getElementById('esc-user-role');
+        if (nameInput) nameInput.value = u.name;
+        if (roleInput) roleInput.value = u.designation || u.role;
+      } catch (e) {}
+    }
+
+    if (prefillQuery) {
+      const qInput = document.getElementById('esc-query');
+      if (qInput) qInput.value = prefillQuery;
+    }
+    if (prefillProduct) {
+      const pSelect = document.getElementById('esc-product');
+      if (pSelect) pSelect.value = prefillProduct;
+    }
+
+    overlay?.classList.add('active');
+  },
+
+  closeEscalationModal() {
+    const overlay = document.getElementById('escalation-modal-overlay');
+    overlay?.classList.remove('active');
   }
 };
 

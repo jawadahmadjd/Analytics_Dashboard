@@ -1,0 +1,25 @@
+[
+  {
+    "ticket_id": "ESC-2026-FA90",
+    "timestamp": "2026-09-10 14:53:59",
+    "user_name": "Ahmed (RM)",
+    "user_role": "Senior Relationship Manager",
+    "product_name": "Booster Plan",
+    "query": "Customer requesting waiver of 1% early redemption penalty due to bereavement.",
+    "reason": "Policy Exception / Fee Waiver",
+    "status": "PENDING_PRODUCT_MGMT_REVIEW",
+    "priority": "HIGH",
+    "assigned_lead": "Fariha Fatima Hameed (Product Management Lead)"
+  },
+  {
+    "ticket_id": "ESC-2026-3041",
+    "timestamp": "2026-09-07 20:26:11",
+    "user_name": "Ahmed (RM)",
+    "user_role": "Sales / Relationship Manager",
+    "product_name": "Booster Plan",
+    "query": "Can we offer the extra 1.5% promo bonus on Booster Plan for fresh money?",
+    "reason": "Query references draft document Draft Circular 2026/Promo-X currently under executive review.",
+    "status": "PENDING_PRODUCT_MGMT_REVIEW",
+    "assigned_lead": "Alisha Rizvi / Fariha Fatima Hameed"
+  }
+]

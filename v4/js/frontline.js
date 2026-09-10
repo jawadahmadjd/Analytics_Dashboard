@@ -169,10 +169,16 @@ window.NBC_FRONTLINE = {
               </span>
               <span style="font-size: 12px; color: var(--text-tertiary); margin-left: 12px;">Confidence: <b>99.4%</b> &bull; Latency: <b>1.1s</b></span>
             </div>
-            <button class="alert-action-btn" id="btn-fl-copy" style="padding: 4px 10px; font-size: 10.5px;">
-              <span class="material-symbols-rounded" style="font-size: 13px; vertical-align: -1px;">content_copy</span>
-              COPY CITATION
-            </button>
+            <div style="display: flex; gap: 8px;">
+              <button class="alert-action-btn" id="btn-fl-copy" style="padding: 4px 10px; font-size: 10.5px;">
+                <span class="material-symbols-rounded" style="font-size: 13px; vertical-align: -1px;">content_copy</span>
+                COPY CITATION
+              </button>
+              <button class="alert-action-btn" id="btn-fl-escalate" style="padding: 4px 10px; font-size: 10.5px; border-color: #f59e0b; background: rgba(245, 158, 11, 0.1); color: #d97706;">
+                <span class="material-symbols-rounded" style="font-size: 13px; vertical-align: -1px;">forward_to_inbox</span>
+                ESCALATE TO PRODUCT LEAD
+              </button>
+            </div>
           </div>
 
           <div id="fl-answer-content" style="font-size: 13px; line-height: 1.6; color: var(--text-primary);">
@@ -214,6 +220,11 @@ window.NBC_FRONTLINE = {
     document.getElementById('btn-fl-copy')?.addEventListener('click', () => {
       navigator.clipboard.writeText('Product Circular 2026/04, Section 3.2 (Fatwa 2026/SH-09)');
       alert('Official citation copied to clipboard!');
+    });
+
+    document.getElementById('btn-fl-escalate')?.addEventListener('click', () => {
+      const q = document.getElementById('fl-query-input')?.value || defaultQ;
+      window.NBC_APP.openEscalationModal(q, state.selectedProduct || 'Booster Plan');
     });
   },
 
@@ -300,8 +311,9 @@ window.NBC_FRONTLINE = {
             <div style="font-size: 15px; font-weight: 800; color: var(--navy-slate-900);">Active Frontline Escalation Tickets</div>
             <div style="font-size: 12px; color: var(--text-tertiary); margin-top: 2px;">Inquiries Requiring Product Management & Commercial Legal Clarification</div>
           </div>
-          <button class="alert-action-btn" onclick="alert('New escalation ticket form opened.');">
-            + CREATE ESCALATION TICKET
+          <button class="alert-action-btn" id="btn-create-escalation-ticket" style="cursor: pointer;">
+            <span class="material-symbols-rounded" style="font-size: 14px; vertical-align: -2px;">add</span>
+            CREATE ESCALATION TICKET
           </button>
         </div>
 
@@ -335,6 +347,10 @@ window.NBC_FRONTLINE = {
         </table>
       </div>
     `;
+
+    document.getElementById('btn-create-escalation-ticket')?.addEventListener('click', () => {
+      window.NBC_APP.openEscalationModal();
+    });
   },
 
   // Sub Tab 4: Compliance & InfoSec Audit Trail

@@ -7,9 +7,9 @@
   <meta name="description" content="Institutional Executive Cockpit and Frontline Knowledge Assistant for National Bonds Corporation. Audited ground-truth analytics, agentic workflows, and Sharia compliance.">
 
   <!-- Design Tokens, Layout & Components -->
-  <link rel="stylesheet" href="css/design-tokens.css?v=4.1.0">
-  <link rel="stylesheet" href="css/layout.css?v=4.1.0">
-  <link rel="stylesheet" href="css/components.css?v=4.1.0">
+  <link rel="stylesheet" href="css/design-tokens.css?v=4.2.0">
+  <link rel="stylesheet" href="css/layout.css?v=4.2.0">
+  <link rel="stylesheet" href="css/components.css?v=4.2.0">
 
   <!-- ApexCharts Suite (Defect 1 Fix: Zero Legend Overlap) -->
   <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
@@ -450,12 +450,127 @@
     </div>
   </div>
 
+  <!-- ====================================================================
+       Frontline Commercial Governance Escalation Ticket Modal
+       ==================================================================== -->
+  <div class="escalation-modal-overlay" id="escalation-modal-overlay">
+    <div class="escalation-modal-container">
+      <div class="escalation-modal-header">
+        <div class="auth-modal-title-group">
+          <div class="auth-brand-emblem" style="background: linear-gradient(135deg, #f59e0b, #d97706);">
+            <span class="material-symbols-rounded" style="font-size: 20px;">confirmation_number</span>
+          </div>
+          <div>
+            <h3 class="auth-modal-title">Create Escalation Ticket</h3>
+            <p class="auth-modal-subtitle">Frontline Product Management & Commercial Policy Determination</p>
+          </div>
+        </div>
+        <button class="auth-modal-close" id="btn-close-escalation-modal" title="Close modal">
+          <span class="material-symbols-rounded">close</span>
+        </button>
+      </div>
+
+      <div class="escalation-modal-body">
+        <div class="auth-feedback-banner" id="escalation-feedback-banner"></div>
+
+        <form id="form-create-escalation">
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+            <div class="auth-form-group">
+              <label class="auth-form-label" for="esc-user-name">Requester Name</label>
+              <div class="auth-input-wrap">
+                <span class="material-symbols-rounded">person</span>
+                <input type="text" id="esc-user-name" class="auth-input" value="Ahmed (RM)" required>
+              </div>
+            </div>
+
+            <div class="auth-form-group">
+              <label class="auth-form-label" for="esc-user-role">Role / Department</label>
+              <div class="auth-input-wrap">
+                <span class="material-symbols-rounded">badge</span>
+                <input type="text" id="esc-user-role" class="auth-input" value="Sales / Relationship Manager" required>
+              </div>
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+            <div class="auth-form-group">
+              <label class="auth-form-label" for="esc-product">Target Product</label>
+              <div class="auth-input-wrap">
+                <span class="material-symbols-rounded">category</span>
+                <select id="esc-product" class="auth-input" style="padding-left: 38px;">
+                  <option value="Saving Bonds">Saving Bonds (Retail)</option>
+                  <option value="Term Sukuk (Fixed Income)">Term Sukuk (Fixed Income)</option>
+                  <option value="Booster Plan" selected>Booster Plan (Loyalty)</option>
+                  <option value="Second Salary (Regular Savings)">Second Salary (Regular Savings)</option>
+                  <option value="MyPlan / Regular Saver">MyPlan / Regular Saver</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="auth-form-group">
+              <label class="auth-form-label" for="esc-priority">Priority SLA</label>
+              <div class="auth-input-wrap">
+                <span class="material-symbols-rounded">flag</span>
+                <select id="esc-priority" class="auth-input" style="padding-left: 38px;">
+                  <option value="HIGH">High Priority (24h SLA)</option>
+                  <option value="URGENT">Urgent (Executive Review)</option>
+                  <option value="NORMAL">Normal (48h SLA)</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div class="auth-form-group">
+            <label class="auth-form-label" for="esc-reason">Escalation Category / Reason</label>
+            <div class="auth-input-wrap">
+              <span class="material-symbols-rounded">report_problem</span>
+              <select id="esc-reason" class="auth-input" style="padding-left: 38px;">
+                <option value="Policy Exception / Fee Waiver">Policy Exception & Fee Waiver Request</option>
+                <option value="Fatwa / Sharia Certification Clarification">Fatwa & Sharia Certification Clarification</option>
+                <option value="HNW Commercial Retention Incentive">HNW Commercial Retention Incentive</option>
+                <option value="Draft Circular / Promo Rate Inconsistency">Draft Circular & Promo Rate Inconsistency</option>
+                <option value="Digital Gateway Reconciliation Inquiry">Digital Gateway Reconciliation Inquiry</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="auth-form-group">
+            <label class="auth-form-label" for="esc-query">Customer Inquiry / Commercial Details</label>
+            <textarea id="esc-query" class="auth-input" rows="3" style="padding-left: 12px; resize: vertical; min-height: 80px;" placeholder="Provide specific customer context, account balance, certificate number, or specific policy question requiring approval..." required>Can we offer the extra 1.5% promo bonus on Booster Plan for fresh money?</textarea>
+          </div>
+
+          <div class="auth-form-group">
+            <label class="auth-form-label" for="esc-assigned">Assigned Escalation Authority</label>
+            <div class="auth-input-wrap">
+              <span class="material-symbols-rounded">assignment_ind</span>
+              <select id="esc-assigned" class="auth-input" style="padding-left: 38px;">
+                <option value="Fariha Fatima Hameed (Product Management Lead)">Fariha Fatima Hameed (Product Management Lead)</option>
+                <option value="Jawad Ahmad (GCCO Commercial Advisory Lead)">Jawad Ahmad (GCCO Commercial Advisory Lead)</option>
+                <option value="Alisha Rizvi (Regulatory & Sharia Compliance)">Alisha Rizvi (Regulatory & Sharia Compliance)</option>
+              </select>
+            </div>
+          </div>
+
+          <div style="display: flex; gap: 10px; margin-top: 20px;">
+            <button type="button" class="dossier-btn-export" id="btn-cancel-escalation" style="flex: 1; justify-content: center;">
+              Cancel
+            </button>
+            <button type="submit" class="auth-btn-primary" id="btn-submit-escalation" style="flex: 2; margin-top: 0; background: linear-gradient(135deg, #f59e0b, #d97706);">
+              <span class="material-symbols-rounded" style="font-size: 18px;">send</span>
+              Submit Escalation Ticket
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
   <!-- JavaScript Modules -->
-  <script src="js/data.js?v=4.1.0"></script>
-  <script src="js/charts.js?v=4.1.0"></script>
-  <script src="js/executive.js?v=4.1.0"></script>
-  <script src="js/frontline.js?v=4.1.0"></script>
-  <script src="js/copilot.js?v=4.1.0"></script>
-  <script src="js/app.js?v=4.1.0"></script>
+  <script src="js/data.js?v=4.2.0"></script>
+  <script src="js/charts.js?v=4.2.0"></script>
+  <script src="js/executive.js?v=4.2.0"></script>
+  <script src="js/frontline.js?v=4.2.0"></script>
+  <script src="js/copilot.js?v=4.2.0"></script>
+  <script src="js/app.js?v=4.2.0"></script>
 </body>
 </html>
