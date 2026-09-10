@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>National Bonds Corporation | Executive Intelligence & Early Warning System (V4)</title>
+  <meta name="description" content="Institutional Executive Cockpit and Frontline Knowledge Assistant for National Bonds Corporation. Audited ground-truth analytics, agentic workflows, and Sharia compliance.">
+
+  <!-- Design Tokens, Layout & Components -->
+  <link rel="stylesheet" href="css/design-tokens.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/components.css">
+
+  <!-- ApexCharts Suite (Defect 1 Fix: Zero Legend Overlap) -->
+  <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+</head>
+<body>
+  <div class="app-shell">
+
+    <!-- ====================================================================
+         1. Left Navigation Sidebar (280px Desktop Workstation Standard)
+         ==================================================================== -->
+    <aside class="sidebar" id="app-sidebar">
+      <!-- Brand Emblem & Title -->
+      <div class="sidebar-brand">
+        <div class="brand-emblem">NB</div>
+        <div class="brand-info">
+          <span class="brand-title">National Bonds</span>
+          <span class="brand-subtitle">Executive AI System</span>
+        </div>
+      </div>
+
+      <!-- Operating View Switcher -->
+      <div class="sidebar-mode-selector">
+        <div class="mode-selector-label">
+          <span class="material-symbols-rounded" style="font-size: 14px;">view_quilt</span>
+          Operating Persona Mode
+        </div>
+        <div class="mode-pills">
+          <button class="mode-pill active" id="btn-mode-executive">
+            <span class="material-symbols-rounded" style="font-size: 14px;">dashboard</span>
+            Executive
+          </button>
+          <button class="mode-pill" id="btn-mode-frontline">
+            <span class="material-symbols-rounded" style="font-size: 14px;">support_agent</span>
+            Frontline
+          </button>
+        </div>
+      </div>
+
+      <!-- Slicer: Product Family -->
+      <div class="sidebar-section">
+        <label class="sidebar-label" for="sidebar-product-select">
+          <span>Active Product</span>
+          <span class="material-symbols-rounded" style="font-size: 13px;">category</span>
+        </label>
+        <select class="sidebar-select" id="sidebar-product-select">
+          <option value="Saving Bonds" selected>Saving Bonds (Retail)</option>
+          <option value="Term Sukuk (Fixed Income)">Term Sukuk (Fixed Income)</option>
+          <option value="Booster Plan">Booster Plan (Loyalty)</option>
+          <option value="Second Salary (Regular Savings)">Second Salary (Regular Savings)</option>
+          <option value="MyPlan / Regular Saver">MyPlan / Regular Saver</option>
+        </select>
+
+        <!-- Product Quick Summary Card -->
+        <div class="sidebar-product-card">
+          <div class="product-card-hdr">
+            <span class="product-card-name" id="sidebar-prod-name">Saving Bonds</span>
+            <span class="status-badge warning" id="sidebar-prod-badge" style="font-size: 9.5px; padding: 2px 6px;">WARNING</span>
+          </div>
+          <div class="product-stat-row">
+            <span>Net Inflows:</span>
+            <span class="product-stat-val" id="sidebar-prod-net">AED 41.7M</span>
+          </div>
+          <div class="product-stat-row">
+            <span>Variance vs Target:</span>
+            <span class="product-stat-val" id="sidebar-prod-var" style="color: #ef4444;">-10.2%</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Slicer: Reporting Cycle -->
+      <div class="sidebar-section">
+        <div class="sidebar-label">
+          <span>Reporting Cycle</span>
+          <span class="slider-val-badge" id="sidebar-cycle-badge">2026-06</span>
+        </div>
+        <div class="sidebar-slider-container">
+          <input type="range" id="sidebar-cycle-slider" min="0" max="17" value="17" class="sidebar-range">
+          <div style="display: flex; justify-content: space-between; font-size: 10px; color: var(--text-inverse-muted); margin-top: 4px;">
+            <span>2025-01</span>
+            <span>2026-06 (Latest)</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Slicer: Anomaly Sensitivity -->
+      <div class="sidebar-section">
+        <div class="sidebar-label">
+          <span>Early Warning Floor</span>
+          <span class="slider-val-badge" id="sidebar-thresh-badge">-8.0%</span>
+        </div>
+        <div class="sidebar-slider-container">
+          <input type="range" id="sidebar-thresh-range" min="-20" max="-2" value="-8" step="1" class="sidebar-range">
+          <div style="display: flex; justify-content: space-between; font-size: 10px; color: var(--text-inverse-muted); margin-top: 4px;">
+            <span>-20% (Lax)</span>
+            <span>-2% (Strict)</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pinned Footer User Profile -->
+      <div class="sidebar-footer">
+        <div class="user-avatar">JA</div>
+        <div class="user-meta">
+          <span class="user-name">Jawad Ahmad</span>
+          <span class="user-role">GCCO Commercial Advisory</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- ====================================================================
+         2. Main Content Canvas
+         ==================================================================== -->
+    <main class="main-canvas">
+      <div class="canvas-container">
+
+        <!-- Global Executive Header -->
+        <header class="exec-header">
+          <div class="header-brand-group">
+            <h1 class="header-title">National Bonds Corporation</h1>
+            <p class="header-subtitle">Executive Intelligence & Early Warning System &bull; Initiative 3 (Zero-Streamlit V4)</p>
+          </div>
+
+          <!-- AUM Live Ticker (4 Stats) -->
+          <div class="aum-ticker-container">
+            <div class="ticker-stat">
+              <span class="ticker-label">
+                <span class="material-symbols-rounded" style="font-size: 13px; color: var(--brand-primary);">account_balance</span>
+                Total Portfolio AUM
+              </span>
+              <span class="ticker-value">AED 18.34B</span>
+            </div>
+            <div class="ticker-stat">
+              <span class="ticker-label">
+                <span class="material-symbols-rounded" style="font-size: 13px; color: #10b981;">group</span>
+                Active Savers
+              </span>
+              <span class="ticker-value">154.2K</span>
+            </div>
+            <div class="ticker-stat">
+              <span class="ticker-label">
+                <span class="material-symbols-rounded" style="font-size: 13px; color: #c5a059;">percent</span>
+                Annualized H1 Yield
+              </span>
+              <span class="ticker-value">5.12%</span>
+            </div>
+            <div class="ticker-stat">
+              <span class="ticker-label">
+                <span class="material-symbols-rounded" style="font-size: 13px; color: #0ea5e9;">verified</span>
+                Sharia & SLA
+              </span>
+              <span class="ticker-value">99.8%</span>
+            </div>
+          </div>
+        </header>
+
+        <!-- Executive Alert Banner -->
+        <div id="exec-alert-banner"></div>
+
+        <!-- 4 Overview KPI Cards Grid -->
+        <div class="kpi-cards-grid" id="exec-kpi-grid"></div>
+
+        <!-- Executive Cockpit 7 Navigation Tabs -->
+        <nav class="tabs-ribbon" id="exec-tabs-nav">
+          <button class="nav-tab active" data-exec-tab="powerbi">
+            <span class="material-symbols-rounded">bar_chart</span>
+            PowerBI Analytics Studio
+          </button>
+          <button class="nav-tab" data-exec-tab="workflow">
+            <span class="material-symbols-rounded">schema</span>
+            6-Step Agentic Workflow
+          </button>
+          <button class="nav-tab" data-exec-tab="portfolio">
+            <span class="material-symbols-rounded">table_chart</span>
+            5-Product Portfolio Matrix
+          </button>
+          <button class="nav-tab" data-exec-tab="diagnostic">
+            <span class="material-symbols-rounded">troubleshoot</span>
+            Dynamic Diagnostic Engine
+          </button>
+          <button class="nav-tab" data-exec-tab="simulator">
+            <span class="material-symbols-rounded">tune</span>
+            Live Action Simulator
+          </button>
+          <button class="nav-tab" data-exec-tab="report">
+            <span class="material-symbols-rounded">description</span>
+            Bi-Weekly Memo
+          </button>
+          <button class="nav-tab" data-exec-tab="gcco">
+            <span class="material-symbols-rounded">assignment_late</span>
+            GCCO Briefing
+          </button>
+        </nav>
+
+        <!-- Active View / Subsystem Content Pane -->
+        <div id="view-container"></div>
+
+      </div>
+    </main>
+
+    <!-- ====================================================================
+         3. Floating JD AI Copilot (Defect 4 Fix: Fluid Max Height & Scroll)
+         ==================================================================== -->
+    <button class="copilot-trigger" id="copilot-trigger" title="Open JD AI Copilot">
+      <span class="material-symbols-rounded" style="font-size: 26px;">smart_toy</span>
+    </button>
+
+    <div class="copilot-popover hidden" id="copilot-popover">
+      <!-- Header -->
+      <div class="copilot-hdr">
+        <div class="copilot-title-group">
+          <span class="material-symbols-rounded" style="color: #38bdf8;">smart_toy</span>
+          <span class="copilot-title">JD Executive AI Copilot</span>
+          <span class="status-badge healthy" style="font-size: 9px; padding: 2px 6px;">LIVE AI</span>
+        </div>
+        <div style="display: flex; gap: 8px; align-items: center;">
+          <button id="copilot-reset-btn" title="Reset Conversation" style="background: none; border: none; color: var(--text-inverse-muted); cursor: pointer; display: flex;">
+            <span class="material-symbols-rounded" style="font-size: 18px;">refresh</span>
+          </button>
+          <button id="copilot-close-btn" title="Close" style="background: none; border: none; color: var(--text-inverse-muted); cursor: pointer; display: flex;">
+            <span class="material-symbols-rounded" style="font-size: 18px;">close</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Body / Messages -->
+      <div class="copilot-body" id="copilot-body">
+        <!-- 6 Preset Suggested Inquiry Chips -->
+        <div class="copilot-chips-grid">
+          <button class="copilot-chip" data-prompt="Explain the Saving Bonds deficit in 2026-06">
+            Explain Saving Bonds Deficit
+          </button>
+          <button class="copilot-chip" data-prompt="Compare Second Salary yield and shortfall">
+            Compare Second Salary Yield
+          </button>
+          <button class="copilot-chip" data-prompt="Show Q3 Liquidity Projection from Monte Carlo">
+            Show Q3 Liquidity Projection
+          </button>
+          <button class="copilot-chip" data-prompt="What are Booster Plan early withdrawal penalties?">
+            Booster Plan Penalties & Rules
+          </button>
+          <button class="copilot-chip" data-prompt="Top customer segment demographic drivers">
+            Top Customer Segment Drivers
+          </button>
+          <button class="copilot-chip" data-prompt="What are the ALCO approved recommendations?">
+            ALCO Recommendations
+          </button>
+        </div>
+
+        <div id="copilot-messages" style="display: flex; flex-direction: column; gap: 10px;"></div>
+      </div>
+
+      <!-- Sticky Input Bar -->
+      <div class="copilot-footer">
+        <input type="text" id="copilot-input" class="copilot-input" placeholder="Ask JD anything across 58 slides, KPIs, circulars...">
+        <button class="copilot-send-btn" id="copilot-send-btn">
+          <span class="material-symbols-rounded" style="font-size: 18px;">send</span>
+        </button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- JavaScript Modules -->
+  <script src="js/data.js"></script>
+  <script src="js/charts.js"></script>
+  <script src="js/executive.js"></script>
+  <script src="js/frontline.js"></script>
+  <script src="js/copilot.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

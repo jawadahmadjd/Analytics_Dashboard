@@ -1,0 +1,171 @@
+/* ==========================================================================
+   National Bonds Corporation — Design System Tokens & Foundations
+   Document Reference: NBC-DESKTOP-UI-AUDIT-2026-V1
+   ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap');
+
+:root {
+  /* --- Brand Identity --- */
+  --brand-primary: #0284c7;        /* Sky Blue 600 */
+  --brand-primary-hover: #0369a1;  /* Sky Blue 700 */
+  --brand-primary-light: rgba(2, 132, 199, 0.08);
+  --brand-primary-border: rgba(2, 132, 199, 0.25);
+  --brand-secondary: #0ea5e9;      /* Vibrant Cyan 500 */
+  --brand-gold: #c5a059;           /* Brushed Champagne Gold */
+  --brand-gold-light: rgba(197, 160, 89, 0.12);
+
+  /* --- Executive Luxury Dark Surfaces --- */
+  --navy-imperial: #0b192c;
+  --navy-slate-900: #0f172a;
+  --navy-slate-800: #1e293b;
+  --navy-slate-700: #334155;
+  --navy-hero-gradient: linear-gradient(135deg, #0b192c 0%, #0f172a 50%, #1e293b 100%);
+  --navy-card-gradient: linear-gradient(135deg, rgba(15, 23, 42, 0.95), rgba(30, 41, 59, 0.85));
+
+  /* --- Institutional Surfaces & Backgrounds --- */
+  --surface-page: #fafbfd;
+  --surface-card: #ffffff;
+  --surface-elevated: #ffffff;
+  --surface-subtle: #f4f6f9;
+  --surface-sidebar: #0b192c;
+  --surface-sidebar-card: rgba(255, 255, 255, 0.05);
+
+  /* --- Borders & Dividers --- */
+  --border-subtle: #eaeff5;
+  --border-default: #e2e8f0;
+  --border-medium: #cbd5e1;
+  --border-dark: rgba(255, 255, 255, 0.1);
+  --border-focus: #0284c7;
+
+  /* --- Typography Colors --- */
+  --text-primary: #0f172a;         /* High contrast slate */
+  --text-secondary: #475569;       /* Mid tone */
+  --text-tertiary: #64748b;        /* Muted / labels */
+  --text-quaternary: #94a3b8;      /* Captions */
+  --text-inverse: #f8fafc;         /* Crisp white on dark */
+  --text-inverse-muted: #94a3b8;
+
+  /* --- Semantic Status Indicators --- */
+  --status-optimal: #10b981;       /* Emerald */
+  --status-optimal-bg: rgba(16, 185, 129, 0.08);
+  --status-optimal-border: rgba(16, 185, 129, 0.28);
+
+  --status-warning: #f59e0b;       /* Amber Gold */
+  --status-warning-bg: rgba(245, 158, 11, 0.08);
+  --status-warning-border: rgba(245, 158, 11, 0.28);
+
+  --status-critical: #ef4444;      /* Crimson Red */
+  --status-critical-bg: rgba(239, 68, 68, 0.08);
+  --status-critical-border: rgba(239, 68, 68, 0.28);
+
+  --status-info: #0284c7;          /* Brand Blue */
+  --status-info-bg: rgba(2, 132, 199, 0.08);
+  --status-info-border: rgba(2, 132, 199, 0.28);
+
+  /* --- 8px Spatial Scale --- */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+
+  /* --- Radii --- */
+  --radius-xs: 4px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-full: 9999px;
+
+  /* --- Shadows & Ambient Elevation --- */
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-sm: 0 2px 8px -2px rgba(15, 23, 42, 0.06);
+  --shadow-card: 0 4px 20px -2px rgba(15, 23, 42, 0.05);
+  --shadow-card-hover: 0 12px 32px -4px rgba(2, 132, 199, 0.14);
+  --shadow-modal: 0 20px 48px -8px rgba(15, 23, 42, 0.22);
+  --shadow-floating: 0 12px 36px -4px rgba(2, 132, 199, 0.4);
+
+  /* --- Typography Font Stacks --- */
+  --font-primary: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', 'SF Mono', Consolas, Menlo, monospace;
+
+  /* --- Transitions --- */
+  --transition-fast: 150ms cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-smooth: 220ms cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-slow: 350ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ==========================================================================
+   Universal Typography & Font Ligature Protection
+   Defect 2 Remediation from UI Audit Report:
+   Universal Plus Jakarta Sans / Inter without breaking icon ligatures
+   ========================================================================== */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  font-family: var(--font-primary);
+  background-color: var(--surface-page);
+  color: var(--text-primary);
+  line-height: 1.5;
+  overflow-x: hidden;
+  height: 100vh;
+}
+
+/* Protected Icon Fonts */
+.material-symbols-rounded,
+.material-symbols-outlined,
+[class*="material-symbols"] {
+  font-family: 'Material Symbols Rounded', 'Material Icons', sans-serif !important;
+  font-weight: normal;
+  font-style: normal;
+  font-size: 20px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  vertical-align: middle;
+  user-select: none;
+}
+
+.mono-metric,
+.tabular-numbers,
+code, pre {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Scrollbar Customization */
+::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.4);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(100, 116, 139, 0.6);
+}

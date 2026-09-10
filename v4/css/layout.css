@@ -1,0 +1,406 @@
+/* ==========================================================================
+   National Bonds Corporation — Layout & Shell Architecture
+   Desktop Workstation (1920x1080) Baseline with Responsive Grid
+   ========================================================================== */
+
+/* Main App Shell */
+.app-shell {
+  display: flex;
+  min-height: 100vh;
+  width: 100vw;
+  background-color: var(--surface-page);
+  position: relative;
+}
+
+/* ==========================================================================
+   1. Left Navigation Sidebar (280px Desktop Standard)
+   ========================================================================== */
+.sidebar {
+  width: 280px;
+  min-width: 280px;
+  height: 100vh;
+  background-color: var(--navy-imperial);
+  color: var(--text-inverse);
+  position: fixed;
+  top: 0;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid var(--border-dark);
+  z-index: 1000;
+  overflow-y: auto;
+  transition: transform var(--transition-smooth);
+}
+
+.sidebar-brand {
+  padding: 24px 20px 18px 20px;
+  border-bottom: 1px solid var(--border-dark);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.brand-emblem {
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(135deg, #c5a059, #dfbe7d);
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #0b192c;
+  box-shadow: 0 4px 12px rgba(197, 160, 89, 0.3);
+  font-weight: 800;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.brand-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.brand-title {
+  font-size: 14.5px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  color: #ffffff;
+  line-height: 1.2;
+}
+
+.brand-subtitle {
+  font-size: 10.5px;
+  font-weight: 600;
+  color: #c5a059;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  margin-top: 3px;
+}
+
+/* Operating Mode Switcher */
+.sidebar-mode-selector {
+  padding: 16px 16px 10px 16px;
+}
+
+.mode-selector-label {
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-inverse-muted);
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.mode-pills {
+  display: flex;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--border-dark);
+  border-radius: var(--radius-sm);
+  padding: 3px;
+  gap: 3px;
+}
+
+.mode-pill {
+  flex: 1;
+  padding: 8px 6px;
+  font-size: 11.5px;
+  font-weight: 600;
+  text-align: center;
+  border-radius: 6px;
+  cursor: pointer;
+  color: var(--text-inverse-muted);
+  transition: all var(--transition-fast);
+  border: none;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+}
+
+.mode-pill:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.mode-pill.active {
+  background: var(--brand-primary);
+  color: #ffffff;
+  font-weight: 700;
+  box-shadow: 0 2px 8px rgba(2, 132, 199, 0.4);
+}
+
+/* Sidebar Slicers & Controls */
+.sidebar-section {
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--border-dark);
+}
+
+.sidebar-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--text-inverse-muted);
+  margin-bottom: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.sidebar-select {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--border-dark);
+  border-radius: var(--radius-sm);
+  padding: 8px 12px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #ffffff;
+  outline: none;
+  cursor: pointer;
+  transition: border-color var(--transition-fast);
+}
+
+.sidebar-select:focus {
+  border-color: var(--brand-secondary);
+}
+
+.sidebar-select option {
+  background-color: var(--navy-slate-900);
+  color: #ffffff;
+}
+
+/* Range Slider */
+.sidebar-slider-container {
+  margin-top: 6px;
+}
+
+.slider-val-badge {
+  color: #c5a059;
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  font-weight: 700;
+}
+
+.sidebar-range {
+  width: 100%;
+  accent-color: var(--brand-primary);
+  cursor: pointer;
+  margin-top: 6px;
+}
+
+/* Sidebar Product Quick Card */
+.sidebar-product-card {
+  background: var(--surface-sidebar-card);
+  border: 1px solid var(--border-dark);
+  border-radius: var(--radius-sm);
+  padding: 12px;
+  margin-top: 10px;
+}
+
+.product-card-hdr {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.product-card-name {
+  font-size: 12px;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.product-stat-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: var(--text-inverse-muted);
+  margin-bottom: 4px;
+}
+
+.product-stat-val {
+  font-weight: 700;
+  color: #ffffff;
+  font-family: var(--font-mono);
+}
+
+/* Sidebar Footer / User Profile */
+.sidebar-footer {
+  margin-top: auto;
+  padding: 16px 18px;
+  border-top: 1px solid var(--border-dark);
+  background: rgba(0, 0, 0, 0.2);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.user-avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: var(--radius-full);
+  background: linear-gradient(135deg, #0284c7, #0ea5e9);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 13px;
+  flex-shrink: 0;
+}
+
+.user-meta {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.user-name {
+  font-size: 12px;
+  font-weight: 700;
+  color: #ffffff;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.user-role {
+  font-size: 10px;
+  color: var(--text-inverse-muted);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/* ==========================================================================
+   2. Main Content Canvas
+   ========================================================================== */
+.main-canvas {
+  margin-left: 280px;
+  flex: 1;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--surface-page);
+  position: relative;
+}
+
+.canvas-container {
+  max-width: 1600px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 24px 36px 60px 36px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Global Executive Header */
+.exec-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--border-default);
+  gap: 20px;
+}
+
+.header-brand-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.header-title {
+  font-size: 23px;
+  font-weight: 800;
+  color: var(--navy-slate-900);
+  letter-spacing: -0.025em;
+  line-height: 1.2;
+}
+
+.header-subtitle {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-tertiary);
+  margin-top: 4px;
+}
+
+/* AUM Live Ticker (4 stats) */
+.aum-ticker-container {
+  display: flex;
+  align-items: center;
+  background: var(--surface-card);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  padding: 8px 16px;
+  box-shadow: var(--shadow-xs);
+  gap: 24px;
+}
+
+.ticker-stat {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.ticker-stat:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  right: -12px;
+  top: 15%;
+  height: 70%;
+  width: 1px;
+  background-color: var(--border-default);
+}
+
+.ticker-label {
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--text-tertiary);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.ticker-value {
+  font-size: 17px;
+  font-weight: 800;
+  color: var(--navy-slate-900);
+  font-family: var(--font-mono);
+  letter-spacing: -0.02em;
+  margin-top: 2px;
+}
+
+/* ==========================================================================
+   3. Responsive Rules (Phase 2 Adaptation)
+   ========================================================================== */
+@media (max-width: 1200px) {
+  .exec-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .aum-ticker-container {
+    width: 100%;
+    justify-content: space-between;
+  }
+}
+
+@media (max-width: 900px) {
+  .sidebar {
+    transform: translateX(-100%);
+  }
+  .sidebar.open {
+    transform: translateX(0);
+  }
+  .main-canvas {
+    margin-left: 0;
+  }
+  .canvas-container {
+    padding: 16px;
+  }
+}

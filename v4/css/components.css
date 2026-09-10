@@ -1,0 +1,904 @@
+/* ==========================================================================
+   National Bonds Corporation — UI Component Styles
+   Follows NBC-DESKTOP-UI-AUDIT-2026-V1 & 8px Spatial System
+   ========================================================================== */
+
+/* ==========================================================================
+   1. Executive Alert Center Banner
+   ========================================================================== */
+.alert-banner {
+  border-radius: var(--radius-md);
+  padding: 14px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: all var(--transition-fast);
+  border-left-width: 4px;
+}
+
+.alert-banner.breach {
+  background: var(--status-critical-bg);
+  border: 1px solid var(--status-critical-border);
+  border-left: 4px solid var(--status-critical);
+}
+
+.alert-banner.warning {
+  background: var(--status-warning-bg);
+  border: 1px solid var(--status-warning-border);
+  border-left: 4px solid var(--status-warning);
+}
+
+.alert-banner.healthy {
+  background: var(--status-optimal-bg);
+  border: 1px solid var(--status-optimal-border);
+  border-left: 4px solid var(--status-optimal);
+}
+
+.alert-content-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.alert-icon-wrap {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.alert-banner.breach .alert-icon-wrap {
+  background: rgba(239, 68, 68, 0.15);
+  color: var(--status-critical);
+}
+
+.alert-banner.warning .alert-icon-wrap {
+  background: rgba(245, 158, 11, 0.15);
+  color: var(--status-warning);
+}
+
+.alert-banner.healthy .alert-icon-wrap {
+  background: rgba(16, 185, 129, 0.15);
+  color: var(--status-optimal);
+}
+
+.alert-text-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.alert-title {
+  font-size: 13.5px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.alert-banner.breach .alert-title { color: var(--status-critical); }
+.alert-banner.warning .alert-title { color: var(--status-warning); }
+.alert-banner.healthy .alert-title { color: var(--status-optimal); }
+
+.alert-desc {
+  font-size: 12.5px;
+  color: var(--text-secondary);
+  margin-top: 2px;
+}
+
+.alert-chips-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.alert-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: var(--radius-xs);
+  font-size: 11px;
+  font-weight: 700;
+  font-family: var(--font-mono);
+}
+
+.alert-chip.critical {
+  background: rgba(239, 68, 68, 0.12);
+  color: var(--status-critical);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.alert-chip.warn {
+  background: rgba(245, 158, 11, 0.12);
+  color: var(--status-warning);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+.alert-action-btn {
+  padding: 8px 16px;
+  font-size: 11.5px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  border: 1px solid var(--status-critical);
+  background: rgba(239, 68, 68, 0.1);
+  color: var(--status-critical);
+  transition: all var(--transition-fast);
+  white-space: nowrap;
+}
+
+.alert-action-btn:hover {
+  background: var(--status-critical);
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+/* ==========================================================================
+   2. 4 Overview KPI Cards
+   ========================================================================== */
+.kpi-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+.kpi-card {
+  background: var(--surface-card);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  padding: 16px 20px;
+  height: 132px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-shadow: var(--shadow-card);
+  transition: transform var(--transition-smooth), box-shadow var(--transition-smooth), border-color var(--transition-smooth);
+  position: relative;
+  overflow: hidden;
+}
+
+.kpi-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-card-hover);
+  border-color: var(--brand-primary-border);
+}
+
+.kpi-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.kpi-card-label {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--text-tertiary);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.kpi-card-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-sm);
+  background: var(--surface-subtle);
+  color: var(--brand-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+}
+
+.kpi-card-value {
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--navy-slate-900);
+  letter-spacing: -0.025em;
+  line-height: 1.1;
+  font-family: var(--font-primary);
+}
+
+.kpi-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 11.5px;
+}
+
+.kpi-trend-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 7px;
+  border-radius: var(--radius-full);
+  font-weight: 700;
+  font-size: 11px;
+}
+
+.kpi-trend-pill.positive {
+  background: var(--status-optimal-bg);
+  color: var(--status-optimal);
+  border: 1px solid var(--status-optimal-border);
+}
+
+.kpi-trend-pill.negative {
+  background: var(--status-critical-bg);
+  color: var(--status-critical);
+  border: 1px solid var(--status-critical-border);
+}
+
+.kpi-trend-pill.warning {
+  background: var(--status-warning-bg);
+  color: var(--status-warning);
+  border: 1px solid var(--status-warning-border);
+}
+
+.kpi-target-note {
+  color: var(--text-quaternary);
+  font-weight: 500;
+  font-size: 11px;
+}
+
+/* ==========================================================================
+   3. Navigation Tab Ribbon
+   ========================================================================== */
+.tabs-ribbon {
+  display: flex;
+  align-items: center;
+  border-bottom: 2px solid var(--border-default);
+  gap: 8px;
+  overflow-x: auto;
+}
+
+.nav-tab {
+  padding: 10px 18px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-tertiary);
+  cursor: pointer;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all var(--transition-fast);
+}
+
+.nav-tab:hover {
+  color: var(--text-primary);
+  background: var(--surface-subtle);
+  border-radius: 6px 6px 0 0;
+}
+
+.nav-tab.active {
+  color: var(--brand-primary);
+  font-weight: 700;
+  border-bottom-color: var(--brand-primary);
+}
+
+.tab-badge {
+  background: rgba(2, 132, 199, 0.1);
+  color: var(--brand-primary);
+  font-size: 10.5px;
+  font-weight: 800;
+  padding: 1px 6px;
+  border-radius: var(--radius-full);
+}
+
+/* ==========================================================================
+   4. PowerBI Hero & Slicers Bar
+   ========================================================================== */
+.powerbi-hero {
+  background: var(--navy-hero-gradient);
+  border: 1px solid var(--border-dark);
+  border-radius: var(--radius-md);
+  padding: 20px 24px;
+  color: #ffffff;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 8px 32px rgba(11, 25, 44, 0.25);
+}
+
+.hero-left-title {
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+
+.hero-left-subtitle {
+  font-size: 12.5px;
+  color: var(--text-inverse-muted);
+  margin-top: 3px;
+}
+
+.hero-stats-row {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.hero-stat-box {
+  display: flex;
+  flex-direction: column;
+  text-align: right;
+}
+
+.hero-stat-label {
+  font-size: 10.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #c5a059;
+}
+
+.hero-stat-value {
+  font-size: 18px;
+  font-weight: 800;
+  color: #ffffff;
+  font-family: var(--font-mono);
+}
+
+/* Slicers Bar */
+.slicers-bar {
+  background: var(--surface-card);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  padding: 14px 20px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  box-shadow: var(--shadow-xs);
+}
+
+.slicer-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.slicer-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 6px;
+}
+
+.slicer-control {
+  padding: 7px 10px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-default);
+  background: var(--surface-subtle);
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--text-primary);
+  outline: none;
+  cursor: pointer;
+}
+
+.slicer-control:focus {
+  border-color: var(--brand-primary);
+}
+
+/* ==========================================================================
+   5. Chart Containers (Zero-Collision Geometry — Defect 1 Fix)
+   ========================================================================== */
+.chart-card {
+  background: var(--surface-card);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  padding: 20px;
+  box-shadow: var(--shadow-card);
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 16px;
+}
+
+.chart-card-hdr {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 16px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.chart-card-title {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--navy-slate-900);
+}
+
+.chart-card-subtitle {
+  font-size: 12px;
+  color: var(--text-tertiary);
+  margin-top: 2px;
+}
+
+.chart-viewport {
+  width: 100%;
+  min-height: 320px;
+  position: relative;
+}
+
+.charts-grid-2 {
+  display: grid;
+  grid-template-columns: 1.85fr 1fr;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.charts-grid-equal {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+/* ==========================================================================
+   6. 6-Step Autonomous Agentic Workflow
+   ========================================================================== */
+.stepper-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--surface-card);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  padding: 12px 20px;
+  box-shadow: var(--shadow-xs);
+  margin-bottom: 20px;
+}
+
+.step-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  padding: 6px 12px;
+  border-radius: var(--radius-sm);
+  transition: all var(--transition-fast);
+}
+
+.step-item.active {
+  background: rgba(2, 132, 199, 0.08);
+}
+
+.step-num-circle {
+  width: 26px;
+  height: 26px;
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 800;
+  font-family: var(--font-mono);
+  background: var(--surface-subtle);
+  color: var(--text-tertiary);
+}
+
+.step-item.active .step-num-circle {
+  background: var(--brand-primary);
+  color: #ffffff;
+}
+
+.step-item.completed .step-num-circle {
+  background: var(--status-optimal);
+  color: #ffffff;
+}
+
+.step-name {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-secondary);
+  letter-spacing: 0.03em;
+}
+
+.step-item.active .step-name {
+  color: var(--brand-primary);
+}
+
+.step-connector {
+  flex: 1;
+  height: 2px;
+  background-color: var(--border-default);
+  margin: 0 8px;
+}
+
+/* Telemetry & Attribution Cards */
+.telemetry-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.telemetry-card {
+  background: var(--surface-card);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+}
+
+.telemetry-tag {
+  font-size: 10.5px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--brand-primary);
+  margin-bottom: 6px;
+}
+
+.telemetry-metric {
+  font-size: 20px;
+  font-weight: 800;
+  font-family: var(--font-mono);
+  color: var(--navy-slate-900);
+}
+
+.telemetry-desc {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-top: 6px;
+  line-height: 1.4;
+}
+
+/* ==========================================================================
+   7. Tables & Data Matrices
+   ========================================================================== */
+.data-table-container {
+  background: var(--surface-card);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  box-shadow: var(--shadow-card);
+  margin-bottom: 20px;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 12.5px;
+}
+
+.data-table th {
+  background: var(--surface-subtle);
+  padding: 12px 16px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-tertiary);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--border-default);
+}
+
+.data-table td {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border-subtle);
+  color: var(--text-primary);
+}
+
+.data-table tr:hover {
+  background: rgba(2, 132, 199, 0.02);
+}
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  border-radius: var(--radius-full);
+  font-size: 10.5px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.status-badge.healthy {
+  background: var(--status-optimal-bg);
+  color: var(--status-optimal);
+  border: 1px solid var(--status-optimal-border);
+}
+
+.status-badge.warning {
+  background: var(--status-warning-bg);
+  color: var(--status-warning);
+  border: 1px solid var(--status-warning-border);
+}
+
+.status-badge.breach {
+  background: var(--status-critical-bg);
+  color: var(--status-critical);
+  border: 1px solid var(--status-critical-border);
+}
+
+/* ==========================================================================
+   8. Frontline Knowledge Assistant
+   ========================================================================== */
+.frontline-hero {
+  background: linear-gradient(135deg, rgba(2, 132, 199, 0.08), rgba(14, 165, 233, 0.04));
+  border: 1px solid rgba(2, 132, 199, 0.2);
+  border-radius: var(--radius-md);
+  padding: 20px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.persona-badge {
+  background: var(--surface-card);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  box-shadow: var(--shadow-sm);
+}
+
+.persona-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-full);
+  background: #c5a059;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+}
+
+.scenario-chips-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.scenario-btn {
+  background: var(--surface-card);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  text-align: left;
+  font-size: 12px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  line-height: 1.4;
+}
+
+.scenario-btn:hover {
+  border-color: var(--brand-primary);
+  color: var(--brand-primary);
+  background: var(--brand-primary-light);
+}
+
+/* Grounded Response Card */
+.grounded-response-card {
+  background: var(--surface-card);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  padding: 20px;
+  box-shadow: var(--shadow-card);
+  margin-top: 16px;
+}
+
+.grounded-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.verified-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  background: var(--status-optimal-bg);
+  border: 1px solid var(--status-optimal-border);
+  color: var(--status-optimal);
+  border-radius: var(--radius-full);
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.citation-box {
+  background: var(--surface-subtle);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm);
+  padding: 12px 16px;
+  margin-top: 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* ==========================================================================
+   9. Floating JD AI Copilot (Defect 4 Fix: Fluid Max Height & Scroll)
+   ========================================================================== */
+.copilot-trigger {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radius-full);
+  background: var(--brand-primary);
+  color: #ffffff;
+  border: 3px solid #ffffff;
+  box-shadow: var(--shadow-floating);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 99999;
+  transition: transform var(--transition-smooth), background-color var(--transition-fast);
+}
+
+.copilot-trigger:hover {
+  transform: scale(1.08);
+  background: var(--brand-primary-hover);
+}
+
+.copilot-popover {
+  position: fixed;
+  bottom: 92px;
+  right: 24px;
+  width: 440px;
+  max-width: calc(100vw - 48px);
+  max-height: 82vh; /* Defect 4 Fix */
+  background: var(--surface-card);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-modal);
+  display: flex;
+  flex-direction: column;
+  z-index: 99998;
+  overflow: hidden;
+  transition: opacity var(--transition-smooth), transform var(--transition-smooth);
+}
+
+.copilot-popover.hidden {
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(16px) scale(0.97);
+}
+
+.copilot-hdr {
+  padding: 14px 18px;
+  background: var(--navy-imperial);
+  color: #ffffff;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--border-dark);
+}
+
+.copilot-title-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.copilot-title {
+  font-size: 13.5px;
+  font-weight: 800;
+  color: #ffffff;
+}
+
+.copilot-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.copilot-chips-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.copilot-chip {
+  background: var(--surface-subtle);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm);
+  padding: 8px 10px;
+  font-size: 11px;
+  color: var(--text-secondary);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  text-align: left;
+}
+
+.copilot-chip:hover {
+  background: var(--brand-primary-light);
+  border-color: var(--brand-primary);
+  color: var(--brand-primary);
+}
+
+.chat-bubble {
+  padding: 10px 14px;
+  border-radius: var(--radius-md);
+  font-size: 12.5px;
+  line-height: 1.5;
+  max-width: 88%;
+}
+
+.chat-bubble.user {
+  background: var(--brand-primary);
+  color: #ffffff;
+  align-self: flex-end;
+  border-bottom-right-radius: 4px;
+}
+
+.chat-bubble.assistant {
+  background: var(--surface-subtle);
+  color: var(--text-primary);
+  border: 1px solid var(--border-default);
+  align-self: flex-start;
+  border-bottom-left-radius: 4px;
+}
+
+.copilot-footer {
+  padding: 12px 16px;
+  border-top: 1px solid var(--border-default);
+  background: var(--surface-card);
+  display: flex;
+  gap: 8px;
+}
+
+.copilot-input {
+  flex: 1;
+  padding: 9px 14px;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--border-default);
+  font-size: 12.5px;
+  outline: none;
+  font-family: var(--font-primary);
+}
+
+.copilot-input:focus {
+  border-color: var(--brand-primary);
+}
+
+.copilot-send-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: var(--radius-full);
+  background: var(--brand-primary);
+  color: #ffffff;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color var(--transition-fast);
+  flex-shrink: 0;
+}
+
+.copilot-send-btn:hover {
+  background: var(--brand-primary-hover);
+}
