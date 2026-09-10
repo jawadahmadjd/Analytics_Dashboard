@@ -18,7 +18,8 @@ window.NBC_APP = {
     ticketsData: [],
     dispatchData: [],
     auditData: [],
-    demographics: {}
+    demographics: {},
+    reviewedAlerts: new Set()
   },
 
   init() {
@@ -199,22 +200,62 @@ window.NBC_APP = {
   bindNotificationCenter() {
     const btnNotif = document.getElementById('notification-btn');
     const popover = document.getElementById('notification-popover');
-    const btnGotoWorkflow = document.getElementById('notif-goto-workflow');
+    const btnClose = document.getElementById('notif-close-btn');
 
+    // Toggle popover on bell click
     btnNotif?.addEventListener('click', (e) => {
       e.stopPropagation();
       popover?.classList.toggle('hidden');
     });
 
-    btnGotoWorkflow?.addEventListener('click', () => {
+    // Close button inside popover header
+    btnClose?.addEventListener('click', (e) => {
+      e.stopPropagation();
       popover?.classList.add('hidden');
-      document.querySelector('[data-exec-tab=workflow]')?.click();
     });
 
     // Close when clicking outside
     document.addEventListener('click', (e) => {
       if (popover && !popover.classList.contains('hidden') && !popover.contains(e.target) && e.target !== btnNotif) {
         popover.classList.add('hidden');
+      }
+    });
+
+    // Delegate clicks inside alert popover
+    const notifList = document.getElementById('notif-popover-list');
+    notifList?.addEventListener('click', (e) => {
+      // 1. Check if user clicked "Mark as Reviewed" button
+      const reviewBtn = e.target.closest('[data-review-product]');
+      if (reviewBtn) {
+        e.stopPropagation();
+        const prod = reviewBtn.getAttribute('data-review-product');
+        if (this.state.reviewedAlerts.has(prod)) {
+          this.state.reviewedAlerts.delete(prod);
+        } else {
+          this.state.reviewedAlerts.add(prod);
+        }
+        this.updateOverviewHeader();
+        return;
+      }
+
+      // 2. Check if user clicked the alert card itself -> Navigate to Six Step Workflow for this product
+      const card = e.target.closest('.notif-item');
+      if (card) {
+        const prod = card.getAttribute('data-product');
+        if (prod) {
+          this.state.selectedProduct = prod;
+          const topProd = document.getElementById('filter-product-select');
+          if (topProd) topProd.value = prod;
+          const sideProd = document.getElementById('sidebar-product-select');
+          if (sideProd) sideProd.value = prod;
+          this.updateProductCard();
+
+          // Switch to Six Step Workflow
+          document.querySelector('[data-exec-tab=workflow]')?.click();
+
+          // Close popover
+          popover?.classList.add('hidden');
+        }
       }
     });
   },
@@ -250,12 +291,20 @@ window.NBC_APP = {
     // 2. Populate Notification Center Drawer & Badge
     const breaches = cycleKpis.filter(r => r.deviation_pct <= this.state.breachThreshold);
     const warnings = cycleKpis.filter(r => r.deviation_pct > this.state.breachThreshold && r.deviation_pct <= this.state.warningThreshold);
-    const totalAlerts = breaches.length + warnings.length;
+    const allAlerts = [...breaches, ...warnings];
+    const unreviewedAlerts = allAlerts.filter(r => !this.state.reviewedAlerts.has(r.product_name));
+    const unreviewedCount = unreviewedAlerts.length;
 
     const notifBadge = document.getElementById('notification-badge');
     if (notifBadge) {
-      notifBadge.textContent = totalAlerts;
-      notifBadge.style.backgroundColor = breaches.length > 0 ? '#ef4444' : warnings.length > 0 ? '#f59e0b' : '#10b981';
+      notifBadge.textContent = unreviewedCount;
+      if (unreviewedCount === 0) {
+        notifBadge.style.backgroundColor = '#10b981';
+      } else if (unreviewedAlerts.some(r => r.deviation_pct <= this.state.breachThreshold)) {
+        notifBadge.style.backgroundColor = '#ef4444';
+      } else {
+        notifBadge.style.backgroundColor = '#f59e0b';
+      }
     }
 
     const notifCycle = document.getElementById('notif-popover-cycle');
@@ -263,44 +312,50 @@ window.NBC_APP = {
 
     const notifList = document.getElementById('notif-popover-list');
     if (notifList) {
-      if (totalAlerts === 0) {
+      if (allAlerts.length === 0) {
         notifList.innerHTML = `
-          <div style="padding: 16px; text-align: center; color: var(--text-tertiary); font-size: 12px;">
-            <span class="material-symbols-rounded" style="color: #10b981; font-size: 26px; display: block; margin-bottom: 6px;">verified</span>
+          <div style="padding: 20px 16px; text-align: center; color: var(--text-tertiary); font-size: 12px;">
+            <span class="material-symbols-rounded" style="color: #10b981; font-size: 28px; display: block; margin-bottom: 6px;">verified</span>
             All 5 products are operating within approved tolerance parameters for cycle ${selectedCycle}.
           </div>
         `;
       } else {
-        notifList.innerHTML = [
-          ...breaches.map(r => `
-            <div class="notif-item breach">
-              <div style="display: flex; justify-content: space-between; align-items: center;">
-                <b style="color: #ef4444;">${r.product_name}</b>
-                <span class="status-badge breach" style="font-size: 9px; padding: 1px 5px;">BREACH</span>
+        notifList.innerHTML = allAlerts.map(r => {
+          const isBreach = r.deviation_pct <= this.state.breachThreshold;
+          const isReviewed = this.state.reviewedAlerts.has(r.product_name);
+
+          return `
+            <div class="notif-item ${isBreach ? 'breach' : 'warning'} ${isReviewed ? 'reviewed collapsed' : ''}" data-product="${r.product_name}" title="Click to view ${r.product_name} in Workflow">
+              <div class="notif-item-hdr">
+                <div style="display: flex; align-items: center; gap: 6px; overflow: hidden;">
+                  <span class="material-symbols-rounded" style="font-size: 16px; color: ${isReviewed ? '#10b981' : isBreach ? '#ef4444' : '#d97706'}; flex-shrink: 0;">
+                    ${isReviewed ? 'check_circle' : isBreach ? 'error' : 'warning'}
+                  </span>
+                  <b style="color: ${isReviewed ? 'var(--text-secondary)' : isBreach ? '#ef4444' : '#d97706'}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                    ${r.product_name}
+                  </b>
+                </div>
+                <div style="display: flex; align-items: center; gap: 6px; flex-shrink: 0;">
+                  <button class="notif-review-btn ${isReviewed ? 'is-reviewed' : ''}" data-review-product="${r.product_name}" title="${isReviewed ? 'Click to unmark as reviewed' : 'Click to mark as reviewed and collapse'}">
+                    <span class="material-symbols-rounded" style="font-size: 13px;">${isReviewed ? 'check' : 'done'}</span>
+                    <span>${isReviewed ? 'Reviewed' : 'Mark Reviewed'}</span>
+                  </button>
+                  <span class="status-badge ${isBreach ? 'breach' : 'warning'}" style="font-size: 9px; padding: 1px 5px;">
+                    ${isBreach ? 'BREACH' : 'WARNING'}
+                  </span>
+                </div>
               </div>
-              <div style="color: var(--text-secondary); font-size: 11.5px; margin-top: 2px;">
-                Observed Variance: <b style="color: #ef4444;">${r.deviation_pct.toFixed(1)}%</b> vs Target Budget
-              </div>
-              <div style="color: var(--text-tertiary); font-size: 11px;">
-                Actual Net: AED ${(r.net_inflows_aed / 1e6).toFixed(1)}M &bull; Budget: AED ${(r.target_inflows_aed / 1e6).toFixed(1)}M
+              <div class="notif-item-body">
+                <div style="color: var(--text-secondary); font-size: 11.5px; margin-top: 2px;">
+                  Observed Variance: <b style="color: ${isBreach ? '#ef4444' : '#d97706'};">${r.deviation_pct.toFixed(1)}%</b> ${isBreach ? 'vs Target Budget' : 'approaching floor'}
+                </div>
+                <div style="color: var(--text-tertiary); font-size: 11px;">
+                  Actual Net: AED ${(r.net_inflows_aed / 1e6).toFixed(1)}M &bull; Budget: AED ${(r.target_inflows_aed / 1e6).toFixed(1)}M
+                </div>
               </div>
             </div>
-          `),
-          ...warnings.map(r => `
-            <div class="notif-item warning">
-              <div style="display: flex; justify-content: space-between; align-items: center;">
-                <b style="color: #d97706;">${r.product_name}</b>
-                <span class="status-badge warning" style="font-size: 9px; padding: 1px 5px;">EARLY WARNING</span>
-              </div>
-              <div style="color: var(--text-secondary); font-size: 11.5px; margin-top: 2px;">
-                Observed Variance: <b style="color: #d97706;">${r.deviation_pct.toFixed(1)}%</b> approaching floor
-              </div>
-              <div style="color: var(--text-tertiary); font-size: 11px;">
-                Actual Net: AED ${(r.net_inflows_aed / 1e6).toFixed(1)}M &bull; Budget: AED ${(r.target_inflows_aed / 1e6).toFixed(1)}M
-              </div>
-            </div>
-          `)
-        ].join('');
+          `;
+        }).join('');
       }
     }
 
