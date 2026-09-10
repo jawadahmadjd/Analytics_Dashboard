@@ -109,6 +109,24 @@
         </div>
       </div>
 
+      <!-- Executive Reports & Dossiers Section -->
+      <div class="sidebar-section">
+        <div class="sidebar-label">
+          <span>Executive Dossiers</span>
+          <span class="material-symbols-rounded" style="font-size: 13px;">folder_special</span>
+        </div>
+        <div class="sidebar-nav-list">
+          <button class="sidebar-nav-item" id="sidebar-nav-memo" data-exec-report="report">
+            <span class="material-symbols-rounded">description</span>
+            <span>Bi-Weekly Memo</span>
+          </button>
+          <button class="sidebar-nav-item" id="sidebar-nav-gcco" data-exec-report="gcco">
+            <span class="material-symbols-rounded">assignment_late</span>
+            <span>GCCO Briefing</span>
+          </button>
+        </div>
+      </div>
+
       <!-- Pinned Footer User Profile -->
       <div class="sidebar-footer">
         <div class="user-avatar">JA</div>
@@ -132,76 +150,133 @@
             <p class="header-subtitle">Executive Intelligence & Early Warning System &bull; Initiative 3 (Zero-Streamlit V4)</p>
           </div>
 
-          <!-- AUM Live Ticker (4 Stats) -->
-          <div class="aum-ticker-container">
-            <div class="ticker-stat">
-              <span class="ticker-label">
-                <span class="material-symbols-rounded" style="font-size: 13px; color: var(--brand-primary);">account_balance</span>
-                Total Portfolio AUM
-              </span>
-              <span class="ticker-value">AED 18.34B</span>
+          <!-- Header Right Controls: Slim Stat Strip + Notifications Button -->
+          <div class="header-right-controls">
+            <!-- Slim Horizontal Metric Strip (Total Portfolio, Net Inflows, Active Savers) -->
+            <div class="header-stat-strip" id="header-stat-strip">
+              <div class="header-stat-item">
+                <span class="stat-label">
+                  <span class="material-symbols-rounded">account_balance</span>
+                  Total Portfolio
+                </span>
+                <div class="stat-value-group">
+                  <span class="stat-val" id="hdr-stat-aum">AED 18.34B</span>
+                  <span class="stat-badge positive">+8.4% YoY</span>
+                </div>
+              </div>
+              <div class="header-stat-item">
+                <span class="stat-label">
+                  <span class="material-symbols-rounded">payments</span>
+                  Net Inflows
+                </span>
+                <div class="stat-value-group">
+                  <span class="stat-val" id="hdr-stat-net">AED 617.0M</span>
+                  <span class="stat-badge warning" id="hdr-stat-net-badge">-9.5% vs Target</span>
+                </div>
+              </div>
+              <div class="header-stat-item">
+                <span class="stat-label">
+                  <span class="material-symbols-rounded">group</span>
+                  Active Savers
+                </span>
+                <div class="stat-value-group">
+                  <span class="stat-val" id="hdr-stat-savers">154.2K</span>
+                </div>
+              </div>
             </div>
-            <div class="ticker-stat">
-              <span class="ticker-label">
-                <span class="material-symbols-rounded" style="font-size: 13px; color: #10b981;">group</span>
-                Active Savers
-              </span>
-              <span class="ticker-value">154.2K</span>
-            </div>
-            <div class="ticker-stat">
-              <span class="ticker-label">
-                <span class="material-symbols-rounded" style="font-size: 13px; color: #c5a059;">percent</span>
-                Annualized H1 Yield
-              </span>
-              <span class="ticker-value">5.12%</span>
-            </div>
-            <div class="ticker-stat">
-              <span class="ticker-label">
-                <span class="material-symbols-rounded" style="font-size: 13px; color: #0ea5e9;">verified</span>
-                Sharia & SLA
-              </span>
-              <span class="ticker-value">99.8%</span>
+
+            <!-- Top Right Notification Center Button & Drawer -->
+            <div class="notification-center-wrap">
+              <button class="notification-btn" id="notification-btn" title="View Active Deviations & Alerts">
+                <span class="material-symbols-rounded notification-icon">notifications</span>
+                <span class="notification-label">Alerts</span>
+                <span class="notification-counter-badge" id="notification-badge">3</span>
+              </button>
+
+              <!-- Floating Alerts Popover Drawer -->
+              <div class="notification-popover hidden" id="notification-popover">
+                <div class="notif-popover-header">
+                  <div class="notif-popover-title">
+                    <span class="material-symbols-rounded" style="color: #ef4444; font-size: 18px;">warning</span>
+                    <span>Tolerance Deviations</span>
+                  </div>
+                  <span class="status-badge breach" id="notif-popover-cycle">Cycle 2026-06</span>
+                </div>
+                <div class="notif-popover-body" id="notif-popover-list">
+                  <!-- Populated dynamically by JS -->
+                </div>
+                <div class="notif-popover-footer">
+                  <button class="notif-action-btn" id="notif-goto-workflow">
+                    <span class="material-symbols-rounded" style="font-size: 15px;">schema</span>
+                    Investigate in Six Step Workflow
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         </header>
 
-        <!-- Executive Alert Banner -->
-        <div id="exec-alert-banner"></div>
+        <!-- Unified Command Bar: 3 Tabs (Left) + Inline Filters (Right) -->
+        <div class="command-bar" id="exec-command-bar">
+          <nav class="tabs-ribbon" id="exec-tabs-nav">
+            <button class="nav-tab active" data-exec-tab="workflow">
+              <span class="material-symbols-rounded">schema</span>
+              Six Step Workflow
+            </button>
+            <button class="nav-tab" data-exec-tab="portfolio">
+              <span class="material-symbols-rounded">table_chart</span>
+              Portfolio Matrix
+            </button>
+            <button class="nav-tab" data-exec-tab="diagnostic">
+              <span class="material-symbols-rounded">troubleshoot</span>
+              Diagnostics
+            </button>
+          </nav>
 
-        <!-- 4 Overview KPI Cards Grid -->
-        <div class="kpi-cards-grid" id="exec-kpi-grid"></div>
-
-        <!-- Executive Cockpit 7 Navigation Tabs -->
-        <nav class="tabs-ribbon" id="exec-tabs-nav">
-          <button class="nav-tab active" data-exec-tab="powerbi">
-            <span class="material-symbols-rounded">bar_chart</span>
-            PowerBI Analytics Studio
-          </button>
-          <button class="nav-tab" data-exec-tab="workflow">
-            <span class="material-symbols-rounded">schema</span>
-            6-Step Agentic Workflow
-          </button>
-          <button class="nav-tab" data-exec-tab="portfolio">
-            <span class="material-symbols-rounded">table_chart</span>
-            5-Product Portfolio Matrix
-          </button>
-          <button class="nav-tab" data-exec-tab="diagnostic">
-            <span class="material-symbols-rounded">troubleshoot</span>
-            Dynamic Diagnostic Engine
-          </button>
-          <button class="nav-tab" data-exec-tab="simulator">
-            <span class="material-symbols-rounded">tune</span>
-            Live Action Simulator
-          </button>
-          <button class="nav-tab" data-exec-tab="report">
-            <span class="material-symbols-rounded">description</span>
-            Bi-Weekly Memo
-          </button>
-          <button class="nav-tab" data-exec-tab="gcco">
-            <span class="material-symbols-rounded">assignment_late</span>
-            GCCO Briefing
-          </button>
-        </nav>
+          <!-- Inline Filters Integrated Right Next to Tabs -->
+          <div class="inline-filters-bar" id="inline-filters-bar">
+            <div class="inline-filter-item">
+              <span class="filter-label">Cycle</span>
+              <select class="inline-filter-select" id="filter-cycle-select">
+                <option value="2026-06" selected>2026-06</option>
+                <option value="2026-05">2026-05</option>
+                <option value="2026-04">2026-04</option>
+                <option value="2026-03">2026-03</option>
+                <option value="2026-02">2026-02</option>
+                <option value="2026-01">2026-01</option>
+              </select>
+            </div>
+            <div class="inline-filter-item">
+              <span class="filter-label">Product</span>
+              <select class="inline-filter-select" id="filter-product-select">
+                <option value="All Products" selected>All 5 Products</option>
+                <option value="Saving Bonds">Saving Bonds</option>
+                <option value="Term Sukuk (Fixed Income)">Term Sukuk</option>
+                <option value="Booster Plan">Booster Plan</option>
+                <option value="Second Salary (Regular Savings)">Second Salary</option>
+                <option value="MyPlan / Regular Saver">MyPlan Saver</option>
+              </select>
+            </div>
+            <div class="inline-filter-item">
+              <span class="filter-label">Tier</span>
+              <select class="inline-filter-select" id="filter-tier-select">
+                <option value="All">All Tiers (154.2K)</option>
+                <option value="Mass Affluent">Mass Affluent</option>
+                <option value="Emirati National">Emirati National</option>
+                <option value="High Net Worth">High Net Worth</option>
+              </select>
+            </div>
+            <div class="inline-filter-item">
+              <span class="filter-label">Channel</span>
+              <select class="inline-filter-select" id="filter-channel-select">
+                <option value="All">All Channels</option>
+                <option value="Mobile App">Mobile App</option>
+                <option value="Branch Network">Branch Network</option>
+                <option value="Web Portal">Web Portal</option>
+              </select>
+            </div>
+          </div>
+        </div>
 
         <!-- Active View / Subsystem Content Pane -->
         <div id="view-container"></div>

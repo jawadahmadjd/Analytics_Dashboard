@@ -178,9 +178,18 @@ window.NBC_EXECUTIVE = {
     });
   },
 
-  // Tab 2: 6-Step Autonomous Agentic Workflow (Initiative 3)
+  // Tab: Six Step Autonomous Agentic Workflow
   renderAgenticWorkflow(container, state) {
     const { kpiRecords } = state;
+    const activeProd = state.selectedProduct || 'Saving Bonds';
+    const currentMonth = state.selectedCycle || '2026-06';
+    const cycleKpis = kpiRecords.filter(r => r.month === currentMonth);
+    const foundProd = cycleKpis.find(r => r.product_name.includes(activeProd.split(' ')[0])) || cycleKpis[0];
+    const devPct = foundProd ? foundProd.deviation_pct : -10.22;
+    const netAed = foundProd ? (foundProd.net_inflows_aed / 1e6).toFixed(2) : '51.19';
+    const tgtAed = foundProd ? (foundProd.target_inflows_aed / 1e6).toFixed(2) : '57.02';
+    const defAed = foundProd ? Math.abs((foundProd.net_inflows_aed - foundProd.target_inflows_aed) / 1e6).toFixed(2) : '5.82';
+
     container.innerHTML = `
       <!-- Stepper Ribbon -->
       <div class="stepper-container">
@@ -217,10 +226,12 @@ window.NBC_EXECUTIVE = {
 
       <!-- Telemetry Cards -->
       <div class="telemetry-grid">
-        <div class="telemetry-card" style="border-left: 3px solid var(--status-critical);">
+        <div class="telemetry-card" style="border-left: 3px solid ${devPct < -15 ? 'var(--status-critical)' : devPct < 0 ? 'var(--status-warning)' : 'var(--status-optimal)'};">
           <span class="telemetry-tag">Autonomous Detection</span>
-          <span class="telemetry-metric" style="color: var(--status-critical);">-10.22% Deficit</span>
-          <div class="telemetry-desc">Saving Bonds breached amber early warning threshold for 2026-06. Net deficit: <b>AED 5.82M</b> vs target.</div>
+          <span class="telemetry-metric" style="color: ${devPct < -15 ? 'var(--status-critical)' : devPct < 0 ? 'var(--status-warning)' : 'var(--status-optimal)'};">
+            ${devPct > 0 ? '+' : ''}${devPct.toFixed(2)}% Variance
+          </span>
+          <div class="telemetry-desc">${foundProd?.product_name || activeProd} registered <b>AED ${netAed}M</b> net inflow vs <b>AED ${tgtAed}M</b> target for ${currentMonth}.</div>
         </div>
         <div class="telemetry-card" style="border-left: 3px solid var(--brand-primary);">
           <span class="telemetry-tag">Primary Causal Attribution</span>
@@ -238,7 +249,7 @@ window.NBC_EXECUTIVE = {
       <div class="chart-card">
         <div class="chart-card-hdr">
           <div>
-            <div class="chart-card-title">Saving Bonds: Trajectory Spline vs Approved Inflow Budget</div>
+            <div class="chart-card-title">${foundProd?.product_name || activeProd}: Trajectory Spline vs Approved Inflow Budget</div>
             <div class="chart-card-subtitle">Continuous 12-Month Audited Inflows with Dynamic Alert Threshold Bands</div>
           </div>
           <button class="alert-action-btn" id="btn-dispatch-gcco">
@@ -251,7 +262,7 @@ window.NBC_EXECUTIVE = {
     `;
 
     setTimeout(() => {
-      NBC_CHARTS.renderTrajectorySpline('chart-workflow-spline', kpiRecords, 'Saving Bonds');
+      NBC_CHARTS.renderTrajectorySpline('chart-workflow-spline', kpiRecords, activeProd);
     }, 50);
 
     document.getElementById('btn-dispatch-gcco')?.addEventListener('click', () => {
