@@ -7,9 +7,9 @@
   <meta name="description" content="Institutional Executive Cockpit and Frontline Knowledge Assistant for National Bonds Corporation. Audited ground-truth analytics, agentic workflows, and Sharia compliance.">
 
   <!-- Design Tokens, Layout & Components -->
-  <link rel="stylesheet" href="css/design-tokens.css?v=4.2.0">
-  <link rel="stylesheet" href="css/layout.css?v=4.2.0">
-  <link rel="stylesheet" href="css/components.css?v=4.2.0">
+  <link rel="stylesheet" href="css/design-tokens.css?v=4.3.0">
+  <link rel="stylesheet" href="css/layout.css?v=4.3.0">
+  <link rel="stylesheet" href="css/components.css?v=4.3.0">
 
   <!-- ApexCharts Suite (Defect 1 Fix: Zero Legend Overlap) -->
   <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
@@ -104,7 +104,9 @@
           <span class="user-name" id="sidebar-user-name">Jawad Ahmad</span>
           <span class="user-role" id="sidebar-user-role">GCCO Commercial Advisory</span>
         </div>
-        <span class="material-symbols-rounded" style="font-size: 16px; color: #94a3b8; margin-left: auto;">manage_accounts</span>
+        <button class="profile-edit-pencil-btn" id="btn-sidebar-edit-pencil" title="Edit Profile Details">
+          <span class="material-symbols-rounded">edit</span>
+        </button>
       </div>
     </aside>
 
@@ -351,7 +353,7 @@
         </button>
       </div>
 
-      <!-- Auth Tabs: Sign In vs Sign Up -->
+      <!-- Auth Tabs: Sign In vs Sign Up vs Edit Profile -->
       <div class="auth-tabs">
         <button class="auth-tab-btn active" id="tab-btn-login">
           <span class="material-symbols-rounded" style="font-size: 16px;">login</span>
@@ -359,7 +361,11 @@
         </button>
         <button class="auth-tab-btn" id="tab-btn-signup">
           <span class="material-symbols-rounded" style="font-size: 16px;">person_add</span>
-          Create Account / Sign Up
+          Sign Up
+        </button>
+        <button class="auth-tab-btn" id="tab-btn-edit-profile">
+          <span class="material-symbols-rounded" style="font-size: 16px;">edit</span>
+          Edit Profile
         </button>
       </div>
 
@@ -444,6 +450,54 @@
           <button type="submit" class="auth-btn-primary" id="btn-submit-signup">
             <span class="material-symbols-rounded" style="font-size: 18px;">person_add</span>
             Create Account & Save Profile
+          </button>
+        </form>
+
+        <!-- 3. EDIT PROFILE FORM -->
+        <form id="form-auth-edit" style="display: none;">
+          <div class="auth-form-group">
+            <label class="auth-form-label" for="edit-name">Full Name</label>
+            <div class="auth-input-wrap">
+              <span class="material-symbols-rounded">person</span>
+              <input type="text" id="edit-name" class="auth-input" placeholder="e.g. Jawad Ahmad" required>
+            </div>
+          </div>
+
+          <div class="auth-form-group">
+            <label class="auth-form-label" for="edit-email">Official Corporate Email (Immutable Account ID)</label>
+            <div class="auth-input-wrap">
+              <span class="material-symbols-rounded">mail</span>
+              <input type="email" id="edit-email" class="auth-input" readonly style="background: #f1f5f9; cursor: not-allowed; color: #64748b;">
+            </div>
+          </div>
+
+          <div class="auth-form-group">
+            <label class="auth-form-label" for="edit-phone">Contact Phone Number</label>
+            <div class="auth-input-wrap">
+              <span class="material-symbols-rounded">call</span>
+              <input type="tel" id="edit-phone" class="auth-input" placeholder="e.g. +971 50 123 4567" required>
+            </div>
+          </div>
+
+          <div class="auth-form-group">
+            <label class="auth-form-label" for="edit-designation">Designation / Department</label>
+            <div class="auth-input-wrap">
+              <span class="material-symbols-rounded">badge</span>
+              <input type="text" id="edit-designation" class="auth-input" placeholder="e.g. GCCO Commercial Advisory Lead" required>
+            </div>
+          </div>
+
+          <div class="auth-form-group">
+            <label class="auth-form-label" for="edit-password">New Password (Optional)</label>
+            <div class="auth-input-wrap">
+              <span class="material-symbols-rounded">lock</span>
+              <input type="password" id="edit-password" class="auth-input" placeholder="Leave blank to keep current password" autocomplete="new-password">
+            </div>
+          </div>
+
+          <button type="submit" class="auth-btn-primary" id="btn-submit-edit">
+            <span class="material-symbols-rounded" style="font-size: 18px;">save</span>
+            Save Profile Changes
           </button>
         </form>
       </div>
@@ -566,11 +620,11 @@
   </div>
 
   <!-- JavaScript Modules -->
-  <script src="js/data.js?v=4.2.0"></script>
-  <script src="js/charts.js?v=4.2.0"></script>
-  <script src="js/executive.js?v=4.2.0"></script>
-  <script src="js/frontline.js?v=4.2.0"></script>
-  <script src="js/copilot.js?v=4.2.0"></script>
-  <script src="js/app.js?v=4.2.0"></script>
+  <script src="js/data.js?v=4.3.0"></script>
+  <script src="js/charts.js?v=4.3.0"></script>
+  <script src="js/executive.js?v=4.3.0"></script>
+  <script src="js/frontline.js?v=4.3.0"></script>
+  <script src="js/copilot.js?v=4.3.0"></script>
+  <script src="js/app.js?v=4.3.0"></script>
 </body>
 </html>

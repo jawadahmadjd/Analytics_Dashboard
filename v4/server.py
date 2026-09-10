@@ -345,6 +345,8 @@ class V4RequestHandler(SimpleHTTPRequestHandler):
         phone = payload.get('phone', '').strip()
         designation = payload.get('designation', '').strip()
 
+        password = payload.get('password', '').strip()
+
         users = self.get_users_list()
         found = False
         updated_user = None
@@ -353,6 +355,7 @@ class V4RequestHandler(SimpleHTTPRequestHandler):
                 if name: u['name'] = name
                 if phone: u['phone'] = phone
                 if designation: u['designation'] = designation
+                if password: u['password'] = password
                 u['avatar'] = "".join([part[0] for part in name.split()[:2]]).upper() if name else u.get('avatar', 'NB')
                 found = True
                 updated_user = {

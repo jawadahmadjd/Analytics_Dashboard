@@ -420,12 +420,15 @@ window.NBC_APP = {
      ========================================================================== */
   initAuth() {
     const profileBtn = document.getElementById('btn-user-profile');
+    const pencilBtn = document.getElementById('btn-sidebar-edit-pencil');
     const modalOverlay = document.getElementById('auth-modal-overlay');
     const closeBtn = document.getElementById('btn-close-auth-modal');
     const tabLogin = document.getElementById('tab-btn-login');
     const tabSignup = document.getElementById('tab-btn-signup');
+    const tabEdit = document.getElementById('tab-btn-edit-profile');
     const formLogin = document.getElementById('form-auth-login');
     const formSignup = document.getElementById('form-auth-signup');
+    const formEdit = document.getElementById('form-auth-edit');
 
     // Restore saved user or load default
     const savedUserJson = localStorage.getItem('nb_active_user');
@@ -444,10 +447,25 @@ window.NBC_APP = {
     }
     this.applyUserProfile(currentUser);
 
-    // Open Modal
-    profileBtn?.addEventListener('click', () => {
+    // Open Modal via Profile Card
+    profileBtn?.addEventListener('click', (e) => {
+      // If pencil button was clicked directly, let its handler take priority
+      if (e.target.closest('#btn-sidebar-edit-pencil')) return;
       this.loadQuickProfiles();
       this.clearAuthFeedback();
+      tabLogin?.classList.add('active');
+      tabSignup?.classList.remove('active');
+      tabEdit?.classList.remove('active');
+      if (formLogin) formLogin.style.display = 'block';
+      if (formSignup) formSignup.style.display = 'none';
+      if (formEdit) formEdit.style.display = 'none';
+      modalOverlay?.classList.add('active');
+    });
+
+    // Open Modal directly to Edit Profile via Pencil Icon
+    pencilBtn?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      this.switchToEditProfileTab();
       modalOverlay?.classList.add('active');
     });
 
@@ -462,17 +480,25 @@ window.NBC_APP = {
     tabLogin?.addEventListener('click', () => {
       tabLogin.classList.add('active');
       tabSignup?.classList.remove('active');
+      tabEdit?.classList.remove('active');
       if (formLogin) formLogin.style.display = 'block';
       if (formSignup) formSignup.style.display = 'none';
+      if (formEdit) formEdit.style.display = 'none';
       this.clearAuthFeedback();
     });
 
     tabSignup?.addEventListener('click', () => {
       tabSignup.classList.add('active');
       tabLogin?.classList.remove('active');
+      tabEdit?.classList.remove('active');
       if (formLogin) formLogin.style.display = 'none';
       if (formSignup) formSignup.style.display = 'block';
+      if (formEdit) formEdit.style.display = 'none';
       this.clearAuthFeedback();
+    });
+
+    tabEdit?.addEventListener('click', () => {
+      this.switchToEditProfileTab();
     });
 
     // Handle Login Submit
@@ -528,6 +554,77 @@ window.NBC_APP = {
         this.showAuthFeedback('error', 'Network error contacting server.');
       }
     });
+
+    // Handle Edit Profile Submit
+    formEdit?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const name = document.getElementById('edit-name')?.value.trim();
+      const email = document.getElementById('edit-email')?.value.trim().toLowerCase();
+      const phone = document.getElementById('edit-phone')?.value.trim();
+      const designation = document.getElementById('edit-designation')?.value.trim();
+      const password = document.getElementById('edit-password')?.value.trim();
+
+      try {
+        const res = await fetch('/api/auth/update-profile', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, email, phone, designation, password })
+        });
+        const data = await res.json();
+        if (data.success && data.user) {
+          this.showAuthFeedback('success', 'Profile updated successfully!');
+          this.applyUserProfile(data.user);
+          setTimeout(closeModal, 800);
+        } else {
+          this.showAuthFeedback('error', data.message || 'Profile update failed.');
+        }
+      } catch (err) {
+        this.showAuthFeedback('error', 'Network error updating profile.');
+      }
+    });
+  },
+
+  switchToEditProfileTab() {
+    const tabLogin = document.getElementById('tab-btn-login');
+    const tabSignup = document.getElementById('tab-btn-signup');
+    const tabEdit = document.getElementById('tab-btn-edit-profile');
+    const formLogin = document.getElementById('form-auth-login');
+    const formSignup = document.getElementById('form-auth-signup');
+    const formEdit = document.getElementById('form-auth-edit');
+
+    tabEdit?.classList.add('active');
+    tabLogin?.classList.remove('active');
+    tabSignup?.classList.remove('active');
+    if (formLogin) formLogin.style.display = 'none';
+    if (formSignup) formSignup.style.display = 'none';
+    if (formEdit) formEdit.style.display = 'block';
+    this.clearAuthFeedback();
+
+    const savedUserJson = localStorage.getItem('nb_active_user');
+    let u = null;
+    if (savedUserJson) {
+      try { u = JSON.parse(savedUserJson); } catch (e) {}
+    }
+    if (!u) {
+      u = {
+        name: "Jawad Ahmad",
+        email: "jawad.ahmad@nationalbonds.ae",
+        phone: "+971 50 123 4567",
+        designation: "GCCO Commercial Advisory Lead"
+      };
+    }
+
+    const editName = document.getElementById('edit-name');
+    const editEmail = document.getElementById('edit-email');
+    const editPhone = document.getElementById('edit-phone');
+    const editDesig = document.getElementById('edit-designation');
+    const editPass = document.getElementById('edit-password');
+
+    if (editName) editName.value = u.name || '';
+    if (editEmail) editEmail.value = u.email || '';
+    if (editPhone) editPhone.value = u.phone || '';
+    if (editDesig) editDesig.value = u.designation || u.role || '';
+    if (editPass) editPass.value = '';
   },
 
   applyUserProfile(user) {

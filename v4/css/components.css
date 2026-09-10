@@ -2071,4 +2071,34 @@
   }
 }
 
+/* Sidebar Profile Edit Pencil Button */
+.profile-edit-pencil-btn {
+  background: transparent;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #64748b;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+.profile-edit-pencil-btn:hover {
+  background: #0284c7;
+  border-color: #0284c7;
+  color: #ffffff;
+  box-shadow: 0 2px 6px rgba(2, 132, 199, 0.3);
+  transform: scale(1.08);
+}
+
+.profile-edit-pencil-btn .material-symbols-rounded {
+  font-size: 15px;
+}
+
+
 
