@@ -560,100 +560,86 @@ window.NBC_EXECUTIVE = {
 
   // Tab 6: Bi-Weekly Product & Market Intelligence Report (Initiative 2)
   renderBiWeeklyReport(container, state) {
+    const pdfUrl = 'docs/National_Bonds_BiWeekly_Intelligence_Report_2024-06.pdf';
     container.innerHTML = `
-      <div class="chart-card">
+      <div class="chart-card pdf-viewer-card">
         <div class="chart-card-hdr">
           <div>
             <div class="chart-card-title" style="font-size: 17px;">Executive Memorandum: Product & Commercial Intelligence</div>
-            <div class="chart-card-subtitle">Document Ref: <b>NBC-BIWEEKLY-INTEL-202606</b> &bull; Classified: CONFIDENTIAL (C-SUITE / ALCO)</div>
+            <div class="chart-card-subtitle">Document Ref: <b>NBC-BIWEEKLY-INTEL-2024-06</b> &bull; Classified: CONFIDENTIAL (C-SUITE / ALCO)</div>
           </div>
-          <button class="alert-action-btn" style="border-color: var(--brand-primary); background: var(--brand-primary-light); color: var(--brand-primary);" id="btn-export-pdf">
-            <span class="material-symbols-rounded" style="font-size: 14px; vertical-align: -2px;">download</span>
-            EXPORT OFFICIAL PDF
-          </button>
-        </div>
-
-        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 20px;">
-          <div style="background: var(--surface-subtle); padding: 12px; border-radius: var(--radius-sm); border: 1px solid var(--border-default);">
-            <div style="font-size: 11px; font-weight: 700; color: var(--text-tertiary); text-transform: uppercase;">CBUAE Base Rate</div>
-            <div style="font-size: 18px; font-weight: 800; color: var(--navy-slate-900); font-family: var(--font-mono); margin-top: 2px;">4.65%</div>
-            <div style="font-size: 11px; color: #10b981;">Flat MoM (-25 bps in Q3 P)</div>
-          </div>
-          <div style="background: var(--surface-subtle); padding: 12px; border-radius: var(--radius-sm); border: 1px solid var(--border-default);">
-            <div style="font-size: 11px; font-weight: 700; color: var(--text-tertiary); text-transform: uppercase;">3M EIBOR Index</div>
-            <div style="font-size: 18px; font-weight: 800; color: var(--navy-slate-900); font-family: var(--font-mono); margin-top: 2px;">4.52%</div>
-            <div style="font-size: 11px; color: var(--text-tertiary);">&minus;6 bps MoM</div>
-          </div>
-          <div style="background: var(--surface-subtle); padding: 12px; border-radius: var(--radius-sm); border: 1px solid var(--border-default);">
-            <div style="font-size: 11px; font-weight: 700; color: var(--text-tertiary); text-transform: uppercase;">Savings Index</div>
-            <div style="font-size: 18px; font-weight: 800; color: var(--navy-slate-900); font-family: var(--font-mono); margin-top: 2px;">121 Pts</div>
-            <div style="font-size: 11px; color: #10b981;">+3.4% YoY Expansion</div>
-          </div>
-          <div style="background: var(--surface-subtle); padding: 12px; border-radius: var(--radius-sm); border: 1px solid var(--border-default);">
-            <div style="font-size: 11px; font-weight: 700; color: var(--text-tertiary); text-transform: uppercase;">ALCO Sign-Off</div>
-            <div style="font-size: 18px; font-weight: 800; color: #10b981; font-family: var(--font-mono); margin-top: 2px;">APPROVED</div>
-            <div style="font-size: 11px; color: var(--text-tertiary);">Ref: ALCO-2026/06-B</div>
+          <div style="display: flex; gap: 10px; align-items: center;">
+            <a href="${pdfUrl}" target="_blank" class="alert-action-btn" style="text-decoration: none; border-color: var(--border-default); background: #ffffff; color: var(--navy-slate-900);">
+              <span class="material-symbols-rounded" style="font-size: 15px; vertical-align: -2px;">open_in_new</span>
+              Open Fullscreen
+            </a>
+            <a href="${pdfUrl}" download class="alert-action-btn" style="text-decoration: none; border-color: var(--brand-primary); background: var(--brand-primary-light); color: var(--brand-primary);">
+              <span class="material-symbols-rounded" style="font-size: 15px; vertical-align: -2px;">download</span>
+              Download PDF
+            </a>
           </div>
         </div>
 
-        <div style="font-size: 13px; line-height: 1.6; color: var(--text-secondary); display: flex; flex-direction: column; gap: 12px;">
-          <p><b>1. Macroeconomic Context:</b> UAE interbank liquidity remains robust following recent Federal Reserve and CBUAE guidance. Retail depositors exhibit heightened sensitivity to promotional yield structures, migrating liquid current account balances toward short-term Sharia-compliant sukuk instruments.</p>
-          <p><b>2. Commercial Performance Highlights:</b> Total corporate net inflows reached <b>AED 617.0M</b> across the 5 tracked pilot products. Term Sukuk outperformed baseline budget expectations (+AED 26.9M), driven by substantial institutional allocations in the 12-month fixed tenor bucket.</p>
-          <p><b>3. Material Risks & Causal Deviations:</b> Saving Bonds registered a <b>-10.22% (AED 5.82M)</b> deficit against target, while Second Salary recorded a <b>-29.84% (AED 1.13M)</b> contraction due to delayed salary dispatch cycles in selected free-zone employer corporate cohorts.</p>
-          <p><b>4. Executive Remediation Mandate:</b> Product management will launch the revised Booster Plan loyalty tier on July 1st, alongside proactive corporate payroll partner workshops to restore regular monthly contributions.</p>
+        <!-- Quick Executive Macro Indicators -->
+        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 14px;">
+          <div style="background: var(--surface-subtle); padding: 9px 14px; border-radius: var(--radius-sm); border: 1px solid var(--border-default); display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-size: 11px; font-weight: 700; color: var(--text-tertiary); text-transform: uppercase;">CBUAE Base</span>
+            <span style="font-size: 15px; font-weight: 800; color: var(--navy-slate-900); font-family: var(--font-mono);">4.65%</span>
+          </div>
+          <div style="background: var(--surface-subtle); padding: 9px 14px; border-radius: var(--radius-sm); border: 1px solid var(--border-default); display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-size: 11px; font-weight: 700; color: var(--text-tertiary); text-transform: uppercase;">3M EIBOR</span>
+            <span style="font-size: 15px; font-weight: 800; color: var(--navy-slate-900); font-family: var(--font-mono);">4.52%</span>
+          </div>
+          <div style="background: var(--surface-subtle); padding: 9px 14px; border-radius: var(--radius-sm); border: 1px solid var(--border-default); display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-size: 11px; font-weight: 700; color: var(--text-tertiary); text-transform: uppercase;">Savings Index</span>
+            <span style="font-size: 15px; font-weight: 800; color: #10b981; font-family: var(--font-mono);">121 Pts</span>
+          </div>
+          <div style="background: var(--surface-subtle); padding: 9px 14px; border-radius: var(--radius-sm); border: 1px solid var(--border-default); display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-size: 11px; font-weight: 700; color: var(--text-tertiary); text-transform: uppercase;">ALCO Status</span>
+            <span class="status-badge healthy" style="font-size: 10px; padding: 2px 7px;">APPROVED</span>
+          </div>
+        </div>
+
+        <!-- Embedded Interactive PDF Document -->
+        <div class="pdf-frame-container">
+          <iframe 
+            src="${pdfUrl}#toolbar=1&navpanes=1&scrollbar=1" 
+            title="Bi-Weekly Intelligence Report PDF"
+          ></iframe>
         </div>
       </div>
     `;
-
-    document.getElementById('btn-export-pdf')?.addEventListener('click', () => {
-      alert('Generating executive PDF dossier calibrated with audited H1 2026 ground truth. File will download shortly.');
-    });
   },
 
   // Tab 7: GCCO Escalation Briefing
   renderGccoBriefing(container, state) {
+    const pdfUrl = 'docs/National_Bonds_GCCO_Escalation_Dossier_Booster_Sukuk.pdf';
     container.innerHTML = `
-      <div class="chart-card">
+      <div class="chart-card pdf-viewer-card">
         <div class="chart-card-hdr">
           <div>
-            <div class="chart-card-title" style="font-size: 16px;">Confidential Escalation Dossier & Routing Table</div>
-            <div class="chart-card-subtitle">Audited Ground Truth Submission to Group Chief Commercial Officer (GCCO)</div>
+            <div class="chart-card-title" style="font-size: 17px;">Confidential Escalation Dossier & Routing Table</div>
+            <div class="chart-card-subtitle">Audited Ground Truth Submission to Group Chief Commercial Officer (GCCO) &bull; Ref: <b>ESC-2026-GCCO-01</b></div>
           </div>
-          <span class="status-badge breach">URGENT COMMERCIAL REVIEW</span>
+          <div style="display: flex; gap: 10px; align-items: center;">
+            <span class="status-badge breach" style="margin-right: 4px;">URGENT COMMERCIAL REVIEW</span>
+            <a href="${pdfUrl}" target="_blank" class="alert-action-btn" style="text-decoration: none; border-color: var(--border-default); background: #ffffff; color: var(--navy-slate-900);">
+              <span class="material-symbols-rounded" style="font-size: 15px; vertical-align: -2px;">open_in_new</span>
+              Open Fullscreen
+            </a>
+            <a href="${pdfUrl}" download class="alert-action-btn" style="text-decoration: none; border-color: var(--brand-primary); background: var(--brand-primary-light); color: var(--brand-primary);">
+              <span class="material-symbols-rounded" style="font-size: 15px; vertical-align: -2px;">download</span>
+              Download Dossier
+            </a>
+          </div>
         </div>
 
-        <table class="data-table" style="margin-bottom: 20px;">
-          <tbody>
-            <tr>
-              <td style="width: 220px; font-weight: 700; background: var(--surface-subtle);">ADDRESSEE:</td>
-              <td>Group Chief Commercial Officer (GCCO) & ALCO Commercial Sub-Committee</td>
-            </tr>
-            <tr>
-              <td style="font-weight: 700; background: var(--surface-subtle);">TARGET PRODUCT:</td>
-              <td><b>Saving Bonds (Flagship Retail Certificate)</b></td>
-            </tr>
-            <tr>
-              <td style="font-weight: 700; background: var(--surface-subtle);">REPORTED DEFICIT:</td>
-              <td style="color: #ef4444; font-weight: 800; font-family: var(--font-mono);">-AED 5.82 Million (-10.22% Variance)</td>
-            </tr>
-            <tr>
-              <td style="font-weight: 700; background: var(--surface-subtle);">PRIMARY CASUAL FACTOR:</td>
-              <td>Digital App redemptions surge & post-maturity rollover friction in 1-month tenor certificates</td>
-            </tr>
-            <tr>
-              <td style="font-weight: 700; background: var(--surface-subtle);">DIGITAL SIGN-OFF:</td>
-              <td>Jawad Ahmad (Head of Product AI Solutions) &bull; Verified via SHA-256 Ledger (Hash: d13a0a1d891965ced19d7f2ffa4603b7)</td>
-            </tr>
-          </tbody>
-        </table>
-
-        <div style="background: var(--navy-imperial); color: #94a3b8; padding: 18px; border-radius: var(--radius-sm); font-family: var(--font-mono); font-size: 12px; line-height: 1.6;">
-          <span style="color: #c5a059;">// --- NBC AUTONOMOUS MULTI-AGENT AUDIT TRAIL LOG ---</span><br/>
-          [2026-09-08 08:41:54 UTC] [AGENT: ANOMALY_DETECTOR] &gt; Breach detected on Saving Bonds (Threshold: -8.00%, Observed: -10.22%)<br/>
-          [2026-09-08 08:41:55 UTC] [AGENT: DATA_DIAGNOSTICIAN] &gt; Sliced 154,000 cohort; localized 68.4% drop to Direct Mobile Channels<br/>
-          [2026-09-08 08:41:57 UTC] [AGENT: RECOMMENDATION_ENGINE] &gt; Formulated 3 remediation interventions; expected lift +AED 2.91M<br/>
-          [2026-09-08 08:42:31 UTC] [AGENT: GCCO_DISPATCHER] &gt; Official dossier generated, encrypted & transmitted to executive committee<br/>
-          [STATUS: DISPATCH_CONFIRMED &bull; AWAITING ALCO EXECUTIVE RATIFICATION]
+        <!-- Embedded Interactive PDF Document -->
+        <div class="pdf-frame-container">
+          <iframe 
+            src="${pdfUrl}#toolbar=1&navpanes=1&scrollbar=1" 
+            title="GCCO Escalation Dossier PDF"
+          ></iframe>
         </div>
       </div>
     `;
