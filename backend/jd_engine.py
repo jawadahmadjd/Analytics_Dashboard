@@ -45,6 +45,8 @@ class JDAgent:
         self.slides_file = resolve_data_path(slides_json)
         self.audit_log_file = resolve_data_path('audit_trail.json')
         self.tickets_file = resolve_data_path('escalation_tickets.json')
+        self.chat_history_file = resolve_data_path('jd_chat_history.json')
+        self.chat_sessions_file = resolve_data_path('chat_sessions.json')
 
         self.kpi_df = pd.read_csv(self.kpi_file)
         self.cust_df = pd.read_csv(self.cust_file)
@@ -742,7 +744,77 @@ Saving Bonds total portfolio stood at **AED 4.6 Billion** (25% of Total AUM), re
 - **Customer Base:** **154,000 Verified Accounts** (+11% YoY).
 - **H1 Fresh Sales:** **AED 7.51 Billion** (167% of target)."""
 
-    def answer(self, prompt, api_key=None, mode='auto', user_name='Ahmed (RM)', user_role='Sales / Relationship Manager'):
+    def save_chat_turn(self, query, answer, session_id='v4_executive'):
+        """Persist every interaction to both jd_chat_history.json and chat_sessions.json."""
+        import datetime
+        import uuid
+        now_str = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        iso_str = datetime.datetime.now().isoformat()
+        
+        # 1. Append to chronological jd_chat_history.json
+        entry = {
+            'id': f"chat-{uuid.uuid4().hex[:8]}",
+            'timestamp': now_str,
+            'session_id': session_id,
+            'query': query,
+            'answer': answer
+        }
+        
+        history_path = self.chat_history_file or resolve_data_path('jd_chat_history.json')
+        if not history_path or not os.path.isabs(history_path):
+            base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+            history_path = os.path.join(base_dir, 'data', 'jd_chat_history.json')
+            
+        try:
+            os.makedirs(os.path.dirname(history_path), exist_ok=True)
+            history = []
+            if os.path.exists(history_path):
+                with open(history_path, 'r', encoding='utf-8') as f:
+                    try:
+                        history = json.load(f)
+                    except Exception:
+                        history = []
+            history.append(entry)
+            with open(history_path, 'w', encoding='utf-8') as f:
+                json.dump(history, f, indent=2, ensure_ascii=False)
+        except Exception as e:
+            print(f"[JDAgent] Warning saving to jd_chat_history: {e}")
+
+        # 2. Update chat_sessions.json
+        sessions_path = self.chat_sessions_file or resolve_data_path('chat_sessions.json')
+        if not sessions_path or not os.path.isabs(sessions_path):
+            base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+            sessions_path = os.path.join(base_dir, 'data', 'chat_sessions.json')
+
+        try:
+            os.makedirs(os.path.dirname(sessions_path), exist_ok=True)
+            sessions = {}
+            if os.path.exists(sessions_path):
+                with open(sessions_path, 'r', encoding='utf-8') as f:
+                    try:
+                        sessions = json.load(f)
+                    except Exception:
+                        sessions = {}
+            
+            sid = session_id or 'v4_active_session'
+            if sid not in sessions:
+                sessions[sid] = {
+                    'id': sid,
+                    'title': query[:40] + ('...' if len(query) > 40 else ''),
+                    'created_at': iso_str,
+                    'updated_at': iso_str,
+                    'messages': []
+                }
+            sessions[sid]['updated_at'] = iso_str
+            sessions[sid]['messages'].append({'role': 'user', 'content': query})
+            sessions[sid]['messages'].append({'role': 'assistant', 'content': answer})
+            
+            with open(sessions_path, 'w', encoding='utf-8') as f:
+                json.dump(sessions, f, indent=2, ensure_ascii=False)
+        except Exception as e:
+            print(f"[JDAgent] Warning saving to chat_sessions: {e}")
+
+    def answer(self, prompt, api_key=None, mode='auto', user_name='Ahmed (RM)', user_role='Sales / Relationship Manager', session_id='v4_executive'):
         """
         Primary execution entrypoint:
         - mode='frontline': strictly uses the approved product knowledge base & circulars.
@@ -759,15 +831,17 @@ Saving Bonds total portfolio stood at **AED 4.6 Billion** (25% of Total AUM), re
 
         if mode == 'frontline' or (mode == 'auto' and is_policy_query):
             kb_res = self.query_knowledge_assistant(prompt, user_name=user_name, user_role=user_role)
-            return kb_res['answer']
+            resp = kb_res['answer']
+        else:
+            deepseek_response = self.query_deepseek(prompt, api_key=api_key)
+            if deepseek_response:
+                resp = deepseek_response
+            else:
+                resp = self.query_semantic_analytics(prompt)
 
-        # Primary: DeepSeek Grounded Intelligence
-        deepseek_response = self.query_deepseek(prompt, api_key=api_key)
-        if deepseek_response:
-            return deepseek_response
-            
-        # Offline Deterministic Fallback
-        return self.query_semantic_analytics(prompt)
+        # Save each and every chat to permanent storage
+        self.save_chat_turn(prompt, resp, session_id=session_id)
+        return resp
 
     def ask(self, query, **kwargs):
         """Universal alias for answering queries."""

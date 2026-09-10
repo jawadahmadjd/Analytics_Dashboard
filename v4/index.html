@@ -7,9 +7,9 @@
   <meta name="description" content="Institutional Executive Cockpit and Frontline Knowledge Assistant for National Bonds Corporation. Audited ground-truth analytics, agentic workflows, and Sharia compliance.">
 
   <!-- Design Tokens, Layout & Components -->
-  <link rel="stylesheet" href="css/design-tokens.css?v=4.0.3">
-  <link rel="stylesheet" href="css/layout.css?v=4.0.3">
-  <link rel="stylesheet" href="css/components.css?v=4.0.3">
+  <link rel="stylesheet" href="css/design-tokens.css?v=4.0.4">
+  <link rel="stylesheet" href="css/layout.css?v=4.0.4">
+  <link rel="stylesheet" href="css/components.css?v=4.0.4">
 
   <!-- ApexCharts Suite (Defect 1 Fix: Zero Legend Overlap) -->
   <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
@@ -299,10 +299,15 @@
           <span class="status-badge healthy" style="font-size: 9px; padding: 2px 6px;">LIVE AI</span>
         </div>
         <div style="display: flex; gap: 8px; align-items: center;">
-          <button id="copilot-reset-btn" title="Reset Conversation" style="background: none; border: none; color: var(--text-inverse-muted); cursor: pointer; display: flex;">
+          <button id="copilot-expand-btn" class="copilot-hdr-btn" title="Full Screen (Expand)" aria-label="Full Screen">
+            <svg id="copilot-expand-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/>
+            </svg>
+          </button>
+          <button id="copilot-reset-btn" class="copilot-hdr-btn" title="Reset Conversation" aria-label="Reset Conversation">
             <span class="material-symbols-rounded" style="font-size: 18px;">refresh</span>
           </button>
-          <button id="copilot-close-btn" title="Close" style="background: none; border: none; color: var(--text-inverse-muted); cursor: pointer; display: flex;">
+          <button id="copilot-close-btn" class="copilot-hdr-btn" title="Close" aria-label="Close">
             <span class="material-symbols-rounded" style="font-size: 18px;">close</span>
           </button>
         </div>
@@ -310,26 +315,32 @@
 
       <!-- Body / Messages -->
       <div class="copilot-body" id="copilot-body">
-        <!-- 6 Preset Suggested Inquiry Chips -->
-        <div class="copilot-chips-grid">
-          <button class="copilot-chip" data-prompt="Explain the Saving Bonds deficit in 2026-06">
-            Explain Saving Bonds Deficit
-          </button>
-          <button class="copilot-chip" data-prompt="Compare Second Salary yield and shortfall">
-            Compare Second Salary Yield
-          </button>
-          <button class="copilot-chip" data-prompt="Show Q3 Liquidity Projection from Monte Carlo">
-            Show Q3 Liquidity Projection
-          </button>
-          <button class="copilot-chip" data-prompt="What are Booster Plan early withdrawal penalties?">
-            Booster Plan Penalties & Rules
-          </button>
-          <button class="copilot-chip" data-prompt="Top customer segment demographic drivers">
-            Top Customer Segment Drivers
-          </button>
-          <button class="copilot-chip" data-prompt="What are the ALCO approved recommendations?">
-            ALCO Recommendations
-          </button>
+        <!-- Starter / Welcome View (Only visible before first message is sent) -->
+        <div id="copilot-starter-view" class="copilot-starter-view">
+          <div class="copilot-chips-grid">
+            <button class="copilot-chip" data-prompt="Explain the Saving Bonds deficit in 2026-06">
+              Explain Saving Bonds Deficit
+            </button>
+            <button class="copilot-chip" data-prompt="Compare Second Salary yield and shortfall">
+              Compare Second Salary Yield
+            </button>
+            <button class="copilot-chip" data-prompt="Show Q3 Liquidity Projection from Monte Carlo">
+              Show Q3 Liquidity Projection
+            </button>
+            <button class="copilot-chip" data-prompt="What are Booster Plan early withdrawal penalties?">
+              Booster Plan Penalties & Rules
+            </button>
+            <button class="copilot-chip" data-prompt="Top customer segment demographic drivers">
+              Top Customer Segment Drivers
+            </button>
+            <button class="copilot-chip" data-prompt="What are the ALCO approved recommendations?">
+              ALCO Recommendations
+            </button>
+          </div>
+
+          <div class="chat-bubble assistant starter-bubble" style="margin-top: 10px;">
+            Good day! I am <b>JD</b>, your Executive Copilot for National Bonds Corporation. I am grounded in audited H1 2026 data across all 58 slides, 154K customer records, and official circulars. How may I assist your commercial analysis today?
+          </div>
         </div>
 
         <div id="copilot-messages" style="display: flex; flex-direction: column; gap: 10px;"></div>
@@ -347,11 +358,11 @@
   </div>
 
   <!-- JavaScript Modules -->
-  <script src="js/data.js?v=4.0.3"></script>
-  <script src="js/charts.js?v=4.0.3"></script>
-  <script src="js/executive.js?v=4.0.3"></script>
-  <script src="js/frontline.js?v=4.0.3"></script>
-  <script src="js/copilot.js?v=4.0.3"></script>
-  <script src="js/app.js?v=4.0.3"></script>
+  <script src="js/data.js?v=4.0.4"></script>
+  <script src="js/charts.js?v=4.0.4"></script>
+  <script src="js/executive.js?v=4.0.4"></script>
+  <script src="js/frontline.js?v=4.0.4"></script>
+  <script src="js/copilot.js?v=4.0.4"></script>
+  <script src="js/app.js?v=4.0.4"></script>
 </body>
 </html>

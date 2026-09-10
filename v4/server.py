@@ -38,6 +38,8 @@ class V4RequestHandler(SimpleHTTPRequestHandler):
             self.send_json_response({"status": "healthy", "version": "4.0.0", "engine": "zero-streamlit"})
         elif parsed.path == '/api/export-pdf':
             self.handle_api_export_pdf(parsed)
+        elif parsed.path == '/api/copilot/history':
+            self.handle_api_copilot_history()
         elif parsed.path == '/api/copilot':
             query_params = urllib.parse.parse_qs(parsed.query)
             q = query_params.get('q', [''])[0] or query_params.get('query', [''])[0]
@@ -98,9 +100,23 @@ class V4RequestHandler(SimpleHTTPRequestHandler):
         else:
             self.send_error(404, "Ground truth data not found")
 
+    def handle_api_copilot_history(self):
+        history_path = os.path.join(BASE_DIR, 'data', 'jd_chat_history.json')
+        if os.path.exists(history_path):
+            try:
+                with open(history_path, 'r', encoding='utf-8') as f:
+                    history = json.load(f)
+                self.send_json_response({"history": history, "total": len(history)})
+                return
+            except Exception as e:
+                self.send_json_response({"history": [], "error": str(e)})
+                return
+        self.send_json_response({"history": [], "total": 0})
+
     def handle_api_copilot(self, payload):
         global jd_agent_instance
         query = payload.get('query', '').strip()
+        session_id = payload.get('session_id', 'v4_executive')
         if not jd_agent_instance:
             try:
                 from backend.jd_engine import JDAgent
@@ -111,9 +127,9 @@ class V4RequestHandler(SimpleHTTPRequestHandler):
 
         if jd_agent_instance and query:
             try:
-                answer = jd_agent_instance.ask(query)
+                answer = jd_agent_instance.ask(query, session_id=session_id)
                 if answer:
-                    self.send_json_response({"answer": answer, "grounded": True})
+                    self.send_json_response({"answer": answer, "grounded": True, "saved": True})
                     return
             except Exception as e:
                 print(f"[V4 Server] Copilot ask() error: {e}")
@@ -121,7 +137,8 @@ class V4RequestHandler(SimpleHTTPRequestHandler):
         # Fallback response if engine not available
         self.send_json_response({
             "answer": f"National Bonds Audited Ground Truth: Query '{query}' verified under CBUAE Basel III and Sharia Fatwa governance.",
-            "grounded": True
+            "grounded": True,
+            "saved": False
         })
 
     def handle_api_escalate(self, payload):

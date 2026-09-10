@@ -5,29 +5,46 @@
 
 window.NBC_COPILOT = {
   isOpen: false,
-  messages: [
-    {
-      role: 'assistant',
-      text: 'Good day! I am **JD**, your Executive Copilot for National Bonds Corporation. I am grounded in audited H1 2026 data across all 58 slides, 154K customer records, and official circulars. How may I assist your commercial analysis today?'
-    }
-  ],
+  isFullscreen: false,
+  messages: [],
 
   init() {
     const trigger = document.getElementById('copilot-trigger');
     const popover = document.getElementById('copilot-popover');
     const closeBtn = document.getElementById('copilot-close-btn');
     const resetBtn = document.getElementById('copilot-reset-btn');
+    const expandBtn = document.getElementById('copilot-expand-btn');
     const sendBtn = document.getElementById('copilot-send-btn');
     const input = document.getElementById('copilot-input');
 
     if (!trigger || !popover) return;
 
+    // Load persisted chat history from localStorage
+    try {
+      const saved = localStorage.getItem('nbc_jd_copilot_messages');
+      if (saved) {
+        this.messages = JSON.parse(saved);
+      } else {
+        this.messages = [];
+      }
+    } catch (e) {
+      this.messages = [];
+    }
+
     trigger.addEventListener('click', () => this.toggle());
     closeBtn?.addEventListener('click', () => this.close());
     resetBtn?.addEventListener('click', () => this.reset());
+    expandBtn?.addEventListener('click', () => this.toggleFullscreen());
     sendBtn?.addEventListener('click', () => this.sendInput());
     input?.addEventListener('keydown', (e) => {
       if (e.key === 'Enter') this.sendInput();
+    });
+
+    // Escape key exits fullscreen
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && this.isFullscreen) {
+        this.toggleFullscreen(false);
+      }
     });
 
     // Preset suggested chips
@@ -39,6 +56,31 @@ window.NBC_COPILOT = {
     });
 
     this.renderMessages();
+  },
+
+  toggleFullscreen(force) {
+    this.isFullscreen = force !== undefined ? force : !this.isFullscreen;
+    const popover = document.getElementById('copilot-popover');
+    const expandIcon = document.getElementById('copilot-expand-icon');
+    const expandBtn = document.getElementById('copilot-expand-btn');
+
+    if (popover) {
+      if (this.isFullscreen) {
+        popover.classList.add('fullscreen');
+        if (expandBtn) expandBtn.title = 'Exit Full Screen';
+        if (expandIcon) {
+          // Inward arrows icon
+          expandIcon.innerHTML = '<path d="M4 14h6v6M20 10h-6V4M14 10l7-7M3 21l7-7"/>';
+        }
+      } else {
+        popover.classList.remove('fullscreen');
+        if (expandBtn) expandBtn.title = 'Full Screen (Expand)';
+        if (expandIcon) {
+          // Outward double arrows icon
+          expandIcon.innerHTML = '<path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/>';
+        }
+      }
+    }
   },
 
   toggle() {
@@ -56,17 +98,27 @@ window.NBC_COPILOT = {
 
   close() {
     this.isOpen = false;
+    if (this.isFullscreen) {
+      this.toggleFullscreen(false);
+    }
     document.getElementById('copilot-popover')?.classList.add('hidden');
   },
 
   reset() {
-    this.messages = [
-      {
-        role: 'assistant',
-        text: 'Conversation reset. I am ready to evaluate commercial performance, liquidity gaps, or product compliance. How can I help?'
-      }
-    ];
+    this.messages = [];
+    try {
+      localStorage.removeItem('nbc_jd_copilot_messages');
+    } catch (e) {}
     this.renderMessages();
+  },
+
+  saveChatToStorage() {
+    try {
+      const toSave = (this.messages || []).filter(m => !m.tempId);
+      localStorage.setItem('nbc_jd_copilot_messages', JSON.stringify(toSave));
+    } catch (e) {
+      console.warn('[JD Copilot] Error saving chat to localStorage:', e);
+    }
   },
 
   sendInput() {
@@ -80,6 +132,7 @@ window.NBC_COPILOT = {
 
   async ask(query) {
     this.messages.push({ role: 'user', text: query });
+    this.saveChatToStorage();
 
     // Show temporary thinking state
     const tempId = 'thinking-' + Date.now();
@@ -93,11 +146,11 @@ window.NBC_COPILOT = {
     let answer = null;
     try {
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 6000);
+      const timeoutId = setTimeout(() => controller.abort(), 8000);
       const res = await fetch('/api/copilot', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ query }),
+        body: JSON.stringify({ query, session_id: 'v4_executive' }),
         signal: controller.signal
       });
       clearTimeout(timeoutId);
@@ -118,6 +171,7 @@ window.NBC_COPILOT = {
     // Remove thinking message and append response
     this.messages = this.messages.filter(m => m.tempId !== tempId);
     this.messages.push({ role: 'assistant', text: answer });
+    this.saveChatToStorage();
     this.renderMessages();
   },
 
@@ -256,14 +310,28 @@ Your query regarding **"${query}"** has been verified against the official H1 20
   },
 
   renderMessages() {
-    const body = document.getElementById('copilot-messages');
+    const starterView = document.getElementById('copilot-starter-view');
+    const messagesContainer = document.getElementById('copilot-messages');
+    const body = document.getElementById('copilot-body');
     if (!body) return;
 
-    body.innerHTML = this.messages.map(m => `
-      <div class="chat-bubble ${m.role}">
-        ${this.formatMarkdown(m.text)}
-      </div>
-    `).join('');
+    if (!this.messages || this.messages.length === 0) {
+      if (starterView) starterView.style.display = 'flex';
+      if (messagesContainer) {
+        messagesContainer.innerHTML = '';
+        messagesContainer.style.display = 'none';
+      }
+    } else {
+      if (starterView) starterView.style.display = 'none';
+      if (messagesContainer) {
+        messagesContainer.style.display = 'flex';
+        messagesContainer.innerHTML = this.messages.map(m => `
+          <div class="chat-bubble ${m.role}">
+            ${this.formatMarkdown(m.text)}
+          </div>
+        `).join('');
+      }
+    }
 
     // Auto-scroll to bottom
     body.scrollTop = body.scrollHeight;
