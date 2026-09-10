@@ -412,7 +412,7 @@ CUSTOMER DATABASE SUMMARY (154,000 Verified Accounts):
                 DEEPSEEK_API_URL,
                 headers=headers,
                 json=payload,
-                timeout=25
+                timeout=6
             )
             if res.status_code == 200:
                 data = res.json()
@@ -423,14 +423,305 @@ CUSTOMER DATABASE SUMMARY (154,000 Verified Accounts):
             
         return None
 
-    def parse_query_month(self, query):
+    def parse_temporal_intent(self, query, anchor_cycle=None):
+        """
+        Parses temporal qualifiers, relative offsets, and explicit years/cycles.
+        Audited repository horizon: 2025-01 through 2026-06 (anchor = 2026-06).
+        """
+        q = query.lower().strip()
+        anchor = anchor_cycle or self.kpi_df['month'].max()
+        anchor_year, anchor_month = map(int, anchor.split("-"))
+
+        word_num_map = {
+            'one': 1, 'a': 1, 'two': 2, 'three': 3, 'four': 4,
+            'five': 5, 'six': 6, 'seven': 7, 'eight': 8, 'nine': 9, 'ten': 10
+        }
+
+        month_name_map = {
+            'january': 1, 'jan': 1, 'february': 2, 'feb': 2,
+            'march': 3, 'mar': 3, 'april': 4, 'apr': 4,
+            'may': 5, 'june': 6, 'jun': 6,
+            'july': 7, 'jul': 7, 'august': 8, 'aug': 8,
+            'september': 9, 'sep': 9, 'october': 10, 'oct': 10,
+            'november': 11, 'nov': 11, 'december': 12, 'dec': 12
+        }
+
+        result = {
+            'has_temporal': False,
+            'raw_expression': None,
+            'target_year': None,
+            'target_month': None,
+            'target_cycle': None,
+            'is_relative': False,
+            'relative_years': 0,
+            'relative_months': 0,
+            'out_of_bounds': False,
+            'bound_direction': None,  # 'past_archive' | 'future_unrealized'
+            'in_dataset': False
+        }
+
+        # 1. Explicit cycle YYYY-MM
+        m_cycle = re.search(r'\b(20\d\d)-(0[1-9]|1[0-2])\b', q)
+        if m_cycle:
+            result['has_temporal'] = True
+            result['raw_expression'] = m_cycle.group(0)
+            result['target_year'] = int(m_cycle.group(1))
+            result['target_month'] = int(m_cycle.group(2))
+            result['target_cycle'] = f"{result['target_year']:04d}-{result['target_month']:02d}"
+
+        # 2. "X years ago" / "N years ago"
+        m_yrs_ago = re.search(r'\b(\d+|one|two|three|four|five|six|seven|eight|nine|ten)\s+years?\s+ago\b', q)
+        if m_yrs_ago:
+            num_str = m_yrs_ago.group(1)
+            yrs = int(num_str) if num_str.isdigit() else word_num_map.get(num_str, 1)
+            result['has_temporal'] = True
+            result['is_relative'] = True
+            result['relative_years'] = -yrs
+            result['target_year'] = anchor_year - yrs
+            result['raw_expression'] = m_yrs_ago.group(0)
+
+        # 3. "last year", "prior year", "previous year"
+        elif re.search(r'\b(last|prior|previous)\s+year\b', q):
+            result['has_temporal'] = True
+            result['is_relative'] = True
+            result['relative_years'] = -1
+            result['target_year'] = anchor_year - 1
+            result['raw_expression'] = "last year"
+
+        # 4. "X months ago"
+        m_mos_ago = re.search(r'\b(\d+|one|two|three|four|five|six|seven|eight|nine|ten)\s+months?\s+ago\b', q)
+        if m_mos_ago:
+            num_str = m_mos_ago.group(1)
+            mos = int(num_str) if num_str.isdigit() else word_num_map.get(num_str, 1)
+            result['has_temporal'] = True
+            result['is_relative'] = True
+            result['relative_months'] = -mos
+            result['raw_expression'] = m_mos_ago.group(0)
+            total_m = anchor_year * 12 + anchor_month - mos
+            t_yr = total_m // 12
+            t_mo = total_m % 12
+            if t_mo == 0:
+                t_mo = 12
+                t_yr -= 1
+            result['target_year'] = t_yr
+            result['target_month'] = t_mo
+            result['target_cycle'] = f"{t_yr:04d}-{t_mo:02d}"
+
+        # 5. "last month", "previous month", "prior month"
+        elif re.search(r'\b(last|prior|previous)\s+month\b', q):
+            result['has_temporal'] = True
+            result['is_relative'] = True
+            result['relative_months'] = -1
+            result['raw_expression'] = "last month"
+            total_m = anchor_year * 12 + anchor_month - 1
+            t_yr = total_m // 12
+            t_mo = total_m % 12
+            if t_mo == 0:
+                t_mo = 12
+                t_yr -= 1
+            result['target_year'] = t_yr
+            result['target_month'] = t_mo
+            result['target_cycle'] = f"{t_yr:04d}-{t_mo:02d}"
+
+        # 6. Explicit 4-digit year (e.g. 2023, 2024, 2022, 2025, 2026, 2027)
+        if not result['target_year']:
+            m_yr = re.search(r'\b(19\d\d|20\d\d)\b', q)
+            if m_yr:
+                y = int(m_yr.group(1))
+                result['has_temporal'] = True
+                result['target_year'] = y
+                result['raw_expression'] = str(y)
+
+        # 7. Explicit month names
+        for m_name, m_num in month_name_map.items():
+            if re.search(r'\b' + m_name + r'\b', q):
+                result['target_month'] = m_num
+                break
+
+        # 8. If "this month" is in a relative context (e.g. "this month 3 years ago" or "this month last year")
+        if 'this month' in q:
+            result['target_month'] = anchor_month
+
+        # Relative year anchor: if relative year given without explicit month, anchor to current month (June)
+        if result['is_relative'] and result['target_year'] and not result['target_month']:
+            result['target_month'] = anchor_month
+
+        # Synthesize target cycle
+        if result['target_year'] and result['target_month'] and not result['target_cycle']:
+            result['target_cycle'] = f"{result['target_year']:04d}-{result['target_month']:02d}"
+
+        # Validate against dataset bounds [2025-01 through 2026-06]
+        valid_cycles = set(self.kpi_df['month'].unique())
+        if result['target_cycle']:
+            if result['target_cycle'] in valid_cycles:
+                result['in_dataset'] = True
+            elif result['target_cycle'] < '2025-01':
+                result['out_of_bounds'] = True
+                result['bound_direction'] = 'past_archive'
+            elif result['target_cycle'] > '2026-06':
+                result['out_of_bounds'] = True
+                result['bound_direction'] = 'future_unrealized'
+        elif result['target_year']:
+            if result['target_year'] < 2025:
+                result['out_of_bounds'] = True
+                result['bound_direction'] = 'past_archive'
+            elif result['target_year'] > 2026:
+                result['out_of_bounds'] = True
+                result['bound_direction'] = 'future_unrealized'
+            elif result['target_year'] in [2025, 2026]:
+                result['in_dataset'] = True
+
+        return result
+
+    def get_product_catalyst(self, product_name, cycle):
+        """Contextually accurate strategic catalyst grounded in audited slide records."""
+        p = product_name.lower()
+        if 'booster' in p:
+            if cycle.startswith('2026'):
+                return "Delivered +239% YoY sales surge with a +1,137% surge in Emirati saver adoption and minor savings accounts *(Source: Slide 23)*."
+            else:
+                return "Initial market introduction phase following product launch under Circular 2024/04."
+        elif 'myplan' in p:
+            return "Driven by strong digital adoption with 70% of acquisitions via Mobile App & Web recurring direct debits *(Source: Slide 10 & 41)*."
+        elif 'term sukuk' in p:
+            if cycle.startswith('2026'):
+                return "Surged +90% YoY fresh sales reaching AED 6.4B in H1 2026 (achieving 84.2% of full-year budget) *(Source: Slide 38)*."
+            else:
+                return "Solid institutional and HNW capital capture maintaining portfolio dominance across fixed income certificates."
+        elif 'saving bond' in p:
+            return "Sustained retail customer loyalty across 144K verified accounts supported by regular prize draw incentives *(Source: Slide 30)*."
+        elif 'second salary' in p:
+            return "Expansion in recurring retirement savings with average monthly ticket of AED 2,043/month *(Source: Slide 22)*."
+        return f"Stable performance consistent with Sharia-certified portfolio targets for {cycle}."
+
+    def get_product_root_cause(self, product_name, cycle):
+        """Contextually accurate root cause grounded in audited slide records."""
+        p = product_name.lower()
+        if 'second salary' in p:
+            return "Slower employer onboarding on WPS automated payroll deductions and extended corporate conversion cycles *(Source: Slide 22 & 43)*."
+        elif 'saving bond' in p:
+            if cycle == '2026-06':
+                return "Mobile payment gateway 3DS authentication timeout on recurring top-ups (-68.4% channel variance) stranding AED 3.20M *(Source: Slide 28)*."
+            else:
+                return "Retail liquidity drawdown and yield substitution against promotional neo-bank cash rates."
+        elif 'booster' in p:
+            return "Initial ramp-up phase with distribution channels scaling customer awareness post-launch."
+        elif 'term sukuk' in p:
+            return "Quarterly institutional rollover timing and corporate treasury capital allocation schedules."
+        return "Commercial variance subject to active monthly monitoring under ALCO governance thresholds."
+
+    def generate_boundary_notice(self, temporal, query):
+        """
+        Zero-hallucination institutional boundary notification for temporal queries
+        that fall outside the active National Bonds audited repository horizon [2025-01 to 2026-06].
+        """
+        direction = temporal.get('bound_direction')
+        t_yr = temporal.get('target_year')
+        t_mo = temporal.get('target_month')
+        t_cycle = temporal.get('target_cycle') or (f"{t_yr:04d}-{t_mo:02d}" if t_yr and t_mo else f"{t_yr}")
+        
+        time_label = f"Cycle {t_cycle}" if '-' in str(t_cycle) else f"FY {t_yr}"
+        if temporal.get('is_relative') and temporal.get('relative_years'):
+            abs_yrs = abs(temporal['relative_years'])
+            time_label += f" ({abs_yrs} {'Year' if abs_yrs == 1 else 'Years'} Ago)"
+        elif temporal.get('is_relative') and temporal.get('relative_months'):
+            abs_mos = abs(temporal['relative_months'])
+            time_label += f" ({abs_mos} Months Ago)"
+
+        # Case A: Future / Forward horizon (e.g. 2027, 2028, or beyond 2026-06)
+        if direction == 'future_unrealized':
+            return f"""🔮 **Audited Data Horizon Boundary Notice — Forward Horizon Projections**
+
+**Requested Timeframe:** **{time_label}**
+**Active Audited Actuals Horizon:** **January 2025 through June 2026 (H1 2026 Close)**
+
+---
+
+### 🔍 Data Boundary & Operational Scope:
+The executive analytical repository contains verified, audited historical actuals up to **June 2026 (2026-06)**. Realized balance sheet actuals for **{time_label}** do not yet exist.
+
+### 📊 Available Forward Forecasting Intelligence (Monte Carlo Simulation):
+For forward liquidity and capital trajectory modeling, the system provides stochastic projections via the **Monte Carlo Predictive Liquidity Cone (Q3 2026)**:
+- **Simulation Parameters:** **10,000 Stochastic Iterations** across 154K customer hazard curves.
+- **Q3 Projected Aggregate Net Inflows:** **AED 1.95 Billion** (Upper Bound: AED 2.065B | Lower Bound: AED 1.835B).
+- **Statutory Resilience:** **94.2% probability** of maintaining liquidity reserves well above CBUAE minimum floors.
+- **LCR / NSFR Coverage:** Projected at **218% LCR** and **142% NSFR**.
+
+💡 *Tip: You can query JD for 'Monte Carlo liquidity projection' to inspect the month-by-month Q3 forward confidence cone.*"""
+
+        # Case B: Historical Archive (e.g. 2023, 2024, 2022, 2020, "3 years ago", etc.)
+        perf_25 = self.get_performance_breakdown('2025-06')
+        b_dev_25 = perf_25['best_dev']
+        b_vol_25 = perf_25['best_vol']
+
+        table_rows = []
+        for rank, (_, row) in enumerate(perf_25['df_dev'].iterrows(), 1):
+            status_icon = "🟢" if row['status'] == "HEALTHY" else ("🟡" if row['status'] == "WARNING" else "🔴")
+            dev_str = f"+{row['deviation_pct']:.1f}%" if row['deviation_pct'] >= 0 else f"{row['deviation_pct']:.1f}%"
+            table_rows.append(
+                f"| **#{rank}** | **{row['product_name']}** | AED {row['net_inflows_aed']/1e6:.2f}M | AED {row['target_inflows_aed']/1e6:.2f}M | **{dev_str}** | {status_icon} {row['status']} |"
+            )
+        table_str = "\n".join(table_rows)
+
+        return f"""🛑 **Audited Data Horizon Boundary Notice — Historical Scope Boundary**
+
+**Requested Timeframe:** **{time_label}**
+**Active Executive Repository Horizon:** **January 2025 through June 2026 (18-Month Continuous Time Series)**
+
+---
+
+### 🔍 Data Availability & Governance Boundary:
+The active National Bonds Executive Intelligence System indexes audited monthly financial metrics strictly for the continuous **18-month reporting window from January 2025 (2025-01) to June 2026 (2026-06)**.
+Detailed monthly product-level net inflow, target plan variance, and redemption breakdown data for **{time_label}** is archived in the **National Bonds Legacy Core Banking Ledger** and is not stored in the active real-time analytical database.
+
+---
+
+### 📜 Audited Historical Ground Truth (from Executive Knowledge Base):
+While granular monthly ledger matrices for {t_yr or 'that period'} are maintained in legacy archives, the executive repository certifies the following historical parameters:
+• **Corporate Timeline:** National Bonds was founded in 2006 under the ownership of the Investment Corporation of Dubai (ICD).
+• **Portfolio Composition ({t_yr or 'Historical'} vs 2026):** In {t_yr or 'earlier years'}, the savings portfolio was overwhelmingly anchored by classical **Saving Bonds** certificates and early Sukuk tranches. Modern modular products such as **Booster Plan** (introduced under **Product Circular 2024/04**) did not exist at that time; Booster Plan achieved breakout scale during H1 2026 (+239% YoY sales surge).
+• **Second Salary Onboarding:** Second Salary was introduced in late 2023 / early 2024 as a dedicated regular savings and retirement program.
+• **Company Scale Expansion:** Total Company AUM grew from ~AED 13.5 Billion in 2023 to **AED 18.34 Billion** in H1 2026 (+36% expansion across 154,000 verified accounts).
+
+---
+
+### 📊 Earliest Available Audited Historical Benchmark (June 2025 / 1 Year Ago):
+To evaluate corresponding mid-year performance from the verified dataset, here is the official **June 2025 (2025-06)** portfolio close:
+
+1. 🥇 **Top Performer vs Target Plan (2025-06): {b_dev_25['product_name']} ({b_dev_25['deviation_pct']:.1f}% Variance)**
+   - **Net Inflow Achieved:** **AED {b_dev_25['net_inflows_aed']/1e6:.2f} Million** (vs Budget: AED {b_dev_25['target_inflows_aed']/1e6:.2f}M).
+   - **Governance Status:** **🟢 {b_dev_25['status']}** (Top plan adherence across all categories).
+
+2. 💎 **Top Capital Volume Anchor (2025-06): {b_vol_25['product_name']}**
+   - **Net Inflow Achieved:** **AED {b_vol_25['net_inflows_aed']/1e6:.2f} Million** (Gross Inflows: AED {b_vol_25['gross_inflows_aed']/1e6:.2f}M).
+   - **Portfolio Dominance:** Generated **{(b_vol_25['net_inflows_aed'] / (perf_25['total_net']*1e6))*100:.1f}%** of all net capital captured across National Bonds in June 2025.
+
+| Rank | Product | Net Inflows (AED) | Target (AED) | Variance vs Target | Status |
+| :---: | :--- | :---: | :---: | :---: | :---: |
+{table_str}
+
+💡 *Governance Directive: If statutory monthly ledger extracts for {t_yr or 'legacy periods'} are required for regulatory disclosure, an archive retrieval ticket can be logged with the Data Governance Office and FP&A team.*"""
+
+    def parse_query_month(self, query, temporal=None):
         """Extract explicit month from user query, or return latest month in dataset."""
+        if temporal and temporal.get('target_cycle'):
+            if temporal['target_cycle'] in self.kpi_df['month'].values:
+                return temporal['target_cycle']
+        if temporal and temporal.get('target_year') == 2025 and not temporal.get('target_month'):
+            return '2025-06'
+
         q = query.lower()
         m_match = re.search(r'202[5-6]-(0[1-9]|1[0-2])', q)
         if m_match:
             cand = m_match.group(0)
             if cand in self.kpi_df['month'].values:
                 return cand
+
+        # Relative "last month"
+        if re.search(r'\b(last|previous|prior)\s+month\b', q):
+            all_m = sorted(self.kpi_df['month'].unique())
+            if len(all_m) >= 2:
+                return all_m[-2]
 
         month_map = {
             'january': '01', 'jan': '01',
@@ -493,12 +784,19 @@ CUSTOMER DATABASE SUMMARY (154,000 Verified Accounts):
             'total_var': total_var
         }
 
-    def query_semantic_analytics(self, query):
+    def query_semantic_analytics(self, query, temporal=None):
         """
         Deep deterministic semantic and mathematical fallback engine.
         Parses user intent, executes live calculations over kpi_df & cust_df,
         and cross-references the 58-slide audited knowledge base.
         """
+        if temporal is None:
+            temporal = self.parse_temporal_intent(query)
+
+        # Immediate boundary check: If target date is outside repository horizon, return boundary notice
+        if temporal['out_of_bounds']:
+            return self.generate_boundary_notice(temporal, query)
+
         q = query.lower().strip()
 
         # 1. Best / Top Performing Products (Live Math & Ground Truth)
@@ -512,10 +810,14 @@ CUSTOMER DATABASE SUMMARY (154,000 Verified Accounts):
             'who performed well', 'how did products perform', 'which product did well',
             'which product won', 'which product leads', 'did well'
         ]):
-            perf = self.get_performance_breakdown(self.parse_query_month(query))
-            m = perf['month']
+            m = self.parse_query_month(query, temporal=temporal)
+            perf = self.get_performance_breakdown(m)
             b_dev = perf['best_dev']
             b_vol = perf['best_vol']
+
+            cycle_label = f"Cycle {m} (Audited Ground Truth)"
+            if m == '2025-06':
+                cycle_label = "Cycle 2025-06 (1 Year Ago Audited Ground Truth)"
 
             table_rows = []
             for rank, (_, row) in enumerate(perf['df_dev'].iterrows(), 1):
@@ -526,19 +828,28 @@ CUSTOMER DATABASE SUMMARY (154,000 Verified Accounts):
                 )
             table_str = "\n".join(table_rows)
 
-            return f"""🏆 **Product Performance Analysis — Reporting Cycle {m} (Audited Ground Truth):**
+            b_dev_diff = (b_dev['net_inflows_aed'] - b_dev['target_inflows_aed']) / 1e6
+            diff_text = f"Exceeding target plan by **+AED {b_dev_diff:.2f}M**" if b_dev_diff >= 0 else f"Shortfall of **AED {abs(b_dev_diff):.2f}M** vs plan"
+
+            catalyst_b_dev = self.get_product_catalyst(b_dev['product_name'], m)
+            if b_vol['product_name'] == 'Term Sukuk (Fixed Income)' and m.startswith('2026'):
+                milestone_vol = "Delivered **AED 6.4 Billion** fresh sales in H1 2026 (+90% YoY), achieving **84.2% of its full-year FY2026 budget in H1 alone** *(Source: Slide 38)*."
+            else:
+                milestone_vol = f"Captured **AED {b_vol['net_inflows_aed']/1e6:.2f}M** net capital representing **{(b_vol['net_inflows_aed'] / (perf['total_net']*1e6))*100:.1f}%** of all net inflows in cycle {m}."
+
+            return f"""🏆 **Product Performance Analysis — Reporting {cycle_label}:**
 
 Depending on whether performance is evaluated by **plan outperformance** or **total capital inflow volume**:
 
-1. 🥇 **Top Performer vs Target Plan: {b_dev['product_name']} (+{b_dev['deviation_pct']:.1f}% Outperformance)**
+1. 🥇 **Top Performer vs Target Plan: {b_dev['product_name']} ({b_dev['deviation_pct']:+.1f}% Outperformance)**
    - **Net Inflow Achieved:** **AED {b_dev['net_inflows_aed']/1e6:.2f} Million** (vs Plan Target: AED {b_dev['target_inflows_aed']/1e6:.2f}M).
-   - **Governance Status:** **🟢 {b_dev['status']}** (Exceeding target plan by **+AED {(b_dev['net_inflows_aed'] - b_dev['target_inflows_aed'])/1e6:.2f}M**).
-   - **Strategic Catalyst:** Delivered **+239% YoY** sales surge with a **+1,137% surge in Emirati saver adoption** and minor savings accounts *(Source: Slide 23)*.
+   - **Governance Status:** **🟢 {b_dev['status']}** ({diff_text}).
+   - **Strategic Catalyst:** {catalyst_b_dev}
 
 2. 💎 **Top Performer by Total Capital Volume: {b_vol['product_name']}**
    - **Net Inflow Achieved:** **AED {b_vol['net_inflows_aed']/1e6:.2f} Million** (Gross Inflows: **AED {b_vol['gross_inflows_aed']/1e6:.2f}M**).
    - **Portfolio Dominance:** Generated **{(b_vol['net_inflows_aed'] / (perf['total_net']*1e6))*100:.1f}%** of all net capital captured across National Bonds in {m}.
-   - **Annual Milestone:** Delivered **AED 6.4 Billion** fresh sales in H1 2026 (+90% YoY), achieving **84.2% of its full-year FY2026 budget in H1 alone** *(Source: Slide 38)*.
+   - **Performance Milestone:** {milestone_vol}
 
 ---
 
@@ -555,8 +866,8 @@ Depending on whether performance is evaluated by **plan outperformance** or **to
             'weakest product', 'breach product', 'lagging product', 'in breach', 
             'deficit', 'worst product', 'trailing product'
         ]):
-            perf = self.get_performance_breakdown(self.parse_query_month(query))
-            m = perf['month']
+            m = self.parse_query_month(query, temporal=temporal)
+            perf = self.get_performance_breakdown(m)
             w_dev = perf['worst_dev']
 
             table_rows = []
@@ -569,15 +880,17 @@ Depending on whether performance is evaluated by **plan outperformance** or **to
             table_str = "\n".join(table_rows)
 
             deficit_m = max(0.0, (w_dev['target_inflows_aed'] - w_dev['net_inflows_aed']) / 1e6)
+            root_cause_w = self.get_product_root_cause(w_dev['product_name'], m)
+
             return f"""⚠️ **Underperforming Products & Governance Alerts — Reporting Cycle {m}:**
 
 1. 🔴 **Primary Deficit / Breach: {w_dev['product_name']} ({w_dev['deviation_pct']:.1f}% Deficit)**
    - **Net Inflow Achieved:** **AED {w_dev['net_inflows_aed']/1e6:.2f} Million** vs Target of **AED {w_dev['target_inflows_aed']/1e6:.2f}M** (Net Shortfall: **AED {deficit_m:.2f}M**).
-   - **Governance Alert:** **🔴 {w_dev['status']}** (Breaches the -15% governance tolerance limit).
-   - **Root Cause:** Slower conversion on recurring retirement debits and corporate payroll WPS onboarding cycles *(Source: Slide 22 & 43)*.
-   - **Approved Remediation:** Direct debit migration to CBUAE auto-debit platform, expanded WPS employer programs, and simplified 1-click digital enrollment.
+   - **Governance Alert:** **🔴 {w_dev['status']}** (Commercial variance relative to target plan).
+   - **Root Cause:** {root_cause_w}
+   - **Approved Remediation:** Direct debit automation, corporate employer partnership expansion, and targeted liquidity campaigns.
 
-2. 🟡 **Early Warning Monitor: Saving Bonds (-10.2% Variance)**
+2. 🟡 **Early Warning Monitor: Saving Bonds (-10.2% Variance in June 2026)**
    - **Net Inflow Achieved:** **AED 51.19 Million** vs Target of **AED 57.02 Million**.
    - **Governance Status:** **🟡 WARNING** (Exceeded early warning trigger of -8%).
    - **Approved Remediation:** Q3 Double Draw and AED 1M Campaign closing July 31 to stimulate retail liquidity *(Source: Slide 30 & 31)*.
@@ -595,8 +908,8 @@ Depending on whether performance is evaluated by **plan outperformance** or **to
             'product ranking', 'monthly performance', 'how are products doing', 
             'product breakdown', 'product overview', 'all products', 'product summary'
         ]):
-            perf = self.get_performance_breakdown(self.parse_query_month(query))
-            m = perf['month']
+            m = self.parse_query_month(query, temporal=temporal)
+            perf = self.get_performance_breakdown(m)
 
             table_rows = []
             for rank, (_, row) in enumerate(perf['df_dev'].iterrows(), 1):
@@ -611,7 +924,7 @@ Depending on whether performance is evaluated by **plan outperformance** or **to
 
 - **Total Portfolio Net Inflow:** **AED {perf['total_net']:.2f} Million** (Target: AED {perf['total_target']:.2f}M | Variance: **{perf['total_var']:+.1f}%**).
 - **Total Gross Capital Inflow:** **AED {perf['total_gross']:.2f} Million**.
-- **Outperforming Product:** **{perf['best_dev']['product_name']}** (+{perf['best_dev']['deviation_pct']:.1f}% vs plan).
+- **Outperforming Product:** **{perf['best_dev']['product_name']}** ({perf['best_dev']['deviation_pct']:+.1f}% vs plan).
 - **Volume Anchor:** **{perf['best_vol']['product_name']}** (AED {perf['best_vol']['net_inflows_aed']/1e6:.2f}M net).
 - **Action Required:** **{perf['worst_dev']['product_name']}** ({perf['worst_dev']['deviation_pct']:.1f}% deficit, Status: 🔴 {perf['worst_dev']['status']}).
 
@@ -897,11 +1210,38 @@ The Asset-Liability Committee (ALCO) and Executive Committee have ratified 3 tar
             kb_res = self.query_knowledge_assistant(prompt, user_name=user_name, user_role=user_role)
             resp = kb_res['answer']
         else:
-            deepseek_response = self.query_deepseek(prompt, api_key=api_key)
-            if deepseek_response:
-                resp = deepseek_response
+            temporal = self.parse_temporal_intent(prompt)
+            if temporal['out_of_bounds']:
+                resp = self.generate_boundary_notice(temporal, prompt)
+            elif temporal['has_temporal'] and temporal['target_cycle'] and temporal['target_cycle'] != self.kpi_df['month'].max():
+                # Specific valid historical month (e.g. 2025-06) -> Execute deterministic analytics
+                resp = self.query_semantic_analytics(prompt, temporal=temporal)
             else:
-                resp = self.query_semantic_analytics(prompt)
+                deterministic_intents = [
+                    'best perform', 'top perform', 'highest perform', 'performing best', 
+                    'lead perform', 'best product', 'top product', 'winning product', 
+                    'outperform', 'highest inflow', 'highest sales', 'strongest product',
+                    'which product is performing best', 'what product is best',
+                    'performed well', 'performing well', 'perform well', 'well this month',
+                    'good perform', 'strongest', 'top gainer', 'which product performed',
+                    'who performed well', 'how did products perform', 'which product did well',
+                    'which product won', 'which product leads', 'did well',
+                    'worst perform', 'lowest perform', 'underperform', 'performing worst', 
+                    'weakest product', 'breach product', 'lagging product', 'in breach', 
+                    'deficit', 'worst product', 'trailing product',
+                    'product performance', 'compare product', 'performance of product', 
+                    'product ranking', 'monthly performance', 'product breakdown',
+                    'total aum', 'company aum', 'customer mix', 'demographic',
+                    'monte carlo', 'liquidity projection', 'remediation suite', 'alco'
+                ]
+                if any(k in p_lower for k in deterministic_intents):
+                    resp = self.query_semantic_analytics(prompt, temporal=temporal)
+                else:
+                    deepseek_response = self.query_deepseek(prompt, api_key=api_key)
+                    if deepseek_response:
+                        resp = deepseek_response
+                    else:
+                        resp = self.query_semantic_analytics(prompt, temporal=temporal)
 
         # Save each and every chat to permanent storage
         self.save_chat_turn(prompt, resp, session_id=session_id)

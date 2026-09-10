@@ -7,7 +7,7 @@ import os
 import sys
 import json
 import argparse
-from http.server import SimpleHTTPRequestHandler, HTTPServer
+from http.server import SimpleHTTPRequestHandler, HTTPServer, ThreadingHTTPServer
 import urllib.parse
 
 # Ensure root directory is in sys.path for backend imports
@@ -396,7 +396,7 @@ class V4RequestHandler(SimpleHTTPRequestHandler):
 
 def run_server(port=8080):
     server_address = ('', port)
-    httpd = HTTPServer(server_address, V4RequestHandler)
+    httpd = ThreadingHTTPServer(server_address, V4RequestHandler)
     print(f"\n========================================================")
     print(f" National Bonds Corporation — V4 Modern Web Application")
     print(f" Zero-Streamlit Architecture & Audited Ground Truth")

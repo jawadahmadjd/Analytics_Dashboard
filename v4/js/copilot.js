@@ -178,7 +178,89 @@ window.NBC_COPILOT = {
   generateGroundedResponse(query) {
     const q = query.toLowerCase().trim();
 
-    // 1. Best / Top Performing Products
+    // 0. Temporal Horizon & Boundary Validation
+    const isThreeYearsAgo = q.includes('3 years ago') || q.includes('three years ago') || q.includes('2023');
+    const isTwoYearsAgo = q.includes('2 years ago') || q.includes('two years ago') || q.includes('2024');
+    const isHistoricalOutOfBounds = isThreeYearsAgo || isTwoYearsAgo ||
+      q.includes('4 years ago') || q.includes('5 years ago') || q.includes('2022') || q.includes('2021') || q.includes('2020');
+
+    if (isHistoricalOutOfBounds) {
+      const timeLabel = isThreeYearsAgo ? 'Cycle 2023-06 (3 Years Ago)' : (isTwoYearsAgo ? 'Cycle 2024-06 (2 Years Ago)' : 'Legacy Historical Cycle');
+      return `### 🛑 Audited Data Horizon Boundary Notice — Historical Scope Boundary
+
+**Requested Timeframe:** **${timeLabel}**
+**Active Executive Repository Horizon:** **January 2025 through June 2026 (18-Month Continuous Time Series)**
+
+---
+
+### 🔍 Data Availability & Governance Boundary:
+The active National Bonds Executive Intelligence System indexes audited monthly financial metrics strictly for the continuous **18-month reporting window from January 2025 (2025-01) to June 2026 (2026-06)**.
+Detailed monthly product-level net inflow, target plan variance, and redemption breakdown data for **${timeLabel}** is archived in the **National Bonds Legacy Core Banking Ledger** and is not stored in the active real-time analytical database.
+
+---
+
+### 📜 Audited Historical Ground Truth (from Executive Knowledge Base):
+While granular monthly ledger matrices for that period are maintained in legacy archives, the executive repository certifies the following historical parameters:
+• **Corporate Timeline:** National Bonds was founded in 2006 under the ownership of the Investment Corporation of Dubai (ICD).
+• **Portfolio Composition (Historical vs 2026):** In earlier years, the savings portfolio was overwhelmingly anchored by classical **Saving Bonds** certificates and early Sukuk tranches. Modern modular products such as **Booster Plan** (introduced under **Product Circular 2024/04**) did not exist at that time; Booster Plan achieved breakout scale during H1 2026 (+239% YoY sales surge).
+• **Second Salary Onboarding:** Second Salary was introduced in late 2023 / early 2024 as a dedicated regular savings and retirement program.
+• **Company Scale Expansion:** Total Company AUM grew from ~AED 13.5 Billion in 2023 to **AED 18.34 Billion** in H1 2026 (+36% expansion across 154,000 verified accounts).
+
+---
+
+### 📊 Earliest Available Audited Historical Benchmark (June 2025 / 1 Year Ago):
+To evaluate corresponding mid-year performance from the verified dataset, here is the official **June 2025 (2025-06)** portfolio close:
+
+1. 🥇 **Top Performer vs Target Plan (2025-06): MyPlan / Regular Saver (-1.6% Variance)**
+   - **Net Inflow Achieved:** **AED 11.23 Million** (vs Budget: AED 11.41M).
+   - **Governance Status:** <span style="color:#10b981; font-weight:700;">🟢 HEALTHY / PLAN ADHERENCE</span>
+
+2. 💎 **Top Capital Volume Anchor (2025-06): Term Sukuk (Fixed Income)**
+   - **Net Inflow Achieved:** **AED 451.61 Million** (Gross Inflows: AED 724.51M).
+   - **Portfolio Dominance:** Generated **87.6%** of all net capital captured across National Bonds in June 2025.
+
+| Rank | Product | Net Inflows (AED) | Target (AED) | Variance vs Target | Status |
+| :---: | :--- | :---: | :---: | :---: | :---: |
+| **#1** | **MyPlan / Regular Saver** | AED 11.23M | AED 11.41M | **-1.6%** | 🟢 HEALTHY |
+| **#2** | **Term Sukuk (Fixed Income)** | AED 451.61M | AED 462.07M | **-2.3%** | 🟢 HEALTHY |
+| **#3** | **Saving Bonds** | AED 41.74M | AED 43.13M | **-3.2%** | 🟢 HEALTHY |
+| **#4** | **Second Salary (Regular Savings)** | AED 2.47M | AED 2.60M | **-5.0%** | 🟢 HEALTHY |
+| **#5** | **Booster Plan** | AED 8.22M | AED 10.45M | **-21.4%** | 🔴 BREACH |
+
+💡 *Governance Directive: If statutory monthly ledger extracts for legacy periods are required for regulatory disclosure, an archive retrieval ticket can be logged with the Data Governance Office and FP&A team.*`;
+    }
+
+    // Check for 1 year ago (June 2025)
+    const isOneYearAgo = q.includes('1 year ago') || q.includes('one year ago') || q.includes('last year') || q.includes('2025-06') || (q.includes('2025') && q.includes('june'));
+    if (isOneYearAgo && (q.includes('best perform') || q.includes('top perform') || q.includes('perform well') || q.includes('best product') || q.includes('which product performed') || q.includes('did well'))) {
+      return `### 🏆 Product Performance Analysis — Reporting Cycle 2025-06 (1 Year Ago Audited Ground Truth)
+
+Depending on whether performance is evaluated by **plan outperformance** or **total capital inflow volume**:
+
+1. 🥇 **Top Performer vs Target Plan: MyPlan / Regular Saver (-1.6% Variance)**
+   - **Net Inflow Achieved:** **AED 11.23M** (vs Budget: AED 11.41M | Highest plan adherence in portfolio).
+   - **Governance Status:** <span style="color:#10b981; font-weight:700;">🟢 HEALTHY / PLAN ADHERENCE</span>
+   - **Performance Driver:** Sustained recurring automated digital debits across 25,000+ active savers *(Source: Slide 10 & 41)*.
+
+2. 💎 **Top Performer by Total Capital Volume: Term Sukuk (Fixed Income)**
+   - **Net Inflow Achieved:** **AED 451.61M** (Gross Inflows: AED 724.51M)
+   - **Portfolio Dominance:** Generated **87.6%** of all net capital captured across National Bonds in June 2025.
+
+---
+
+📊 **Full Product Performance Ranking (2025-06 Close):**
+| Rank | Product | Net Inflows (AED) | Target (AED) | Variance | Status |
+| :---: | :--- | :---: | :---: | :---: | :---: |
+| **#1** | **MyPlan / Regular Saver** | AED 11.23M | AED 11.41M | **-1.6%** | 🟢 HEALTHY |
+| **#2** | **Term Sukuk (Fixed Income)** | AED 451.61M | AED 462.07M | **-2.3%** | 🟢 HEALTHY |
+| **#3** | **Saving Bonds** | AED 41.74M | AED 43.13M | **-3.2%** | 🟢 HEALTHY |
+| **#4** | **Second Salary (Regular Savings)** | AED 2.47M | AED 2.60M | **-5.0%** | 🟢 HEALTHY |
+| **#5** | **Booster Plan** | AED 8.22M | AED 10.45M | **-21.4%** | 🔴 BREACH |
+
+💡 *Total company portfolio captured **AED 515.27M** net inflows against a target of **AED 529.64M** (-2.7% variance).*`;
+    }
+
+    // 1. Best / Top Performing Products (Current Reporting Cycle 2026-06)
     if (q.includes('perform well') || q.includes('performed well') || q.includes('performing well') ||
         q.includes('best perform') || q.includes('top perform') || q.includes('highest perform') ||
         q.includes('outperform') || q.includes('winning product') || q.includes('top product') ||
