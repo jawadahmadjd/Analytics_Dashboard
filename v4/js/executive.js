@@ -559,9 +559,9 @@ window.NBC_EXECUTIVE = {
   },
 
   // Helper for official certified PDF export with interactive toast
-  downloadOfficialReport(pdfUrl, downloadFilename, reportTitle) {
+  downloadOfficialReport(primaryUrl, downloadFilename, reportTitle, fallbackUrl) {
     const link = document.createElement('a');
-    link.href = pdfUrl;
+    link.href = primaryUrl || fallbackUrl;
     link.download = downloadFilename;
     document.body.appendChild(link);
     link.click();
@@ -838,7 +838,7 @@ window.NBC_EXECUTIVE = {
 
     // Bind Export Button
     document.getElementById('btn-export-biweekly')?.addEventListener('click', () => {
-      this.downloadOfficialReport(pdfUrl, downloadFilename, 'Bi-Weekly Intelligence Report');
+      this.downloadOfficialReport('/api/export-pdf?type=biweekly&cycle=2026-06', downloadFilename, 'Bi-Weekly Intelligence Report', pdfUrl);
     });
 
     // Bind Print Button
@@ -1150,7 +1150,7 @@ window.NBC_EXECUTIVE = {
 
     // Bind Export Button
     document.getElementById('btn-export-gcco')?.addEventListener('click', () => {
-      this.downloadOfficialReport(pdfUrl, downloadFilename, 'GCCO Escalation Dossier');
+      this.downloadOfficialReport('/api/export-pdf?type=gcco&product=Saving%20Bonds&cycle=2026-06', downloadFilename, 'GCCO Escalation Dossier', pdfUrl);
     });
 
     // Bind Print Button

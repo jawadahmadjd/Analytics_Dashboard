@@ -36,8 +36,37 @@ class V4RequestHandler(SimpleHTTPRequestHandler):
             self.handle_api_data()
         elif parsed.path == '/api/health':
             self.send_json_response({"status": "healthy", "version": "4.0.0", "engine": "zero-streamlit"})
+        elif parsed.path == '/api/export-pdf':
+            self.handle_api_export_pdf(parsed)
         else:
             super().do_GET()
+
+    def handle_api_export_pdf(self, parsed):
+        query_params = urllib.parse.parse_qs(parsed.query)
+        doc_type = query_params.get('type', ['gcco'])[0]
+        product = query_params.get('product', ['Saving Bonds'])[0]
+        cycle = query_params.get('cycle', ['2026-06'])[0]
+        
+        try:
+            from pdf_generator import ExecutivePDFGenerator
+            gen = ExecutivePDFGenerator()
+            if doc_type == 'biweekly':
+                pdf_bytes = gen.generate_biweekly_report_pdf(cycle)
+                filename = f"National_Bonds_BiWeekly_Intelligence_Report_{cycle}.pdf"
+            else:
+                pdf_bytes = gen.generate_gcco_escalation_memo_pdf(product, cycle)
+                clean_p = product.replace(' ', '_').replace('(', '').replace(')', '')
+                filename = f"National_Bonds_GCCO_Escalation_Dossier_{clean_p}_{cycle}.pdf"
+                
+            self.send_response(200)
+            self.send_header('Content-Type', 'application/pdf')
+            self.send_header('Content-Disposition', f'attachment; filename="{filename}"')
+            self.send_header('Content-Length', str(len(pdf_bytes)))
+            self.send_header('Access-Control-Allow-Origin', '*')
+            self.end_headers()
+            self.wfile.write(pdf_bytes)
+        except Exception as e:
+            self.send_error(500, f"Error generating PDF: {e}")
 
     def do_POST(self):
         parsed = urllib.parse.urlparse(self.path)
