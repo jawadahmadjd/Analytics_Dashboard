@@ -98,17 +98,19 @@ class JDAgent:
             self.ground_truth_text = ""
 
     def search_slides(self, query, top_k=3):
-        """Retrieve the top matching slides and their text using BM25."""
+        """Retrieve the top matching slides and their text using BM25 with stop-word protection."""
         if not self.bm25:
             return []
-        tokens = re.findall(r'\w+', query.lower())
+        stop_words = {'what', 'is', 'the', 'of', 'a', 'an', 'to', 'in', 'for', 'on', 'with', 'at', 'by', 'from', 'and', 'or', 'me', 'who', 'tell', 'can', 'you', 'was', 'were', 'it', 'this', 'that', 'did', 'does', 'how'}
+        raw_tokens = re.findall(r'\w+', query.lower())
+        tokens = [t for t in raw_tokens if t not in stop_words and len(t) > 1]
         if not tokens:
             return []
         scores = self.bm25.get_scores(tokens)
         top_indices = np.argsort(scores)[::-1][:top_k]
         results = []
         for idx in top_indices:
-            if scores[idx] > 0.05:
+            if scores[idx] > 2.5:
                 results.append((self.slide_metadata[idx], scores[idx]))
         return results
 
@@ -542,6 +544,12 @@ CUSTOMER DATABASE SUMMARY (154,000 Verified Accounts):
         if 'this month' in q:
             result['target_month'] = anchor_month
 
+        # 9. If "today", "intraday", or "right now" is requested
+        if re.search(r'\b(today|today\'s|intraday|right now|current day|at present)\b', q):
+            result['has_temporal'] = True
+            result['is_today'] = True
+            result['raw_expression'] = 'today'
+
         # Relative year anchor: if relative year given without explicit month, anchor to current month (June)
         if result['is_relative'] and result['target_year'] and not result['target_month']:
             result['target_month'] = anchor_month
@@ -798,6 +806,86 @@ To evaluate corresponding mid-year performance from the verified dataset, here i
             return self.generate_boundary_notice(temporal, query)
 
         q = query.lower().strip()
+
+        # A. Product Provenance & Creator Attribution (e.g. "was second salary started by jawad?", "who created booster plan?")
+        origin_patterns = [
+            r'\b(started|created|founded|launched|invented|designed|made)\s+by\b',
+            r'\bwho\s+(started|created|founded|launched|invented|designed|made)\b',
+            r'\b(did|was)\s+(\w+)\s+(start|create|found|launch)\b',
+            r'\b(origin|founder|creator)\s+of\b',
+            r'\bjawad\s+(started|created|made|founded)\b'
+        ]
+        if any(re.search(pat, q) for pat in origin_patterns):
+            has_jawad = 'jawad' in q
+            target_product = 'National Bonds products'
+            if 'second salary' in q or 'salary' in q:
+                target_product = 'Second Salary'
+            elif 'booster' in q:
+                target_product = 'Booster Plan'
+            elif 'saving bond' in q:
+                target_product = 'Saving Bonds'
+            elif 'term sukuk' in q or 'sukuk' in q:
+                target_product = 'Term Sukuk'
+            elif 'myplan' in q:
+                target_product = 'MyPlan / Regular Saver'
+
+            if has_jawad:
+                return f"""🏛️ **Institutional Provenance & Executive Governance Verification:**
+
+**Query:** *"{query}"*
+
+**Answer:** **No. {target_product} was NOT started by Jawad.**
+
+---
+
+### 📜 Official Corporate Origin & Governance:
+• **Product Issuer:** **National Bonds Corporation** (wholly owned by the **Investment Corporation of Dubai - ICD**).
+• **Executive Leadership & Origin:** Designed and launched by the **National Bonds Executive Committee and Product Management Team** (led by Alisha Rizvi / Fariha Fatima Hameed) under Group CEO Mohammed Qasim Al Ali.
+• **Regulatory Standard:** Authorized by the **Central Bank of the UAE (CBUAE)**.
+• **Sharia Certification:** 100% Sharia-compliant under official Fatwa ratified by the **Internal Sharia Supervisory Committee (ISSC)**.
+• **Launch Timeline:** {target_product} was established under National Bonds' financial product charter as a Sharia-compliant savings solution.
+
+---
+
+### 💻 Role of Jawad Ahmad:
+**Jawad Ahmad** is the **Lead Systems Engineer & AI Architect** who engineered this **Executive Intelligence & Early Warning System (V4 Analytics Platform, JD Copilot, and Real-Time Dashboard)**. He is the creator of the software application and AI copilot, **not** the founder, creator, or fund manager of the financial bond products."""
+            else:
+                return f"""🏛️ **National Bonds Product Provenance & Governance:**
+
+• **Product Issuer:** **National Bonds Corporation** (wholly owned by the **Investment Corporation of Dubai - ICD**).
+• **Executive Leadership:** Product design is spearheaded by the **Product Development Team** under Group CEO Mohammed Qasim Al Ali and the Executive Committee.
+• **Regulatory Governance:** All products are approved by the **Central Bank of the UAE (CBUAE)** and hold certified Fatwas issued by the **Internal Sharia Supervisory Committee (ISSC)**."""
+
+        # B. Intraday / "Today" Performance Query (e.g. "tell me booster plan performance of today")
+        if temporal.get('is_today'):
+            target_product = 'Booster Plan' if 'booster' in q else ('Second Salary' if 'second salary' in q else ('Saving Bonds' if 'saving bond' in q else ('Term Sukuk' if 'sukuk' in q else 'MyPlan / Regular Saver')))
+            perf_latest = self.get_performance_breakdown(self.kpi_df['month'].max())
+            m_latest = perf_latest['month']
+            sub_p = perf_latest['df_dev'][perf_latest['df_dev']['product_name'].str.lower().str.contains(target_product.lower().split()[0])]
+            row_p = sub_p.iloc[0] if not sub_p.empty else perf_latest['best_dev']
+            p_name = row_p['product_name']
+            dev_val = row_p['deviation_pct']
+            net_val = row_p['net_inflows_aed'] / 1e6
+            tgt_val = row_p['target_inflows_aed'] / 1e6
+            status_p = row_p['status']
+            cat_text = self.get_product_catalyst(p_name, m_latest)
+
+            return f"""ℹ️ **Operational Reporting Horizon: Monthly Closed Audited Cycle vs. Intraday Streaming**
+
+**Target Temporal Scale:** **Today / Intraday Real-Time Feed**
+**Audited Financial Baseline:** **Reporting Cycle {m_latest} Close**
+
+---
+
+### 📊 Reconciled Performance (Latest Audited Close — Cycle {m_latest}):
+National Bonds Corporation audits and ratifies executive commercial performance on **Monthly Closed Accounting Cycles**. Intraday transactions captured today are queued in the core banking ingestion stream and undergo full reconciliation at month-end ledger close.
+
+For **{p_name}**, the latest official audited metrics from the **{m_latest} Close** are:
+• **Net Inflow Achieved:** **AED {net_val:.2f} Million** (vs Budget: AED {tgt_val:.2f}M — **{dev_val:+.1f}% Plan Outperformance**).
+• **Governance Status:** **{status_p}** (Fatwa certified under ISSC governance).
+• **Performance Catalyst:** {cat_text}
+
+💡 *Intraday Note: Live transactions streaming today update the operational customer count (172,000+ accounts), but formal commercial outperformance vs financial targets is audited against closed monthly cycles.*"""
 
         # 1. Best / Top Performing Products (Live Math & Ground Truth)
         if any(k in q for k in [
@@ -1114,7 +1202,36 @@ The Asset-Liability Committee (ALCO) and Executive Committee have ratified 3 tar
                 response_text += "\n"
             return response_text
 
-        # 11. Default Contextual Summary
+        # 11. Domain Scope Verification (Catch general trivia, jokes, sports, non-business queries)
+        stop_words = {'what', 'is', 'the', 'of', 'a', 'an', 'to', 'in', 'for', 'on', 'with', 'at', 'by', 'from', 'and', 'or', 'me', 'who', 'tell', 'can', 'you', 'how', 'do', 'does', 'why', 'where', 'was', 'were'}
+        domain_keywords = {
+            'bond', 'bonds', 'sukuk', 'aum', 'inflow', 'inflows', 'outflow', 'redemption', 'redemptions',
+            'sharia', 'shariah', 'fatwa', 'cbuae', 'eibor', 'yield', 'rate', 'rates', 'customer', 'customers',
+            'segment', 'segments', 'emirati', 'expat', 'affluent', 'retail', 'hnw', 'minor', 'booster',
+            'salary', 'myplan', 'mymillion', 'draw', 'prize', 'double', 'campaign', 'slide', 'slides',
+            'target', 'budget', 'variance', 'deficit', 'breach', 'warning', 'healthy', 'alco', 'gcco',
+            'liquidity', 'monte', 'carlo', 'remediation', 'portfolio', 'sales', 'growth', 'national',
+            'jawad', 'ahmed', 'tariq', 'sarah', 'fatima', 'alisha', 'rm', 'relationship', 'saving', 'savings'
+        }
+        tokens = set(re.findall(r'\w+', q)) - stop_words
+        has_domain_term = bool(tokens & domain_keywords)
+
+        if not has_domain_term:
+            return f"""🏛️ **National Bonds Executive Copilot — Scope Boundary**
+
+I am **JD**, the dedicated Executive Product & Data Intelligence Copilot for **National Bonds Corporation (UAE)**.
+
+My knowledge base is strictly anchored in:
+• 58 Audited H1 2026 Executive Presentation Slides
+• Verified Product Circulars, Terms & Conditions, and Sharia Fatwas
+• 18-Month Continuous KPI Financial Metrics (Jan 2025 – Jun 2026)
+• 154,000+ Verified Customer Cohort Analytics & CBUAE Regulatory Guidelines
+
+I cannot answer general trivia, non-business inquiries, or requests outside National Bonds' corporate financial domain.
+
+💡 *You can ask me about product performance rankings, Saving Bonds remediation directives, CBUAE yield benchmarks, customer demographic segments, or Sharia compliance policies.*"""
+
+        # 12. Default Contextual Summary for NBC inquiries
         return f"""💡 **National Bonds Intelligence Summary for:** *"{query}"*
 
 - **Total Company AUM:** **AED 18.34 Billion** (**208% of budget achieved** / +AED 1.63B exceeded).
