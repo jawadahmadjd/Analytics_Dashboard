@@ -523,5 +523,273 @@ window.NBC_CHARTS = {
     const chart = new ApexCharts(el, options);
     chart.render();
     this.instances[containerId] = chart;
+  },
+
+  // --------------------------------------------------------------------------
+  // 11. Multi-Product Target Attainment & Pacing (Step 01 Monitor)
+  // --------------------------------------------------------------------------
+  renderProductPacing(containerId, kpiRecords, cycle = '2026-06') {
+    this.destroyChart(containerId);
+    const el = document.getElementById(containerId);
+    if (!el) return;
+
+    const cycleKpis = kpiRecords?.filter(r => r.month === cycle) || [];
+    const products = ['Term Sukuk', 'Saving Bonds', 'Booster Plan', 'MyPlan', 'Second Salary'];
+    
+    const actuals = [];
+    const targets = [];
+    products.forEach(p => {
+      const match = cycleKpis.find(r => r.product_name.toLowerCase().includes(p.toLowerCase().split(' ')[0]));
+      actuals.push(match ? +(match.net_inflows_aed / 1e6).toFixed(2) : (p === 'Term Sukuk' ? 520.2 : p === 'Saving Bonds' ? 51.19 : p === 'Booster Plan' ? 26.5 : p === 'MyPlan' ? 16.5 : 2.7));
+      targets.push(match ? +(match.target_inflows_aed / 1e6).toFixed(2) : (p === 'Term Sukuk' ? 582.2 : p === 'Saving Bonds' ? 57.02 : p === 'Booster Plan' ? 21.7 : p === 'MyPlan' ? 16.8 : 3.8));
+    });
+
+    const options = {
+      series: [
+        { name: 'Actual Net Inflows', data: actuals },
+        { name: 'ALCO Target Budget', data: targets }
+      ],
+      chart: {
+        type: 'bar',
+        height: 320,
+        toolbar: { show: false },
+        fontFamily: 'Plus Jakarta Sans, sans-serif'
+      },
+      plotOptions: {
+        bar: {
+          horizontal: false,
+          columnWidth: '55%',
+          borderRadius: 4
+        }
+      },
+      colors: ['#0284c7', '#c5a059'],
+      dataLabels: {
+        enabled: true,
+        formatter: (val) => `${val}M`,
+        style: { fontSize: '10px', fontFamily: 'JetBrains Mono' },
+        offsetY: -18
+      },
+      stroke: { show: true, width: 2, colors: ['transparent'] },
+      xaxis: {
+        categories: products,
+        labels: { style: { colors: '#0f172a', fontSize: '11px', fontWeight: 600 } }
+      },
+      yaxis: {
+        title: { text: 'AED Millions', style: { color: '#64748b', fontSize: '11px' } },
+        labels: { style: { colors: '#64748b' } }
+      },
+      legend: { position: 'bottom', offsetY: 10, fontSize: '11px', fontWeight: 600 },
+      grid: { borderColor: '#eaeff5' },
+      tooltip: { theme: 'light', y: { formatter: (val) => `AED ${val} Million` } }
+    };
+
+    const chart = new ApexCharts(el, options);
+    chart.render();
+    this.instances[containerId] = chart;
+  },
+
+  // --------------------------------------------------------------------------
+  // 12. Acquisition Channel Variance (Step 03 Investigate)
+  // --------------------------------------------------------------------------
+  renderChannelVariance(containerId) {
+    this.destroyChart(containerId);
+    const el = document.getElementById(containerId);
+    if (!el) return;
+
+    const data = [
+      { x: 'Mobile App Gateway', y: -68.4 },
+      { x: 'Call Center Telesales', y: -4.2 },
+      { x: 'Branch Network', y: 2.1 },
+      { x: 'Direct Wealth Sales', y: 8.4 }
+    ];
+
+    const options = {
+      series: [{
+        name: 'Channel Deviation vs Target (%)',
+        data: data
+      }],
+      chart: {
+        type: 'bar',
+        height: 320,
+        toolbar: { show: false },
+        fontFamily: 'Plus Jakarta Sans, sans-serif'
+      },
+      plotOptions: {
+        bar: {
+          horizontal: true,
+          barHeight: '55%',
+          borderRadius: 4,
+          colors: {
+            ranges: [
+              { from: -100, to: -0.01, color: '#ef4444' },
+              { from: 0, to: 100, color: '#10b981' }
+            ]
+          }
+        }
+      },
+      dataLabels: {
+        enabled: true,
+        formatter: (val) => `${val > 0 ? '+' : ''}${val}%`,
+        style: { fontSize: '11px', fontFamily: 'JetBrains Mono', colors: ['#0f172a'] },
+        offsetX: 10
+      },
+      xaxis: {
+        labels: {
+          formatter: (val) => `${val}%`,
+          style: { colors: '#64748b', fontSize: '11px' }
+        }
+      },
+      yaxis: {
+        labels: { style: { colors: '#0f172a', fontSize: '11.5px', fontWeight: 600 } }
+      },
+      grid: { borderColor: '#eaeff5' },
+      tooltip: {
+        theme: 'light',
+        y: { formatter: (val) => `${val > 0 ? '+' : ''}${val}% vs Target Allocation` }
+      }
+    };
+
+    const chart = new ApexCharts(el, options);
+    chart.render();
+    this.instances[containerId] = chart;
+  },
+
+  // --------------------------------------------------------------------------
+  // 13. UAE Bank Competitor Yield Comparison (Step 04 Analyse)
+  // --------------------------------------------------------------------------
+  renderCompetitorYields(containerId) {
+    this.destroyChart(containerId);
+    const el = document.getElementById(containerId);
+    if (!el) return;
+
+    const banks = [
+      'National Bonds Booster (6M)',
+      'Wio Bank Digital Save',
+      'FAB iSave Account',
+      'National Bonds Saving (Std)',
+      'ADCB Millionaire Savings',
+      'Emirates NBD Shake Saver'
+    ];
+    const yields = [5.30, 5.25, 5.10, 4.20, 4.10, 3.80];
+    const colors = ['#c5a059', '#64748b', '#94a3b8', '#0284c7', '#cbd5e1', '#cbd5e1'];
+
+    const options = {
+      series: [{
+        name: 'Annualized Promotional / Effective Yield (%)',
+        data: yields
+      }],
+      chart: {
+        type: 'bar',
+        height: 320,
+        toolbar: { show: false },
+        fontFamily: 'Plus Jakarta Sans, sans-serif'
+      },
+      plotOptions: {
+        bar: {
+          horizontal: true,
+          barHeight: '55%',
+          distributed: true,
+          borderRadius: 4
+        }
+      },
+      colors: colors,
+      dataLabels: {
+        enabled: true,
+        formatter: (val) => `${val.toFixed(2)}%`,
+        style: { fontSize: '11px', fontFamily: 'JetBrains Mono', colors: ['#0f172a'] },
+        offsetX: 10
+      },
+      xaxis: {
+        categories: banks,
+        labels: {
+          formatter: (val) => `${val}%`,
+          style: { colors: '#64748b', fontSize: '11px' }
+        }
+      },
+      yaxis: {
+        labels: { style: { colors: '#0f172a', fontSize: '11px', fontWeight: 600 } }
+      },
+      legend: { show: false },
+      grid: { borderColor: '#eaeff5' },
+      tooltip: {
+        theme: 'light',
+        y: { formatter: (val) => `${val.toFixed(2)}% p.a.` }
+      }
+    };
+
+    const chart = new ApexCharts(el, options);
+    chart.render();
+    this.instances[containerId] = chart;
+  },
+
+  // --------------------------------------------------------------------------
+  // 14. Intervention Recovery Waterfall Bridge (Step 05 Recommend)
+  // --------------------------------------------------------------------------
+  renderInterventionBridge(containerId, activeDirectives = [true, true, true]) {
+    this.destroyChart(containerId);
+    const el = document.getElementById(containerId);
+    if (!el) return;
+
+    let running = 51.19;
+    const items = [
+      { x: 'Current Actual', y: 51.19, fill: '#ef4444' }
+    ];
+
+    if (activeDirectives[0]) {
+      running += 3.20;
+      items.push({ x: '+ Direct 1: Gateway', y: 3.20, fill: '#10b981' });
+    }
+    if (activeDirectives[1]) {
+      running += 4.50;
+      items.push({ x: '+ Direct 2: Booster', y: 4.50, fill: '#10b981' });
+    }
+    if (activeDirectives[2]) {
+      running += 6.00;
+      items.push({ x: '+ Direct 3: HNW RM', y: 6.00, fill: '#10b981' });
+    }
+
+    items.push({ x: 'Projected Total', y: +running.toFixed(2), fill: '#0284c7' });
+    items.push({ x: 'Target Budget', y: 57.02, fill: '#c5a059' });
+
+    const options = {
+      series: [{
+        name: 'Inflow Volume (AED M)',
+        data: items
+      }],
+      chart: {
+        type: 'bar',
+        height: 320,
+        toolbar: { show: false },
+        fontFamily: 'Plus Jakarta Sans, sans-serif'
+      },
+      plotOptions: {
+        bar: {
+          columnWidth: '45%',
+          distributed: true,
+          borderRadius: 4
+        }
+      },
+      dataLabels: {
+        enabled: true,
+        formatter: (val) => `AED ${val}M`,
+        style: { fontSize: '10.5px', fontFamily: 'JetBrains Mono' },
+        offsetY: -18
+      },
+      xaxis: {
+        labels: { style: { colors: '#0f172a', fontSize: '10.5px', fontWeight: 600 } }
+      },
+      yaxis: {
+        labels: { formatter: (val) => `${val}M`, style: { colors: '#64748b' } },
+        title: { text: 'AED Millions', style: { color: '#64748b', fontSize: '11px' } }
+      },
+      legend: { show: false },
+      grid: { borderColor: '#eaeff5' },
+      tooltip: { theme: 'light', y: { formatter: (val) => `AED ${val} Million` } }
+    };
+
+    const chart = new ApexCharts(el, options);
+    chart.render();
+    this.instances[containerId] = chart;
   }
 };
+

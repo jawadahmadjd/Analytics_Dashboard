@@ -8,6 +8,7 @@ window.NBC_APP = {
   state: {
     mode: 'executive',          // 'executive' or 'frontline'
     activeExecTab: 'workflow',   // workflow, portfolio, diagnostic, report, gcco
+    workflowStep: 1,             // 1: Monitor, 2: Detect, 3: Investigate, 4: Analyse, 5: Recommend, 6: Escalate
     selectedCycle: '2026-06',
     selectedProduct: 'Saving Bonds',
     warningThreshold: -8.0,
@@ -250,7 +251,8 @@ window.NBC_APP = {
           if (sideProd) sideProd.value = prod;
           this.updateProductCard();
 
-          // Switch to Six Step Workflow
+          // Switch to Six Step Workflow (Step 02: Detect)
+          this.state.workflowStep = 2;
           document.querySelector('[data-exec-tab=workflow]')?.click();
 
           // Close popover

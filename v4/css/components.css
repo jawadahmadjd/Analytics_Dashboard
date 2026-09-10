@@ -1329,3 +1329,224 @@
 .copilot-send-btn:hover {
   background: var(--brand-primary-hover);
 }
+
+/* ==========================================================================
+   11. Interactive Six Step Workflow Components
+   ========================================================================== */
+.step-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  padding: 8px 14px;
+  border-radius: var(--radius-sm);
+  transition: all var(--transition-fast);
+  border: 1px solid transparent;
+  user-select: none;
+}
+
+.step-item:hover {
+  background: var(--surface-subtle);
+  border-color: var(--border-default);
+}
+
+.step-item.active {
+  background: rgba(2, 132, 199, 0.08);
+  border-color: var(--brand-primary);
+  box-shadow: 0 0 0 1px rgba(2, 132, 199, 0.15);
+}
+
+.step-item.completed {
+  border-color: rgba(16, 185, 129, 0.25);
+}
+
+.step-subtag {
+  font-size: 9.5px;
+  font-weight: 700;
+  color: var(--text-tertiary);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin-top: 1px;
+}
+
+.step-item.active .step-subtag {
+  color: var(--brand-primary);
+}
+
+.workflow-header-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--surface-card);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  padding: 14px 20px;
+  margin-bottom: 16px;
+  box-shadow: var(--shadow-xs);
+}
+
+.workflow-header-info {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.workflow-step-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 10.5px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--brand-primary);
+}
+
+.workflow-step-title {
+  font-size: 17px;
+  font-weight: 800;
+  color: var(--navy-slate-900);
+}
+
+.workflow-step-desc {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.workflow-nav-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.step-nav-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  border: 1px solid var(--border-default);
+  background: var(--surface-card);
+  color: var(--text-secondary);
+}
+
+.step-nav-btn:hover {
+  background: var(--surface-subtle);
+  color: var(--text-primary);
+  border-color: var(--text-tertiary);
+}
+
+.step-nav-btn.primary {
+  background: var(--brand-primary);
+  color: #ffffff;
+  border-color: var(--brand-primary);
+}
+
+.step-nav-btn.primary:hover {
+  background: var(--brand-primary-hover);
+}
+
+.workflow-charts-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+@media (max-width: 1200px) {
+  .workflow-charts-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.workflow-ai-box {
+  background: linear-gradient(135deg, rgba(2, 132, 199, 0.03) 0%, rgba(197, 160, 89, 0.04) 100%), var(--surface-card);
+  border: 1px solid var(--border-default);
+  border-left: 4px solid var(--brand-primary);
+  border-radius: var(--radius-md);
+  padding: 16px 20px;
+  margin-bottom: 20px;
+  box-shadow: var(--shadow-xs);
+}
+
+.workflow-ai-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.workflow-ai-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(2, 132, 199, 0.1);
+  color: var(--brand-primary);
+  font-size: 11px;
+  font-weight: 800;
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  letter-spacing: 0.04em;
+}
+
+.workflow-ai-content {
+  font-size: 12.5px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+.workflow-ai-bullets {
+  list-style: none;
+  padding: 0;
+  margin: 10px 0 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.workflow-ai-bullets li {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 12.5px;
+  color: var(--text-primary);
+}
+
+.workflow-ai-bullets li span.bullet-icon {
+  color: var(--brand-primary);
+  font-size: 16px;
+  line-height: 1.2;
+}
+
+.directive-card-workflow {
+  background: var(--surface-card);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  transition: all var(--transition-fast);
+}
+
+.directive-card-workflow:hover {
+  border-color: var(--brand-primary);
+  box-shadow: var(--shadow-sm);
+}
+
+.directive-pill-recovery {
+  background: rgba(16, 185, 129, 0.1);
+  color: #059669;
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  font-size: 12px;
+  font-weight: 800;
+  font-family: var(--font-mono);
+  padding: 4px 10px;
+  border-radius: var(--radius-sm);
+}
+
