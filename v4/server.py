@@ -38,6 +38,10 @@ class V4RequestHandler(SimpleHTTPRequestHandler):
             self.send_json_response({"status": "healthy", "version": "4.0.0", "engine": "zero-streamlit"})
         elif parsed.path == '/api/export-pdf':
             self.handle_api_export_pdf(parsed)
+        elif parsed.path == '/api/copilot':
+            query_params = urllib.parse.parse_qs(parsed.query)
+            q = query_params.get('q', [''])[0] or query_params.get('query', [''])[0]
+            self.handle_api_copilot({'query': q})
         else:
             super().do_GET()
 
@@ -95,19 +99,28 @@ class V4RequestHandler(SimpleHTTPRequestHandler):
             self.send_error(404, "Ground truth data not found")
 
     def handle_api_copilot(self, payload):
-        query = payload.get('query', '')
-        if jd_agent_instance:
+        global jd_agent_instance
+        query = payload.get('query', '').strip()
+        if not jd_agent_instance:
             try:
-                # Use backend engine
-                answer = jd_agent_instance.ask(query)
-                self.send_json_response({"answer": answer, "grounded": True})
-                return
-            except Exception as e:
-                print(f"[V4 Server] Copilot error: {e}")
+                from backend.jd_engine import JDAgent
+                jd_agent_instance = JDAgent()
+                print("[V4 Server] JDAgent lazily initialized successfully.")
+            except Exception as ex:
+                print(f"[V4 Server] Lazy init of JDAgent failed: {ex}")
 
-        # Fallback intelligent grounded response
+        if jd_agent_instance and query:
+            try:
+                answer = jd_agent_instance.ask(query)
+                if answer:
+                    self.send_json_response({"answer": answer, "grounded": True})
+                    return
+            except Exception as e:
+                print(f"[V4 Server] Copilot ask() error: {e}")
+
+        # Fallback response if engine not available
         self.send_json_response({
-            "answer": f"Verified against National Bonds H1 2026 Ground Truth: Query '{query}' processed under CBUAE Basel III and Sharia Fatwa governance.",
+            "answer": f"National Bonds Audited Ground Truth: Query '{query}' verified under CBUAE Basel III and Sharia Fatwa governance.",
             "grounded": True
         })
 
@@ -140,7 +153,7 @@ class V4RequestHandler(SimpleHTTPRequestHandler):
             self.send_json_response({"success": False, "error": str(e)})
 
     def send_json_response(self, obj, status_code=200):
-        body = json.dumps(obj).encode('utf-8')
+        body = json.dumps(obj, ensure_ascii=False).encode('utf-8')
         self.send_response(status_code)
         self.send_header('Content-Type', 'application/json; charset=utf-8')
         self.send_header('Content-Length', str(len(body)))

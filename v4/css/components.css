@@ -1189,9 +1189,9 @@
   position: fixed;
   bottom: 92px;
   right: 24px;
-  width: 440px;
-  max-width: calc(100vw - 48px);
-  max-height: 82vh; /* Defect 4 Fix */
+  width: 520px;
+  max-width: calc(100vw - 32px);
+  max-height: 84vh; /* Defect 4 Fix */
   background: var(--surface-card);
   border: 1px solid var(--border-default);
   border-radius: var(--radius-lg);
@@ -1287,6 +1287,8 @@
   border: 1px solid var(--border-default);
   align-self: flex-start;
   border-bottom-left-radius: 4px;
+  max-width: 96%;
+  box-sizing: border-box;
 }
 
 .copilot-footer {
