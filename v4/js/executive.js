@@ -1325,8 +1325,9 @@ window.NBC_EXECUTIVE = {
 
   // Helper for official certified PDF export with interactive toast
   downloadOfficialReport(primaryUrl, downloadFilename, reportTitle, fallbackUrl) {
+    const isLocalServer = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
     const link = document.createElement('a');
-    link.href = primaryUrl || fallbackUrl;
+    link.href = (isLocalServer && primaryUrl) ? primaryUrl : (fallbackUrl || primaryUrl);
     link.download = downloadFilename;
     document.body.appendChild(link);
     link.click();
