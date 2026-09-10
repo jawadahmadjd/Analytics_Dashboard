@@ -679,7 +679,7 @@ For forward liquidity and capital trajectory modeling, the system provides stoch
 ---
 
 ### 🔍 Data Availability & Governance Boundary:
-The active National Bonds Executive Intelligence System indexes audited monthly financial metrics strictly for the continuous **18-month reporting window from January 2025 (2025-01) to June 2026 (2026-06)**.
+The active National Bonds Product Intelligence System indexes audited monthly financial metrics strictly for the continuous **18-month reporting window from January 2025 (2025-01) to June 2026 (2026-06)**.
 Detailed monthly product-level net inflow, target plan variance, and redemption breakdown data for **{time_label}** is archived in the **National Bonds Legacy Core Banking Ledger** and is not stored in the active real-time analytical database.
 
 ---
@@ -848,7 +848,7 @@ To evaluate corresponding mid-year performance from the verified dataset, here i
 ---
 
 ### 💻 Role of Jawad Ahmad:
-**Jawad Ahmad** is the **Lead Systems Engineer & AI Architect** who engineered this **Executive Intelligence & Early Warning System (V4 Analytics Platform, JD Copilot, and Real-Time Dashboard)**. He is the creator of the software application and AI copilot, **not** the founder, creator, or fund manager of the financial bond products."""
+**Jawad Ahmad** is the **Lead Systems Engineer & AI Architect** who engineered this **Product Intelligence & Early Warning System (V4 Analytics Platform, JD Copilot, and Real-Time Dashboard)**. He is the creator of the software application and AI copilot, **not** the founder, creator, or fund manager of the financial bond products."""
             else:
                 return f"""🏛️ **National Bonds Product Provenance & Governance:**
 

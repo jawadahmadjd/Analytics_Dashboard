@@ -1055,13 +1055,13 @@ st.markdown("""
 
     div[data-testid="stPopover"] > button,
     div[data-testid="stPopover"] button,
+    div[data-testid="stPopover"] button[data-testid="stBaseButton-secondary"],
     div.stPopover > button,
     div.stPopover button,
     .stPopover button,
     button[data-testid="stBaseButton-secondary"].stPopoverButton,
     button.stPopoverButton,
-    div[data-testid="stPopover"] button[kind="secondary"],
-    div[data-testid="stPopover"] button[data-testid="stBaseButton-secondary"] {
+    div[data-testid="stPopover"] button[kind="secondary"] {
         width: 48px !important;
         height: 48px !important;
         min-width: 48px !important;
@@ -1074,6 +1074,10 @@ st.markdown("""
         color: #ffffff !important;
         border: 2px solid #ffffff !important;
         padding: 0 !important;
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+        padding-top: 0 !important;
+        padding-bottom: 0 !important;
         margin: 0 !important;
         box-shadow: var(--shadow-md) !important;
         cursor: pointer !important;
@@ -1097,39 +1101,57 @@ st.markdown("""
         border-color: #ffffff !important;
     }
 
+    /* Completely hide caret/chevron or secondary children */
+    div[data-testid="stPopover"] button > *:nth-child(2),
     div[data-testid="stPopover"] button > *:not(:first-child),
     div[data-testid="stPopover"] button svg,
     div[data-testid="stPopover"] button [data-testid="stIconMaterial"],
     div[data-testid="stPopover"] button span[data-testid="stIconMaterial"],
-    div[data-testid="stPopover"] button > span,
-    div[data-testid="stPopover"] button > span:last-child {
+    div[data-testid="stPopover"] button span:has(svg),
+    div[data-testid="stPopover"] button div:has(svg) {
         display: none !important;
         width: 0 !important;
         height: 0 !important;
+        min-width: 0 !important;
+        max-width: 0 !important;
         position: absolute !important;
         visibility: hidden !important;
         opacity: 0 !important;
         pointer-events: none !important;
+        margin: 0 !important;
+        padding: 0 !important;
     }
 
+    /* Dead-center horizontal & vertical anchor for text container */
+    div[data-testid="stPopover"] button > *:first-child,
     div[data-testid="stPopover"] button [data-testid="stMarkdownContainer"],
     .stPopover button [data-testid="stMarkdownContainer"] {
+        position: absolute !important;
+        top: 50% !important;
+        left: 50% !important;
+        transform: translate(-50%, -50%) !important;
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
-        width: 100% !important;
-        height: 100% !important;
+        width: auto !important;
+        height: auto !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        pointer-events: none !important;
     }
 
     div[data-testid="stPopover"] button [data-testid="stMarkdownContainer"] p,
     .stPopover button [data-testid="stMarkdownContainer"] p {
         margin: 0 !important;
         padding: 0 !important;
-        font-size: 13px !important;
+        font-size: 13.5px !important;
         font-weight: 700 !important;
         color: #ffffff !important;
-        letter-spacing: 0.05em !important;
+        letter-spacing: 0px !important;
+        line-height: 1 !important;
         text-align: center !important;
+        display: block !important;
+        transform: translateY(-0.5px) !important;
     }
 
     /* FLOATING CHAT DIALOG WINDOW (Fixes Height Defect) */
@@ -1137,7 +1159,7 @@ st.markdown("""
         position: fixed !important;
         bottom: 84px !important;
         right: 24px !important;
-        width: 420px !important;
+        width: 460px !important;
         max-width: calc(100vw - 32px) !important;
         height: 560px !important;
         max-height: 80vh !important;
@@ -1560,44 +1582,7 @@ else:
     # Dynamic Product Metadata
     spec = PRODUCT_SPECS.get(selected_product, PRODUCT_SPECS['Saving Bonds'])
     
-    st.sidebar.markdown(f"""
-    <div class="sidebar-info-card">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; border-bottom: 1px solid var(--border-primary); padding-bottom: 6px;">
-            <span style="font-size: 11px; font-weight: 700; color: var(--text-primary); text-transform: uppercase; letter-spacing: 0.04em;">Product Profile</span>
-            <span style="font-size: 10px; font-weight: 600; background: var(--brand-subtle); color: var(--brand-primary); padding: 2px 7px; border-radius: 4px;">{spec['type']}</span>
-        </div>
-        <div style="display: flex; flex-direction: column; gap: 6px; font-size: 11.5px;">
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-                <span style="color: var(--text-tertiary);">Segment:</span>
-                <span style="font-weight: 600; color: var(--text-primary);">{spec['target_segment']}</span>
-            </div>
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-                <span style="color: var(--text-tertiary);">Channels:</span>
-                <span style="font-weight: 600; color: var(--text-primary);">{', '.join(spec['key_channels'][:2])}</span>
-            </div>
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-                <span style="color: var(--text-tertiary);">Macro Sensitivity:</span>
-                <span style="font-weight: 600; color: #059669;">{spec.get('macro_sensitivity', 'Direct Impact').split(' ')[0]}</span>
-            </div>
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
-    
-    st.sidebar.markdown(f"""
-    <div class="sidebar-footer-card">
-        <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 4px;">
-            <span style="color: #059669;">{get_icon('check-circle', 13, '#059669')}</span>
-            <span style="font-size: 10.5px; font-weight: 700; color: var(--text-primary); letter-spacing: 0.03em; text-transform: uppercase;">Central Bank Ground Truth</span>
-        </div>
-        <div style="font-size: 11px; color: var(--text-secondary); line-height: 1.4;">
-            154,000 Verified Accounts<br>
-            Sharia Fatwa Compliant
-        </div>
-        <div style="font-size: 9.5px; color: var(--text-tertiary); margin-top: 6px; padding-top: 6px; border-top: 1px solid var(--border-primary);">
-            H1 2026 Close &middot; Audited Source
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
+    # Product Profile and Ground Truth sidebar cards removed as requested
     
     # Extract Records for Selected Month & Product
     month_data = kpi_df[kpi_df['month'] == selected_cycle]
@@ -2295,17 +2280,72 @@ if "chat_messages" not in st.session_state:
 
 has_started = len(st.session_state.chat_messages) > 1
 
+is_fullscreen = st.session_state.get("chat_fullscreen", False)
+
 # Render Floating Chat Trigger using Streamlit Popover
 with st.popover("AI", help="Click to open Financial Intelligence Assistant"):
-    # Header Bar with Status and Compact Reset Button
-    col_h1, col_h2 = st.columns([3, 1])
+    # Dynamic Full Screen Styles
+    if is_fullscreen:
+        st.markdown("""
+        <style>
+        div[data-testid="stPopoverBody"] {
+            position: fixed !important;
+            top: 20px !important;
+            bottom: 20px !important;
+            left: 20px !important;
+            right: 20px !important;
+            width: calc(100vw - 40px) !important;
+            max-width: calc(100vw - 40px) !important;
+            height: calc(100vh - 40px) !important;
+            max-height: calc(100vh - 40px) !important;
+            border-radius: var(--radius-lg) !important;
+            box-shadow: 0 25px 60px -15px rgba(11, 25, 44, 0.45), 0 0 0 100vmax rgba(11, 25, 44, 0.35) !important;
+            z-index: 999999999 !important;
+            padding: 20px 24px !important;
+            transition: all 180ms ease !important;
+        }
+        div[data-testid="stPopoverBody"] [data-testid="stChatMessage"] {
+            max-width: 100% !important;
+            font-size: 14px !important;
+        }
+        div[data-testid="stPopoverBody"] table {
+            width: 100% !important;
+            font-size: 13.5px !important;
+        }
+        div[data-testid="stPopoverBody"] th,
+        div[data-testid="stPopoverBody"] td {
+            padding: 10px 14px !important;
+        }
+        </style>
+        """, unsafe_allow_html=True)
+
+    # Header Bar with Status, Full Screen Button, and Reset Button
+    st.markdown("""
+    <style>
+    div[data-testid="stPopoverBody"] div[data-testid="column"] button {
+        padding: 3px 6px !important;
+        font-size: 11.5px !important;
+        font-weight: 600 !important;
+        white-space: nowrap !important;
+        min-height: 32px !important;
+        height: 32px !important;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+    col_h1, col_h2, col_h3 = st.columns([1.6, 1.25, 1.05])
     with col_h1:
         st.markdown("""
-        <div style="display: flex; align-items: center; gap: 8px; padding: 2px 0;">
-            <span style="font-weight: 700; font-size: 14px; color: var(--brand-primary);">Financial Intelligence Assistant</span>
+        <div style="display: flex; align-items: center; gap: 6px; padding: 5px 0;">
+            <span style="font-weight: 700; font-size: 12.5px; color: var(--brand-primary); white-space: nowrap;">Financial Intelligence</span>
         </div>
         """, unsafe_allow_html=True)
     with col_h2:
+        fs_label = "⤡ Contract" if is_fullscreen else "⤢ Expand"
+        fs_help = "Contract view to standard compact window" if is_fullscreen else "Expand to full screen executive dashboard view"
+        if st.button(fs_label, key="chat_fullscreen_btn", help=fs_help, use_container_width=True):
+            st.session_state.chat_fullscreen = not is_fullscreen
+            st.rerun()
+    with col_h3:
         if st.button("Reset", key="chat_reset_btn", help="Clear conversation and start fresh", use_container_width=True):
             st.session_state.chat_messages = [
                 {"role": "assistant", "content": "Conversation reset. How can I help you analyze National Bonds data today?"}
@@ -2359,12 +2399,13 @@ with st.popover("AI", help="Click to open Financial Intelligence Assistant"):
         st.markdown("<hr style='margin: 6px 0; border: none; border-top: 1px solid var(--border-primary);'>", unsafe_allow_html=True)
 
     # Message History Rendering
+    chat_height = 620 if is_fullscreen else 390
     if not has_started:
         for msg in st.session_state.chat_messages:
             with st.chat_message(msg["role"], avatar="assistant" if msg["role"] == "assistant" else "user"):
                 st.markdown(msg["content"])
     else:
-        chat_container = st.container(height=390)
+        chat_container = st.container(height=chat_height)
         with chat_container:
             for msg in st.session_state.chat_messages:
                 with st.chat_message(msg["role"], avatar="assistant" if msg["role"] == "assistant" else "user"):

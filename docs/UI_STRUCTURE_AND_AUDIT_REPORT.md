@@ -2,7 +2,7 @@
 ## Comprehensive Desktop UI Visual Audit, Component Placement Matrix & Design System Report
 
 **Document Reference:** `NBC-DESKTOP-UI-AUDIT-2026-V1`  
-**System Evaluated:** National Bonds Corporation — Executive Intelligence & Early Warning System (Initiatives 1, 2, and 3)  
+**System Evaluated:** National Bonds Corporation — Product Intelligence & Early Warning System (Initiatives 1, 2, and 3)  
 **Primary Target Platform:** **Desktop Executive Workstation (1920 x 1080 / 16:9 Wide-Canvas Display)**  
 **Host URL:** `http://localhost:8501/`  
 **Evaluation Date:** September 8, 2026  
@@ -13,7 +13,7 @@
 
 ## Executive Summary (Desktop Focus)
 
-This report provides an exhaustive, component-level UI/UX visual audit and architectural placement matrix for the **Desktop Executive Experience** of the **National Bonds Corporation Executive Intelligence & Early Warning System**.
+This report provides an exhaustive, component-level UI/UX visual audit and architectural placement matrix for the **Desktop Executive Experience** of the **National Bonds Corporation Product Intelligence & Early Warning System**.
 
 The platform serves C-suite executives, Group Chief Commercial Officer (GCCO) leadership, Asset-Liability Committee (ALCO) members, and Relationship Managers across two primary operating modes:
 1. **Executive Cockpit (Initiatives 3 & 2):** High-density financial command center featuring an Executive Alert Center, 4 high-level KPI cards, 7 functional sub-systems (PowerBI Analytics Studio with 8 multi-dimensional charts, 6-Step Autonomous Agentic Workflow, 5-Product Portfolio Matrix, Dynamic Diagnostic Engine, Live Action Simulator, Bi-Weekly Product & Market Intelligence Reporting, and GCCO Escalation Briefing).

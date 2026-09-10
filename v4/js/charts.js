@@ -352,15 +352,38 @@ window.NBC_CHARTS = {
   // --------------------------------------------------------------------------
   // 7. Customer Lifecycle Conversion Funnel
   // --------------------------------------------------------------------------
-  renderFunnel(containerId) {
+  renderFunnel(containerId, activeProduct = 'All Products', baseSavers = null) {
     this.destroyChart(containerId);
     const el = document.getElementById(containerId);
     if (!el) return;
 
+    let base = 154200;
+    if (baseSavers && baseSavers > 0) {
+      base = baseSavers;
+    } else if (activeProduct && activeProduct !== 'All Products') {
+      const prodSaversMap = {
+        'Saving Bonds': 139945,
+        'Term Sukuk': 5255,
+        'Booster Plan': 5858,
+        'MyPlan': 23742,
+        'Second Salary': 1919
+      };
+      const key = Object.keys(prodSaversMap).find(k => activeProduct.includes(k));
+      if (key) base = prodSaversMap[key];
+    }
+
+    const data = [
+      Math.round(base * 1.15),
+      Math.round(base * 1.0),
+      Math.round(base * 0.82),
+      Math.round(base * 0.65),
+      Math.round(base * 0.54)
+    ];
+
     const options = {
       series: [{
         name: 'Savers',
-        data: [154200, 128500, 104200, 82600, 71300]
+        data: data
       }],
       chart: {
         type: 'bar',
@@ -404,20 +427,39 @@ window.NBC_CHARTS = {
   // --------------------------------------------------------------------------
   // 8. 6-Step Trajectory Spline Chart
   // --------------------------------------------------------------------------
-  renderTrajectorySpline(containerId, kpiRecords, activeProduct = 'Saving Bonds') {
+  renderTrajectorySpline(containerId, kpiRecords, activeProduct = 'All Products') {
     this.destroyChart(containerId);
     const el = document.getElementById(containerId);
     if (!el || !kpiRecords) return;
 
-    const prodRecords = kpiRecords.filter(r => r.product_name.includes(activeProduct.split(' ')[0])).sort((a, b) => a.month.localeCompare(b.month)).slice(-12);
+    const isAll = !activeProduct || activeProduct === 'All Products' || activeProduct === 'ALL';
+    let months = [];
+    let actual = [];
+    let target = [];
 
-    const months = prodRecords.map(r => r.month);
-    const actual = prodRecords.map(r => +(r.net_inflows_aed / 1e6).toFixed(2));
-    const target = prodRecords.map(r => +(r.target_inflows_aed / 1e6).toFixed(2));
+    if (isAll) {
+      const allMonths = [...new Set(kpiRecords.map(r => r.month))].sort().slice(-12);
+      months = allMonths;
+      actual = allMonths.map(m => {
+        const rows = kpiRecords.filter(r => r.month === m);
+        const sumNet = rows.reduce((acc, r) => acc + r.net_inflows_aed, 0) / 1e6;
+        return +sumNet.toFixed(2);
+      });
+      target = allMonths.map(m => {
+        const rows = kpiRecords.filter(r => r.month === m);
+        const sumTgt = rows.reduce((acc, r) => acc + r.target_inflows_aed, 0) / 1e6;
+        return +sumTgt.toFixed(2);
+      });
+    } else {
+      const prodRecords = kpiRecords.filter(r => r.product_name.includes(activeProduct.split(' ')[0])).sort((a, b) => a.month.localeCompare(b.month)).slice(-12);
+      months = prodRecords.map(r => r.month);
+      actual = prodRecords.map(r => +(r.net_inflows_aed / 1e6).toFixed(2));
+      target = prodRecords.map(r => +(r.target_inflows_aed / 1e6).toFixed(2));
+    }
 
     const options = {
       series: [
-        { name: 'Audited Net Inflow', data: actual },
+        { name: isAll ? 'Audited Portfolio Inflow' : `${activeProduct.split(' (')[0]} Net Inflow`, data: actual },
         { name: 'ALCO Approved Target', data: target }
       ],
       chart: {
@@ -528,10 +570,67 @@ window.NBC_CHARTS = {
   // --------------------------------------------------------------------------
   // 11. Multi-Product Target Attainment & Pacing (Step 01 Monitor)
   // --------------------------------------------------------------------------
-  renderProductPacing(containerId, kpiRecords, cycle = '2026-06') {
+  renderProductPacing(containerId, kpiRecords, cycle = '2026-06', activeProduct = 'All Products') {
     this.destroyChart(containerId);
     const el = document.getElementById(containerId);
     if (!el) return;
+
+    const isAll = !activeProduct || activeProduct === 'All Products' || activeProduct === 'ALL';
+
+    if (!isAll) {
+      // Show historical 6-month pacing for this specific product
+      const prodRecords = (kpiRecords || []).filter(r => r.product_name.includes(activeProduct.split(' ')[0]))
+        .sort((a, b) => a.month.localeCompare(b.month))
+        .slice(-6);
+
+      const months = prodRecords.map(r => r.month);
+      const actuals = prodRecords.map(r => +(r.net_inflows_aed / 1e6).toFixed(2));
+      const targets = prodRecords.map(r => +(r.target_inflows_aed / 1e6).toFixed(2));
+
+      const options = {
+        series: [
+          { name: `${activeProduct.split(' (')[0]} Net Inflows`, data: actuals },
+          { name: 'ALCO Approved Target', data: targets }
+        ],
+        chart: {
+          type: 'bar',
+          height: 320,
+          toolbar: { show: false },
+          fontFamily: 'Plus Jakarta Sans, sans-serif'
+        },
+        plotOptions: {
+          bar: {
+            horizontal: false,
+            columnWidth: '50%',
+            borderRadius: 4
+          }
+        },
+        colors: ['#0284c7', '#c5a059'],
+        dataLabels: {
+          enabled: true,
+          formatter: (val) => `${val}M`,
+          style: { fontSize: '10px', fontFamily: 'JetBrains Mono' },
+          offsetY: -18
+        },
+        stroke: { show: true, width: 2, colors: ['transparent'] },
+        xaxis: {
+          categories: months,
+          labels: { style: { colors: '#0f172a', fontSize: '11px', fontWeight: 600 } }
+        },
+        yaxis: {
+          title: { text: 'AED Millions', style: { color: '#64748b', fontSize: '11px' } },
+          labels: { style: { colors: '#64748b' } }
+        },
+        legend: { position: 'bottom', offsetY: 10, fontSize: '11px', fontWeight: 600 },
+        grid: { borderColor: '#eaeff5' },
+        tooltip: { theme: 'light', y: { formatter: (val) => `AED ${val} Million` } }
+      };
+
+      const chart = new ApexCharts(el, options);
+      chart.render();
+      this.instances[containerId] = chart;
+      return;
+    }
 
     const cycleKpis = kpiRecords?.filter(r => r.month === cycle) || [];
     const products = ['Term Sukuk', 'Saving Bonds', 'Booster Plan', 'MyPlan', 'Second Salary'];
@@ -591,17 +690,54 @@ window.NBC_CHARTS = {
   // --------------------------------------------------------------------------
   // 12. Acquisition Channel Variance (Step 03 Investigate)
   // --------------------------------------------------------------------------
-  renderChannelVariance(containerId) {
+  renderChannelVariance(containerId, activeProduct = 'All Products') {
     this.destroyChart(containerId);
     const el = document.getElementById(containerId);
     if (!el) return;
 
-    const data = [
-      { x: 'Mobile App Gateway', y: -68.4 },
-      { x: 'Call Center Telesales', y: -4.2 },
+    let data = [
+      { x: 'Mobile App Gateway', y: -41.2 },
+      { x: 'Call Center Telesales', y: -2.8 },
       { x: 'Branch Network', y: 2.1 },
       { x: 'Direct Wealth Sales', y: 8.4 }
     ];
+
+    if (activeProduct && activeProduct.includes('Saving Bonds')) {
+      data = [
+        { x: 'Mobile App Gateway', y: -68.4 },
+        { x: 'Call Center Telesales', y: -4.2 },
+        { x: 'Branch Network', y: 2.1 },
+        { x: 'Direct Wealth Sales', y: 8.4 }
+      ];
+    } else if (activeProduct && activeProduct.includes('Term Sukuk')) {
+      data = [
+        { x: 'Direct Wealth Sales', y: 8.4 },
+        { x: 'Corporate Treasury Desk', y: 4.2 },
+        { x: 'Branch Network', y: -3.8 },
+        { x: 'Mobile App Gateway', y: -12.1 }
+      ];
+    } else if (activeProduct && activeProduct.includes('Booster Plan')) {
+      data = [
+        { x: 'Mobile App Gateway', y: 22.1 },
+        { x: 'Digital Referral Links', y: 8.4 },
+        { x: 'Branch Network', y: 2.1 },
+        { x: 'Call Center Telesales', y: -1.5 }
+      ];
+    } else if (activeProduct && activeProduct.includes('Second Salary')) {
+      data = [
+        { x: 'Corporate Payroll Partner', y: 14.2 },
+        { x: 'Branch Network', y: -4.5 },
+        { x: 'Direct Web Portal', y: -18.2 },
+        { x: 'Mobile App Gateway', y: -28.9 }
+      ];
+    } else if (activeProduct && activeProduct.includes('MyPlan')) {
+      data = [
+        { x: 'Branch Auto-Debit Desk', y: 5.2 },
+        { x: 'Direct Web Portal', y: -1.2 },
+        { x: 'Call Center Telesales', y: -1.5 },
+        { x: 'Mobile App Gateway', y: -1.8 }
+      ];
+    }
 
     const options = {
       series: [{
@@ -657,7 +793,7 @@ window.NBC_CHARTS = {
   // --------------------------------------------------------------------------
   // 13. UAE Bank Competitor Yield Comparison (Step 04 Analyse)
   // --------------------------------------------------------------------------
-  renderCompetitorYields(containerId) {
+  renderCompetitorYields(containerId, activeProduct = 'All Products') {
     this.destroyChart(containerId);
     const el = document.getElementById(containerId);
     if (!el) return;
@@ -666,12 +802,23 @@ window.NBC_CHARTS = {
       'National Bonds Booster (6M)',
       'Wio Bank Digital Save',
       'FAB iSave Account',
+      'National Bonds Term Sukuk',
+      'National Bonds Second Salary',
+      'National Bonds MyPlan Saver',
       'National Bonds Saving (Std)',
-      'ADCB Millionaire Savings',
-      'Emirates NBD Shake Saver'
+      'ADCB Millionaire Savings'
     ];
-    const yields = [5.30, 5.25, 5.10, 4.20, 4.10, 3.80];
-    const colors = ['#c5a059', '#64748b', '#94a3b8', '#0284c7', '#cbd5e1', '#cbd5e1'];
+    const yields = [5.30, 5.25, 5.10, 5.15, 4.80, 4.50, 4.20, 4.10];
+
+    const colors = banks.map(name => {
+      if (activeProduct && activeProduct !== 'All Products' && activeProduct !== 'ALL') {
+        const firstWord = activeProduct.split(' ')[0];
+        if (name.includes(firstWord)) return '#c5a059';
+      } else if (name.includes('National Bonds')) {
+        return '#0284c7';
+      }
+      return '#94a3b8';
+    });
 
     const options = {
       series: [{
@@ -725,31 +872,32 @@ window.NBC_CHARTS = {
   // --------------------------------------------------------------------------
   // 14. Intervention Recovery Waterfall Bridge (Step 05 Recommend)
   // --------------------------------------------------------------------------
-  renderInterventionBridge(containerId, activeDirectives = [true, true, true]) {
+  renderInterventionBridge(containerId, activeDirectives = [true, true, true], baselineNet = 51.19, targetBudget = 57.02, directiveItems = null) {
     this.destroyChart(containerId);
     const el = document.getElementById(containerId);
     if (!el) return;
 
-    let running = 51.19;
+    const defaultItems = [
+      { label: '+ Direct 1: Hotfix', amount: 3.20 },
+      { label: '+ Direct 2: Promo', amount: 4.50 },
+      { label: '+ Direct 3: Concierge', amount: 6.00 }
+    ];
+    const directives = directiveItems && directiveItems.length > 0 ? directiveItems : defaultItems;
+
+    let running = baselineNet;
     const items = [
-      { x: 'Current Actual', y: 51.19, fill: '#ef4444' }
+      { x: 'Current Actual', y: +baselineNet.toFixed(2), fill: baselineNet < targetBudget ? '#ef4444' : '#10b981' }
     ];
 
-    if (activeDirectives[0]) {
-      running += 3.20;
-      items.push({ x: '+ Direct 1: Gateway', y: 3.20, fill: '#10b981' });
-    }
-    if (activeDirectives[1]) {
-      running += 4.50;
-      items.push({ x: '+ Direct 2: Booster', y: 4.50, fill: '#10b981' });
-    }
-    if (activeDirectives[2]) {
-      running += 6.00;
-      items.push({ x: '+ Direct 3: HNW RM', y: 6.00, fill: '#10b981' });
-    }
+    directives.forEach((d, idx) => {
+      if (activeDirectives[idx]) {
+        running += d.amount;
+        items.push({ x: d.label, y: +d.amount.toFixed(2), fill: '#10b981' });
+      }
+    });
 
     items.push({ x: 'Projected Total', y: +running.toFixed(2), fill: '#0284c7' });
-    items.push({ x: 'Target Budget', y: 57.02, fill: '#c5a059' });
+    items.push({ x: 'Target Budget', y: +targetBudget.toFixed(2), fill: '#c5a059' });
 
     const options = {
       series: [{

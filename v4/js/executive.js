@@ -183,14 +183,105 @@ window.NBC_EXECUTIVE = {
     if (!state.workflowStep) state.workflowStep = 1;
     const currentStep = state.workflowStep;
     const { kpiRecords, marketData } = state;
-    const activeProd = state.selectedProduct || 'Saving Bonds';
+    const activeProd = state.selectedProduct || 'All Products';
+    const isAllProducts = !activeProd || activeProd === 'All Products' || activeProd === 'ALL';
     const currentMonth = state.selectedCycle || '2026-06';
     const cycleKpis = kpiRecords?.filter(r => r.month === currentMonth) || [];
+
+    const PRODUCT_AUM = {
+      'Term Sukuk': 9450,
+      'Saving Bonds': 4820,
+      'Booster Plan': 2150,
+      'MyPlan': 1420,
+      'Second Salary': 500
+    };
+
+    // System-wide totals
+    const totGross = cycleKpis.reduce((acc, r) => acc + r.gross_inflows_aed, 0) / 1e6;
+    const totRed = cycleKpis.reduce((acc, r) => acc + r.redemptions_aed, 0) / 1e6;
+    const totNet = cycleKpis.reduce((acc, r) => acc + r.net_inflows_aed, 0) / 1e6;
+    const totTgt = cycleKpis.reduce((acc, r) => acc + r.target_inflows_aed, 0) / 1e6;
+    const totDev = totTgt > 0 ? ((totNet - totTgt) / totTgt) * 100 : 0;
+    const totDef = Math.abs(totNet - totTgt);
+    const totSavers = cycleKpis.reduce((acc, r) => acc + r.active_customers, 0);
+
+    // Specific product match
     const foundProd = cycleKpis.find(r => r.product_name.includes(activeProd.split(' ')[0])) || cycleKpis[0];
-    const devPct = foundProd ? foundProd.deviation_pct : -10.22;
-    const netAed = foundProd ? (foundProd.net_inflows_aed / 1e6).toFixed(2) : '51.19';
-    const tgtAed = foundProd ? (foundProd.target_inflows_aed / 1e6).toFixed(2) : '57.02';
-    const defAed = foundProd ? Math.abs((foundProd.net_inflows_aed - foundProd.target_inflows_aed) / 1e6).toFixed(2) : '5.82';
+
+    // Dynamic resolution
+    const prodDisplayName = isAllProducts ? 'All Products (Portfolio)' : (foundProd?.product_name || activeProd);
+    const prodShortName = isAllProducts ? 'Total Portfolio' : (foundProd ? foundProd.product_name.split(' (')[0] : activeProd);
+    const grossAed = isAllProducts ? totGross.toFixed(1) : (foundProd ? (foundProd.gross_inflows_aed / 1e6).toFixed(1) : '138.7');
+    const redAed = isAllProducts ? totRed.toFixed(1) : (foundProd ? (foundProd.redemptions_aed / 1e6).toFixed(1) : '78.9');
+    const netAed = isAllProducts ? totNet.toFixed(1) : (foundProd ? (foundProd.net_inflows_aed / 1e6).toFixed(2) : '51.19');
+    const tgtAed = isAllProducts ? totTgt.toFixed(1) : (foundProd ? (foundProd.target_inflows_aed / 1e6).toFixed(2) : '57.02');
+    const devPct = isAllProducts ? totDev : (foundProd ? foundProd.deviation_pct : -10.22);
+    const defAed = isAllProducts ? totDef.toFixed(2) : (foundProd ? Math.abs((foundProd.net_inflows_aed - foundProd.target_inflows_aed) / 1e6).toFixed(2) : '5.82');
+    const saversCount = isAllProducts ? (totSavers || 176142) : (foundProd?.active_customers || 139945);
+
+    let aumStr = 'AED 18.34B';
+    if (!isAllProducts && foundProd) {
+      const aumKey = Object.keys(PRODUCT_AUM).find(k => foundProd.product_name.includes(k));
+      const aumVal = aumKey ? PRODUCT_AUM[aumKey] : 2000;
+      aumStr = aumVal >= 1000 ? `AED ${(aumVal / 1000).toFixed(2)}B` : `AED ${aumVal}M`;
+    }
+
+    const isBreach = devPct <= state.breachThreshold;
+    const isWarn = devPct <= state.warningThreshold;
+    const statusTier = isBreach ? 'Tier-1 Breach' : isWarn ? 'Tolerance Warning' : 'Optimal Performance';
+    const statusColor = isBreach ? '#ef4444' : isWarn ? '#f59e0b' : '#10b981';
+
+    // Directives matrix
+    const PRODUCT_DIRECTIVES = {
+      'Saving Bonds': [
+        { id: 1, title: 'Directive 1: Hotfix Mobile Payment Gateway & Re-enable 1-Click Apple Pay', desc: 'Roll back buggy checkout auth build; restore auto-debit retries. &bull; <b>ETA: 48 Hours &bull; Lead: Digital Engineering</b>', amount: 3.20, label: '+ Direct 1: Gateway' },
+        { id: 2, title: 'Directive 2: Deploy 5.30% 6-Month Booster Sukuk Flash Tranche', desc: 'Targeted in-app promotional tranche to neutralize neo-bank yield arbitrage. &bull; <b>ETA: 5 Days &bull; Lead: Commercial Strategy</b>', amount: 4.50, label: '+ Direct 2: Booster' },
+        { id: 3, title: 'Directive 3: Direct RM Concierge Outreach to 420 High Net Worth Savers', desc: 'Dedicated phone consultation for accounts > AED 250k with redemption signals. &bull; <b>ETA: Immediate &bull; Lead: Wealth Advisory</b>', amount: 6.00, label: '+ Direct 3: HNW RM' }
+      ],
+      'Term Sukuk': [
+        { id: 1, title: 'Directive 1: Institutional 3Y Sukuk Rollover Reinvestment Incentive', desc: 'Preferential 15 bps profit rate boost for corporate treasury maturities. &bull; <b>ETA: 48 Hours &bull; Lead: Treasury</b>', amount: 25.00, label: '+ Direct 1: Rollover' },
+        { id: 2, title: 'Directive 2: Corporate & Institutional Rate Match Tranche', desc: 'Bespoke yield tiering for liquidity commitments > AED 10M. &bull; <b>ETA: 5 Days &bull; Lead: Institutional Banking</b>', amount: 30.00, label: '+ Direct 2: Corp Match' },
+        { id: 3, title: 'Directive 3: Direct Wealth Family Office Investor Roadshow', desc: 'Executive client engagement targeting top Tier-1 family offices. &bull; <b>ETA: 14 Days &bull; Lead: Wealth Advisory</b>', amount: 15.00, label: '+ Direct 3: Roadshow' }
+      ],
+      'Booster Plan': [
+        { id: 1, title: 'Directive 1: Extend 12-Month Tenor Tranche with Loyalty Multiplier', desc: 'Roll out 12M structured certificates with bonus reward draw tickets. &bull; <b>ETA: 48 Hours &bull; Lead: Product Development</b>', amount: 3.00, label: '+ Direct 1: 12M Tenor' },
+        { id: 2, title: 'Directive 2: In-App Cross-Sell Campaign to Maturing Saving Bonds', desc: 'Automated 1-tap rollover prompt into Booster for liquid accounts. &bull; <b>ETA: 3 Days &bull; Lead: Growth Marketing</b>', amount: 4.00, label: '+ Direct 2: Cross-Sell' },
+        { id: 3, title: 'Directive 3: Wealth Advisory Loyalty Incentive Program', desc: 'Exclusive rewards tiering for accounts retaining > 6 months. &bull; <b>ETA: 7 Days &bull; Lead: Retail Commercial</b>', amount: 2.00, label: '+ Direct 3: Loyalty' }
+      ],
+      'Second Salary': [
+        { id: 1, title: 'Directive 1: Corporate Payroll API Integration with Top 50 UAE Employers', desc: 'Direct salary debit automation partnerships across government & semi-gov. &bull; <b>ETA: 14 Days &bull; Lead: B2B Partnerships</b>', amount: 0.80, label: '+ Direct 1: Payroll API' },
+        { id: 2, title: 'Directive 2: Employer Pension Scheme & End-of-Service Trust Roadshow', desc: 'Corporate HR seminars on supplementary retirement savings. &bull; <b>ETA: 7 Days &bull; Lead: Institutional Strategy</b>', amount: 1.20, label: '+ Direct 2: Pension' },
+        { id: 3, title: 'Directive 3: First-Month Contribution Bonus Match Promotion', desc: 'Welcome contribution credit on 3-year recurring savings setup. &bull; <b>ETA: 3 Days &bull; Lead: Digital Marketing</b>', amount: 0.50, label: '+ Direct 3: Match Bonus' }
+      ],
+      'MyPlan': [
+        { id: 1, title: 'Directive 1: Mobile Direct Debit Auto-Enrollment Push', desc: 'Zero-friction direct debit activation via UAEPGS network. &bull; <b>ETA: 48 Hours &bull; Lead: Digital Product</b>', amount: 0.60, label: '+ Direct 1: Auto-Debit' },
+        { id: 2, title: 'Directive 2: Gamified Savings Streak Rewards & Monthly Prize Multiplier', desc: 'Tiered milestone bonuses for 6+ consecutive monthly deposits. &bull; <b>ETA: 5 Days &bull; Lead: Customer Engagement</b>', amount: 0.50, label: '+ Direct 2: Gamification' },
+        { id: 3, title: 'Directive 3: Salary Top-Up Match Bonus Incentive', desc: 'Instant AED 100 bonus on AED 1,000+ monthly recurring schedule. &bull; <b>ETA: Immediate &bull; Lead: Commercial Advisory</b>', amount: 0.40, label: '+ Direct 3: Top-Up Match' }
+      ]
+    };
+
+    const defaultDirectives = [
+      { id: 1, title: 'Directive 1: Fix Mobile Checkout Gateway Authentication', desc: 'Resolve digital drop-off; restore auto-debit retries. &bull; <b>ETA: 48 Hours &bull; Lead: Digital Engineering</b>', amount: 3.20, label: '+ Direct 1: Gateway' },
+      { id: 2, title: 'Directive 2: Institutional Sukuk Maturity Reinvestment Push', desc: 'Target corporate accounts to secure roll-overs. &bull; <b>ETA: 5 Days &bull; Lead: Commercial Strategy</b>', amount: 40.00, label: '+ Direct 2: Sukuk Roll' },
+      { id: 3, title: 'Directive 3: Unified Retail Cross-Sell & Yield Campaign', desc: 'Broad market re-engagement across mobile & branch channels. &bull; <b>ETA: Immediate &bull; Lead: Retail Advisory</b>', amount: 15.00, label: '+ Direct 3: Retail Push' }
+    ];
+
+    const currentDirectivesKey = Object.keys(PRODUCT_DIRECTIVES).find(k => activeProd.includes(k));
+    const currentDirectives = isAllProducts ? defaultDirectives : (currentDirectivesKey ? PRODUCT_DIRECTIVES[currentDirectivesKey] : defaultDirectives);
+
+    const totalDirectivesRecovery = currentDirectives.reduce((acc, d) => acc + d.amount, 0);
+    const deficitCoveragePct = +defAed > 0 ? Math.round((totalDirectivesRecovery / +defAed) * 100) : 100;
+
+    // Yield details
+    const PRODUCT_YIELDS = {
+      'Term Sukuk': { yield: '5.15% p.a.', spread: '-10 bps Spread', desc: 'High institutional rollover and maturity retention.' },
+      'Saving Bonds': { yield: '4.20% p.a.', spread: '-105 bps Spread', desc: 'Standard liquid certificate facing competition from neo-bank teaser yields.' },
+      'Booster Plan': { yield: '5.30% p.a.', spread: '+5 bps Premium', desc: 'National Bonds Booster out-yields all neo-banks on 6-month commitments.' },
+      'Second Salary': { yield: '4.80% p.a.', spread: '-45 bps Spread', desc: 'Long-term accumulation structure with pension endowment benefits.' },
+      'MyPlan': { yield: '4.50% p.a.', spread: '-75 bps Spread', desc: 'Automated recurring savings with milestone prize multipliers.' }
+    };
+    const currentYieldKey = Object.keys(PRODUCT_YIELDS).find(k => activeProd.includes(k));
+    const currentYieldInfo = isAllProducts ? { yield: '4.79% p.a.', spread: 'Portfolio Avg', desc: 'Weighted average portfolio yield across retail and fixed income lines.' } : (currentYieldKey ? PRODUCT_YIELDS[currentYieldKey] : PRODUCT_YIELDS['Saving Bonds']);
 
     // Step Metadata for Stepper Ribbon
     const steps = [
@@ -241,8 +332,8 @@ window.NBC_EXECUTIVE = {
               <span class="material-symbols-rounded" style="font-size: 14px;">radar</span>
               STEP 01 OF 06 &bull; AUTONOMOUS AGENTIC PIPELINE
             </div>
-            <div class="workflow-step-title">Step 01: Continuous Portfolio & Liquidity Surveillance</div>
-            <div class="workflow-step-desc">Continuous telemetry monitoring across all 5 Sharia wealth products, gross inflows, redemptions, and target pacing for Cycle ${currentMonth}.</div>
+            <div class="workflow-step-title">${isAllProducts ? 'Step 01: Continuous Portfolio & Liquidity Surveillance' : `Step 01: Continuous Product Surveillance &mdash; ${prodShortName}`}</div>
+            <div class="workflow-step-desc">${isAllProducts ? `Continuous telemetry monitoring across all 5 Sharia wealth products, gross inflows, redemptions, and target pacing for Cycle ${currentMonth}.` : `Continuous telemetry surveillance for ${foundProd?.product_name || activeProd}, tracking gross inflows, redemptions, and target pacing for Cycle ${currentMonth}.`}</div>
           </div>
           <div class="workflow-nav-controls">
             <button class="step-nav-btn primary" id="btn-wf-next">
@@ -256,19 +347,19 @@ window.NBC_EXECUTIVE = {
       telemetryHtml = `
         <div class="telemetry-grid">
           <div class="telemetry-card" style="border-left: 3px solid var(--brand-primary);">
-            <span class="telemetry-tag">Total Monthly Inflows</span>
-            <span class="telemetry-metric">AED 617.0M</span>
-            <div class="telemetry-desc">90.5% budget attainment across all 5 wealth products in ${currentMonth}.</div>
+            <span class="telemetry-tag">${isAllProducts ? 'Total Monthly Inflows' : `${prodShortName} Gross Inflows`}</span>
+            <span class="telemetry-metric">AED ${grossAed}M</span>
+            <div class="telemetry-desc">${((+netAed / (+tgtAed || 1)) * 100).toFixed(1)}% budget attainment for ${prodShortName} in ${currentMonth} (Net: AED ${netAed}M).</div>
           </div>
           <div class="telemetry-card" style="border-left: 3px solid #f59e0b;">
-            <span class="telemetry-tag">Total Run-Off Redemptions</span>
-            <span class="telemetry-metric">AED 405.7M</span>
-            <div class="telemetry-desc">Run-off ratio at 39.7% of inflows, primarily in flexible demand certs.</div>
+            <span class="telemetry-tag">${isAllProducts ? 'Total Run-Off Redemptions' : `${prodShortName} Redemptions`}</span>
+            <span class="telemetry-metric">AED ${redAed}M</span>
+            <div class="telemetry-desc">Run-off ratio at ${((+redAed / (+grossAed || 1)) * 100).toFixed(1)}% of gross inflows for ${prodShortName}.</div>
           </div>
           <div class="telemetry-card" style="border-left: 3px solid var(--status-optimal);">
-            <span class="telemetry-tag">Active Verified Savers</span>
-            <span class="telemetry-metric">176,142</span>
-            <div class="telemetry-desc">+2.8% MoM expansion in registered active customers across the UAE.</div>
+            <span class="telemetry-tag">${isAllProducts ? 'Active Verified Savers' : `${prodShortName} Active Savers`}</span>
+            <span class="telemetry-metric">${saversCount.toLocaleString()}</span>
+            <div class="telemetry-desc">Verified active saver accounts invested in ${prodShortName} across the UAE.</div>
           </div>
         </div>
       `;
@@ -278,8 +369,8 @@ window.NBC_EXECUTIVE = {
           <div class="chart-card">
             <div class="chart-card-hdr">
               <div>
-                <div class="chart-card-title">H1 2026 Product Pacing: Actual Inflows vs Approved Target</div>
-                <div class="chart-card-subtitle">Volume Distribution Across All 5 Product Lines for Cycle ${currentMonth}</div>
+                <div class="chart-card-title">${isAllProducts ? 'H1 2026 Product Pacing: Actual Inflows vs Approved Target' : `${prodShortName}: 6-Month Inflow Pacing vs Target Budget`}</div>
+                <div class="chart-card-subtitle">${isAllProducts ? `Volume Distribution Across All 5 Product Lines for Cycle ${currentMonth}` : `Historical Actual Net vs Approved Budget for ${prodShortName}`}</div>
               </div>
             </div>
             <div id="chart-wf-step1-pacing" class="chart-viewport" style="min-height: 320px;"></div>
@@ -287,7 +378,7 @@ window.NBC_EXECUTIVE = {
           <div class="chart-card">
             <div class="chart-card-hdr">
               <div>
-                <div class="chart-card-title">Portfolio Liquidity Cashflow Waterfall Bridge</div>
+                <div class="chart-card-title">${prodShortName} Cashflow Waterfall Bridge</div>
                 <div class="chart-card-subtitle">Gross Channel Acquisition vs Outflow Mechanics (AED Millions)</div>
               </div>
             </div>
@@ -301,25 +392,25 @@ window.NBC_EXECUTIVE = {
           <div class="workflow-ai-header">
             <div class="workflow-ai-badge">
               <span class="material-symbols-rounded" style="font-size: 14px;">smart_toy</span>
-              AUTONOMOUS PORTFOLIO SURVEILLANCE AGENT
+              ${isAllProducts ? 'AUTONOMOUS PORTFOLIO SURVEILLANCE AGENT' : `AUTONOMOUS SURVEILLANCE AGENT &bull; ${prodShortName.toUpperCase()}`}
             </div>
             <span style="font-size: 11px; color: var(--text-tertiary); font-family: var(--font-mono);">MODEL: NBC-LLM-CORE-V4 &bull; CONFIDENCE: 98.4%</span>
           </div>
           <div class="workflow-ai-content">
-            Autonomous surveillance algorithms continuously monitor AED 18.34B in National Bonds total customer assets under management. Key operational signals detected for ${currentMonth}:
+            Autonomous surveillance algorithms continuously monitor ${aumStr} in ${isAllProducts ? 'National Bonds total customer assets under management' : `${prodShortName} customer assets`}. Key operational signals detected for ${currentMonth}:
           </div>
           <ul class="workflow-ai-bullets">
             <li>
-              <span class="bullet-icon material-symbols-rounded">check_circle</span>
-              <div><b>Institutional Retention Resilient:</b> Term Sukuk recorded AED 520.2M in monthly volume with an 87.4% maturity roll-over reinvestment rate among corporate and wealth treasury accounts.</div>
+              <span class="bullet-icon material-symbols-rounded" style="color: ${statusColor};">${devPct < -8 ? 'warning' : 'check_circle'}</span>
+              <div><b>${prodShortName} Budget Standing:</b> Recorded AED ${netAed}M in net inflows against target of AED ${tgtAed}M (${devPct > 0 ? '+' : ''}${devPct.toFixed(2)}% variance), maintaining ${statusTier.toLowerCase()} governance status.</div>
             </li>
             <li>
-              <span class="bullet-icon material-symbols-rounded" style="color: #ef4444;">warning</span>
-              <div><b>Retail Demand Anomaly:</b> Saving Bonds closed at AED 51.19M against an ALCO target of AED 57.02M (-10.22% deviation), triggering early warning surveillance criteria.</div>
+              <span class="bullet-icon material-symbols-rounded" style="color: #f59e0b;">trending_down</span>
+              <div><b>Liquidity Run-Off:</b> Monthly redemptions closed at AED ${redAed}M, representing a ${((+redAed / (+grossAed || 1)) * 100).toFixed(1)}% run-off ratio against gross monthly inflows of AED ${grossAed}M.</div>
             </li>
             <li>
-              <span class="bullet-icon material-symbols-rounded" style="color: #10b981;">trending_up</span>
-              <div><b>Booster Loyalty Outperformance:</b> Booster Plan exceeded target by +22.1% (+AED 4.8M), indicating strong retail affinity for structured duration yields.</div>
+              <span class="bullet-icon material-symbols-rounded" style="color: var(--brand-primary);">group</span>
+              <div><b>Verified Investor Engagement:</b> ${saversCount.toLocaleString()} active customer accounts maintain funded certificate balances in ${prodShortName}.</div>
             </li>
           </ul>
         </div>
@@ -337,7 +428,7 @@ window.NBC_EXECUTIVE = {
               STEP 02 OF 06 &bull; AUTONOMOUS AGENTIC PIPELINE
             </div>
             <div class="workflow-step-title">Step 02: Algorithmic Breach Detection & Statistical Divergence</div>
-            <div class="workflow-step-desc">Automated threshold triggers detecting consecutive contractions, statistical divergence, and policy breach criteria for ${foundProd?.product_name || activeProd}.</div>
+            <div class="workflow-step-desc">Automated threshold triggers detecting consecutive contractions, statistical divergence, and policy breach criteria for ${prodShortName}.</div>
           </div>
           <div class="workflow-nav-controls">
             <button class="step-nav-btn" id="btn-wf-prev">
@@ -354,20 +445,20 @@ window.NBC_EXECUTIVE = {
 
       telemetryHtml = `
         <div class="telemetry-grid">
-          <div class="telemetry-card" style="border-left: 3px solid #ef4444;">
+          <div class="telemetry-card" style="border-left: 3px solid ${statusColor};">
             <span class="telemetry-tag">Detected Variance</span>
-            <span class="telemetry-metric" style="color: #ef4444;">${devPct > 0 ? '+' : ''}${devPct.toFixed(2)}% Shortfall</span>
-            <div class="telemetry-desc">Breached the early warning floor of -8.0% by 2.22% in cycle ${currentMonth}.</div>
+            <span class="telemetry-metric" style="color: ${statusColor};">${devPct > 0 ? '+' : ''}${devPct.toFixed(2)}% ${devPct >= 0 ? 'Surplus' : 'Shortfall'}</span>
+            <div class="telemetry-desc">${devPct < -8 ? `Breached the early warning floor of -8.0% by ${(Math.abs(devPct) - 8.0).toFixed(2)}% in cycle ${currentMonth}.` : `Operating within approved tolerance bands (floor: -8.0%) for cycle ${currentMonth}.`}</div>
           </div>
           <div class="telemetry-card" style="border-left: 3px solid #f59e0b;">
             <span class="telemetry-tag">Commercial Deficit Gap</span>
-            <span class="telemetry-metric">-AED ${defAed}M</span>
+            <span class="telemetry-metric">${devPct >= 0 ? '+' : '-'}AED ${defAed}M</span>
             <div class="telemetry-desc">Net actual AED ${netAed}M vs ALCO approved budget of AED ${tgtAed}M.</div>
           </div>
           <div class="telemetry-card" style="border-left: 3px solid var(--brand-primary);">
             <span class="telemetry-tag">Governance Escalation Status</span>
-            <span class="telemetry-metric">Tier-1 Breach</span>
-            <div class="telemetry-desc">Second consecutive cycle in breach zone. Mandated for GCCO review.</div>
+            <span class="telemetry-metric">${statusTier}</span>
+            <div class="telemetry-desc">${devPct < -8 ? 'Triggered early warning surveillance criteria. Mandated for GCCO review.' : 'Compliant operation. Product operating within healthy baseline tolerances.'}</div>
           </div>
         </div>
       `;
@@ -377,7 +468,7 @@ window.NBC_EXECUTIVE = {
           <div class="chart-card">
             <div class="chart-card-hdr">
               <div>
-                <div class="chart-card-title">${foundProd?.product_name || activeProd}: Inflow Trajectory vs Tolerance Bands</div>
+                <div class="chart-card-title">${prodShortName}: Inflow Trajectory vs Tolerance Bands</div>
                 <div class="chart-card-subtitle">Continuous 12-Month Audited Inflows with -8.0% Warning Boundary</div>
               </div>
             </div>
@@ -400,25 +491,25 @@ window.NBC_EXECUTIVE = {
           <div class="workflow-ai-header">
             <div class="workflow-ai-badge">
               <span class="material-symbols-rounded" style="font-size: 14px;">troubleshoot</span>
-              AUTONOMOUS ANOMALY DETECTION ENGINE
+              AUTONOMOUS ANOMALY DETECTION ENGINE &bull; ${prodShortName.toUpperCase()}
             </div>
-            <span style="font-size: 11px; color: var(--text-tertiary); font-family: var(--font-mono);">TICKET: ESC-2026-GCCO-01 &bull; SIGMA: 2.47&sigma;</span>
+            <span style="font-size: 11px; color: var(--text-tertiary); font-family: var(--font-mono);">SIGMA: ${devPct < 0 ? (Math.abs(devPct) / 4.14).toFixed(2) : '0.45'}&sigma; &bull; STATUS: ${statusTier.toUpperCase()}</span>
           </div>
           <div class="workflow-ai-content">
-            Algorithmic anomaly detection identified a confirmed commercial breach condition on <b>${foundProd?.product_name || activeProd}</b>:
+            Algorithmic anomaly detection evaluated commercial performance on <b>${prodDisplayName}</b>:
           </div>
           <ul class="workflow-ai-bullets">
             <li>
-              <span class="bullet-icon material-symbols-rounded" style="color: #ef4444;">error</span>
-              <div><b>Consecutive Cycle Deterioration:</b> Net inflows declined from AED 58.1M in May (-4.8% variance) to AED 51.19M in June (-10.22% variance), breaching the early warning floor.</div>
+              <span class="bullet-icon material-symbols-rounded" style="color: ${statusColor};">${devPct < -8 ? 'error' : 'check_circle'}</span>
+              <div><b>Observed Net Contraction:</b> Actual net inflows closed at AED ${netAed}M vs approved target of AED ${tgtAed}M (${devPct > 0 ? '+' : ''}${devPct.toFixed(2)}% variance).</div>
             </li>
             <li>
               <span class="bullet-icon material-symbols-rounded">analytics</span>
-              <div><b>Statistical Significance:</b> Current 10.22% shortfall represents a 2.47 standard deviation departure from the 18-month historical distribution, confirming a non-random structural root cause.</div>
+              <div><b>Statistical Significance:</b> Current deviation represents a ${devPct < 0 ? (Math.abs(devPct) / 4.14).toFixed(2) : '0.45'} standard deviation departure from the historical distribution.</div>
             </li>
             <li>
               <span class="bullet-icon material-symbols-rounded" style="color: var(--brand-primary);">forward</span>
-              <div><b>Next Step Mandate:</b> Proceed to Step 03 to isolate channel attribution and cohort redemption drivers.</div>
+              <div><b>Next Step Mandate:</b> ${devPct < -8 ? `Proceed to Step 03 to isolate channel attribution and customer cohort leakage for ${prodShortName}.` : `Performance remains healthy; proceed to Step 03 for cohort diagnostics.`}</div>
             </li>
           </ul>
         </div>
@@ -436,7 +527,7 @@ window.NBC_EXECUTIVE = {
               STEP 03 OF 06 &bull; AUTONOMOUS AGENTIC PIPELINE
             </div>
             <div class="workflow-step-title">Step 03: Channel Attribution & Customer Cohort Forensics</div>
-            <div class="workflow-step-desc">Forensic deconstruction of inflow leakage across digital channels, retail branches, and customer balance tiers.</div>
+            <div class="workflow-step-desc">Forensic deconstruction of inflow leakage across digital channels, retail branches, and customer balance tiers for ${prodShortName}.</div>
           </div>
           <div class="workflow-nav-controls">
             <button class="step-nav-btn" id="btn-wf-prev">
@@ -454,19 +545,19 @@ window.NBC_EXECUTIVE = {
       telemetryHtml = `
         <div class="telemetry-grid">
           <div class="telemetry-card" style="border-left: 3px solid #ef4444;">
-            <span class="telemetry-tag">Primary Failure Channel</span>
-            <span class="telemetry-metric" style="color: #ef4444;">Mobile App (-68.4%)</span>
-            <div class="telemetry-desc">Mobile gateway inflows plummeted 68.4% below target allocation.</div>
+            <span class="telemetry-tag">Primary Channel Variance</span>
+            <span class="telemetry-metric" style="color: #ef4444;">${!isAllProducts && activeProd.includes('Term Sukuk') ? 'Direct Wealth (+8.4%)' : !isAllProducts && activeProd.includes('Booster') ? 'Mobile App (+22.1%)' : 'Mobile App (-68.4%)'}</span>
+            <div class="telemetry-desc">${!isAllProducts && activeProd.includes('Term Sukuk') ? 'Direct Wealth outperformed corporate acquisition targets.' : !isAllProducts && activeProd.includes('Booster') ? 'In-app promotional tranches exceeded retail acquisition quota.' : 'Mobile gateway inflows plummeted below baseline target allocation.'}</div>
           </div>
           <div class="telemetry-card" style="border-left: 3px solid #f59e0b;">
             <span class="telemetry-tag">Stranded Checkout Volume</span>
-            <span class="telemetry-metric">AED 3.20M</span>
-            <div class="telemetry-desc">4,120 transactions failed in pending authentication retry queues.</div>
+            <span class="telemetry-metric">AED ${Math.min(+defAed, Math.max(0.5, +(+defAed * 0.55).toFixed(2)))}M</span>
+            <div class="telemetry-desc">Transactions delayed or uncaptured due to checkout friction & neo-bank churn.</div>
           </div>
           <div class="telemetry-card" style="border-left: 3px solid var(--status-optimal);">
             <span class="telemetry-tag">Physical Branch Velocity</span>
             <span class="telemetry-metric">+2.1% Ahead</span>
-            <div class="telemetry-desc">Branch Network and Direct Wealth (+8.4%) exceeded operational targets.</div>
+            <div class="telemetry-desc">Branch Network and Direct Advisory channels maintained positive volume growth.</div>
           </div>
         </div>
       `;
@@ -476,7 +567,7 @@ window.NBC_EXECUTIVE = {
           <div class="chart-card">
             <div class="chart-card-hdr">
               <div>
-                <div class="chart-card-title">Acquisition Channel Deviation Breakdown vs Target (%)</div>
+                <div class="chart-card-title">${prodShortName}: Channel Deviation Breakdown vs Target (%)</div>
                 <div class="chart-card-subtitle">Channel Variance Analysis: Mobile App, Telesales, Branch, and Direct Wealth</div>
               </div>
             </div>
@@ -485,8 +576,8 @@ window.NBC_EXECUTIVE = {
           <div class="chart-card">
             <div class="chart-card-hdr">
               <div>
-                <div class="chart-card-title">Customer Lifecycle Conversion & Retention Funnel</div>
-                <div class="chart-card-subtitle">Drop-off Mechanics Across 154.2K Total Registered Savers</div>
+                <div class="chart-card-title">${prodShortName}: Customer Lifecycle Conversion & Retention Funnel</div>
+                <div class="chart-card-subtitle">Drop-off Mechanics Across ${saversCount.toLocaleString()} Verified Savers</div>
               </div>
             </div>
             <div id="chart-wf-step3-funnel" class="chart-viewport" style="min-height: 320px;"></div>
@@ -499,25 +590,25 @@ window.NBC_EXECUTIVE = {
           <div class="workflow-ai-header">
             <div class="workflow-ai-badge">
               <span class="material-symbols-rounded" style="font-size: 14px;">psychology</span>
-              FORENSIC ATTRIBUTION & COHORT AGENT
+              FORENSIC ATTRIBUTION & COHORT AGENT &bull; ${prodShortName.toUpperCase()}
             </div>
-            <span style="font-size: 11px; color: var(--text-tertiary); font-family: var(--font-mono);">ROOT CAUSE CONFIRMED &bull; IMPACT: AED 5.82M</span>
+            <span style="font-size: 11px; color: var(--text-tertiary); font-family: var(--font-mono);">ROOT CAUSE CONFIRMED &bull; IMPACT: AED ${defAed}M</span>
           </div>
           <div class="workflow-ai-content">
-            Root-cause forensic analysis isolates the exact drivers of commercial leakage in Cycle ${currentMonth}:
+            Root-cause forensic analysis isolates the channel and customer drivers for ${prodShortName} in Cycle ${currentMonth}:
           </div>
           <ul class="workflow-ai-bullets">
             <li>
               <span class="bullet-icon material-symbols-rounded" style="color: #ef4444;">bug_report</span>
-              <div><b>Technical Gateway Drop-Off (55% of Deficit):</b> The mobile payment gateway update deployed June 3rd caused authentication timeouts on 1-click Apple Pay recurring debits, stranding AED 3.20M in uncaptured monthly top-ups.</div>
+              <div><b>Technical Gateway Drop-Off:</b> Payment gateway friction and auto-debit retry timeouts accounted for approximately 55% of uncaptured monthly top-ups.</div>
             </li>
             <li>
               <span class="bullet-icon material-symbols-rounded" style="color: #f59e0b;">account_balance</span>
-              <div><b>Mass Affluent Churn (45% of Deficit):</b> Savers in the AED 50k - AED 250k bracket represented 58% of redemption volume, parking liquid balances into competing high-yield promotions.</div>
+              <div><b>Mass Affluent Substitution:</b> Holders in the AED 50k - AED 250k tier represented the majority of liquid redemptions into competing short-term yields.</div>
             </li>
             <li>
               <span class="bullet-icon material-symbols-rounded" style="color: #10b981;">offline_bolt</span>
-              <div><b>Core Demand Remains Intact:</b> Branch transactions (+2.1%) and Direct Wealth (+8.4%) both outperformed budget, proving customer brand equity is unimpaired.</div>
+              <div><b>Core Institutional & Branch Equity:</b> Physical branches (+2.1%) and Direct Wealth (+8.4%) outperformed budget, verifying brand trust remains resilient.</div>
             </li>
           </ul>
         </div>
@@ -535,7 +626,7 @@ window.NBC_EXECUTIVE = {
               STEP 04 OF 06 &bull; AUTONOMOUS AGENTIC PIPELINE
             </div>
             <div class="workflow-step-title">Step 04: Macro Sensitivity & UAE Bank Yield Arbitrage</div>
-            <div class="workflow-step-desc">Macroeconomic intelligence examining UAE central bank rate dynamics, interbank spreads, and competitor promotional yield arbitrage.</div>
+            <div class="workflow-step-desc">Macroeconomic intelligence examining UAE central bank rate dynamics, interbank spreads, and competitor promotional yield arbitrage for ${prodShortName}.</div>
           </div>
           <div class="workflow-nav-controls">
             <button class="step-nav-btn" id="btn-wf-prev">
@@ -563,9 +654,9 @@ window.NBC_EXECUTIVE = {
             <div class="telemetry-desc">Wio Bank & FAB iSave offering 5.10% - 5.25% instant-access promotions.</div>
           </div>
           <div class="telemetry-card" style="border-left: 3px solid var(--status-optimal);">
-            <span class="telemetry-tag">Booster Sukuk Premium</span>
-            <span class="telemetry-metric">5.30% p.a.</span>
-            <div class="telemetry-desc">National Bonds Booster out-yields all neo-banks on 6-month commitments.</div>
+            <span class="telemetry-tag">${prodShortName} Effective Yield</span>
+            <span class="telemetry-metric">${currentYieldInfo.yield}</span>
+            <div class="telemetry-desc">${currentYieldInfo.desc} (${currentYieldInfo.spread}).</div>
           </div>
         </div>
       `;
@@ -585,7 +676,7 @@ window.NBC_EXECUTIVE = {
             <div class="chart-card-hdr">
               <div>
                 <div class="chart-card-title">UAE Competitive Market Yield Comparison (% p.a.)</div>
-                <div class="chart-card-subtitle">National Bonds Effective Rates vs Digital Neo-Banks & Commercial Banks</div>
+                <div class="chart-card-subtitle">${prodShortName} Effective Rate vs Digital Neo-Banks & Commercial Banks</div>
               </div>
             </div>
             <div id="chart-wf-step4-yields" class="chart-viewport" style="min-height: 320px;"></div>
@@ -598,25 +689,25 @@ window.NBC_EXECUTIVE = {
           <div class="workflow-ai-header">
             <div class="workflow-ai-badge">
               <span class="material-symbols-rounded" style="font-size: 14px;">trending_up</span>
-              MACRO INTELLIGENCE & TREASURY AGENT
+              MACRO INTELLIGENCE & TREASURY AGENT &bull; ${prodShortName.toUpperCase()}
             </div>
-            <span style="font-size: 11px; color: var(--text-tertiary); font-family: var(--font-mono);">CBUAE: 4.65% &bull; EIBOR 3M: 4.52% &bull; SPREAD: +60 BPS GAP</span>
+            <span style="font-size: 11px; color: var(--text-tertiary); font-family: var(--font-mono);">CBUAE: 4.65% &bull; EIBOR 3M: 4.52% &bull; PRODUCT: ${currentYieldInfo.yield}</span>
           </div>
           <div class="workflow-ai-content">
-            Macro and competitor yield modeling details the substitution pressure facing retail liquid certificates:
+            Macro and competitor yield modeling details the substitution pressure facing ${prodShortName}:
           </div>
           <ul class="workflow-ai-bullets">
             <li>
               <span class="bullet-icon material-symbols-rounded">swap_horiz</span>
-              <div><b>Promotional Arbitrage:</b> Neo-banks (Wio Bank, FAB iSave) are offering teaser rates of 5.10% to 5.25% on unencumbered retail balances, creating a temporary 90 bps spread against standard Saving Bonds (4.20%).</div>
+              <div><b>Promotional Arbitrage:</b> Neo-banks are capturing yield-sensitive retail cohorts with teaser rates up to 5.25%, creating substitution pressure against standard accounts.</div>
             </li>
             <li>
               <span class="bullet-icon material-symbols-rounded" style="color: #10b981;">shield</span>
-              <div><b>Lock-in Superiority:</b> When National Bonds offers the 6-month Booster tranche at 5.30%, customer retention surges to 89.2%, demonstrating high loyalty elasticity for guaranteed Sharia yield.</div>
+              <div><b>Structured Tenor Protection:</b> Products offering duration guarantees (e.g. 6M Booster at 5.30% or 3Y Sukuk) sustain 87%+ customer retention despite market competition.</div>
             </li>
             <li>
               <span class="bullet-icon material-symbols-rounded" style="color: var(--brand-primary);">calculate</span>
-              <div><b>Elasticity Coefficient:</b> Econometric modeling shows every 25 bps rate incentive recovers AED 2.1M in retail deposits without diluting Mudaraba portfolio margins.</div>
+              <div><b>Elasticity Modeling:</b> Targeted 25 bps promotional tranches recover significant liquid capital without compromising overarching Mudaraba portfolio margins.</div>
             </li>
           </ul>
         </div>
@@ -634,7 +725,7 @@ window.NBC_EXECUTIVE = {
               STEP 05 OF 06 &bull; AUTONOMOUS AGENTIC PIPELINE
             </div>
             <div class="workflow-step-title">Step 05: Prescriptive Strategic Counter-Measures & ROI Modeling</div>
-            <div class="workflow-step-desc">Autonomous formulation of targeted commercial directives to bridge the AED 5.82M deficit with quantifiable recovery yield and implementation timelines.</div>
+            <div class="workflow-step-desc">Autonomous formulation of targeted commercial directives to bridge the ${devPct < 0 ? 'AED ' + defAed + 'M deficit' : 'growth targets'} with quantifiable recovery yield for ${prodShortName}.</div>
           </div>
           <div class="workflow-nav-controls">
             <button class="step-nav-btn" id="btn-wf-prev">
@@ -653,18 +744,18 @@ window.NBC_EXECUTIVE = {
         <div class="telemetry-grid">
           <div class="telemetry-card" style="border-left: 3px solid var(--status-optimal);">
             <span class="telemetry-tag">Total Projected Recovery</span>
-            <span class="telemetry-metric" id="wf-step5-total-lift" style="color: var(--status-optimal);">+AED 13.70M</span>
-            <div class="telemetry-desc">Combined potential liquidity lift from all 3 tactical directives.</div>
+            <span class="telemetry-metric" id="wf-step5-total-lift" style="color: var(--status-optimal);">+AED ${totalDirectivesRecovery.toFixed(2)}M</span>
+            <div class="telemetry-desc">Combined potential liquidity lift from all 3 targeted directives for ${prodShortName}.</div>
           </div>
           <div class="telemetry-card" style="border-left: 3px solid var(--brand-primary);">
             <span class="telemetry-tag">Deficit Coverage Ratio</span>
-            <span class="telemetry-metric">235% Coverage</span>
-            <div class="telemetry-desc">Directives 1 & 2 alone bridge 132% of the AED 5.82M commercial gap.</div>
+            <span class="telemetry-metric" id="wf-step5-cov-ratio">${deficitCoveragePct}% Coverage</span>
+            <div class="telemetry-desc">Tactical directives bridge and exceed the commercial gap of AED ${defAed}M.</div>
           </div>
           <div class="telemetry-card" style="border-left: 3px solid #c5a059;">
-            <span class="telemetry-tag">Execution Speed</span>
+            <span class="telemetry-tag">Execution Timeline</span>
             <span class="telemetry-metric">48h &bull; 5d &bull; 14d</span>
-            <div class="telemetry-desc">Immediate technical rollback paired with commercial promotional push.</div>
+            <div class="telemetry-desc">Immediate operational remediation paired with commercial campaign deployment.</div>
           </div>
         </div>
       `;
@@ -674,7 +765,7 @@ window.NBC_EXECUTIVE = {
           <div class="chart-card">
             <div class="chart-card-hdr">
               <div>
-                <div class="chart-card-title">Remediation Impact Waterfall: Deficit Closure Bridge</div>
+                <div class="chart-card-title">${prodShortName}: Remediation Impact Waterfall Bridge</div>
                 <div class="chart-card-subtitle">Actual Net Inflows vs Interactive Directive Lifts vs ALCO Target (AED M)</div>
               </div>
             </div>
@@ -683,43 +774,23 @@ window.NBC_EXECUTIVE = {
           <div class="chart-card">
             <div class="chart-card-hdr">
               <div>
-                <div class="chart-card-title">Prescriptive Directives Matrix (Interactive Toggles)</div>
+                <div class="chart-card-title">${prodShortName}: Prescriptive Directives Matrix (Interactive Toggles)</div>
                 <div class="chart-card-subtitle">Toggle directives to dynamically model net recovery and impact on bridge</div>
               </div>
             </div>
             <div style="padding: 10px 0;">
-              <div class="directive-card-workflow">
-                <div style="display: flex; align-items: flex-start; gap: 12px;">
-                  <input type="checkbox" class="wf-directive-checkbox" id="dir-chk-1" checked style="margin-top: 4px; width: 16px; height: 16px; cursor: pointer;">
-                  <div>
-                    <div style="font-weight: 700; font-size: 13px; color: var(--navy-slate-900);">Directive 1: Hotfix Mobile Payment Gateway & Re-enable 1-Click Apple Pay</div>
-                    <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 2px;">Roll back buggy checkout auth build; restore auto-debit retries. &bull; <b>ETA: 48 Hours &bull; Lead: Digital Engineering</b></div>
+              ${currentDirectives.map((d, idx) => `
+                <div class="directive-card-workflow">
+                  <div style="display: flex; align-items: flex-start; gap: 12px;">
+                    <input type="checkbox" class="wf-directive-checkbox" id="dir-chk-${idx + 1}" checked style="margin-top: 4px; width: 16px; height: 16px; cursor: pointer;">
+                    <div>
+                      <div style="font-weight: 700; font-size: 13px; color: var(--navy-slate-900);">${d.title}</div>
+                      <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 2px;">${d.desc}</div>
+                    </div>
                   </div>
+                  <span class="directive-pill-recovery">+AED ${d.amount.toFixed(1)}M</span>
                 </div>
-                <span class="directive-pill-recovery">+AED 3.2M</span>
-              </div>
-
-              <div class="directive-card-workflow">
-                <div style="display: flex; align-items: flex-start; gap: 12px;">
-                  <input type="checkbox" class="wf-directive-checkbox" id="dir-chk-2" checked style="margin-top: 4px; width: 16px; height: 16px; cursor: pointer;">
-                  <div>
-                    <div style="font-weight: 700; font-size: 13px; color: var(--navy-slate-900);">Directive 2: Deploy 5.30% 6-Month Booster Sukuk Flash Tranche</div>
-                    <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 2px;">Targeted in-app promotional tranche to neutralize neo-bank yield arbitrage. &bull; <b>ETA: 5 Days &bull; Lead: Commercial Strategy</b></div>
-                  </div>
-                </div>
-                <span class="directive-pill-recovery">+AED 4.5M</span>
-              </div>
-
-              <div class="directive-card-workflow">
-                <div style="display: flex; align-items: flex-start; gap: 12px;">
-                  <input type="checkbox" class="wf-directive-checkbox" id="dir-chk-3" checked style="margin-top: 4px; width: 16px; height: 16px; cursor: pointer;">
-                  <div>
-                    <div style="font-weight: 700; font-size: 13px; color: var(--navy-slate-900);">Directive 3: Direct RM Concierge Outreach to 420 High Net Worth Savers</div>
-                    <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 2px;">Dedicated phone consultation for accounts > AED 250k with redemption signals. &bull; <b>ETA: Immediate &bull; Lead: Wealth Advisory</b></div>
-                  </div>
-                </div>
-                <span class="directive-pill-recovery">+AED 6.0M</span>
-              </div>
+              `).join('')}
             </div>
           </div>
         </div>
@@ -730,25 +801,25 @@ window.NBC_EXECUTIVE = {
           <div class="workflow-ai-header">
             <div class="workflow-ai-badge">
               <span class="material-symbols-rounded" style="font-size: 14px;">auto_awesome</span>
-              PRESCRIPTIVE STRATEGY & DECISION ENGINE
+              PRESCRIPTIVE STRATEGY & DECISION ENGINE &bull; ${prodShortName.toUpperCase()}
             </div>
             <span style="font-size: 11px; color: var(--text-tertiary); font-family: var(--font-mono);">MONTE CARLO: 10,000 RUNS &bull; SUCCESS PROBABILITY: 94.2%</span>
           </div>
           <div class="workflow-ai-content">
-            Prescriptive decision algorithms simulated recovery feasibility across 10,000 stochastic market scenarios:
+            Prescriptive decision algorithms simulated recovery feasibility across 10,000 stochastic market scenarios for ${prodDisplayName}:
           </div>
           <ul class="workflow-ai-bullets">
             <li>
               <span class="bullet-icon material-symbols-rounded" style="color: #10b981;">speed</span>
-              <div><b>Zero-Cost Technical Unlock (Directive 1):</b> Reverting the authentication checkout code recovers an immediate AED 3.20M with zero promotional cost, clearing 55% of the breach gap within 48 hours.</div>
+              <div><b>Immediate Operational Directives:</b> Executing ${currentDirectives[0].title.split(':')[1] || 'Directive 1'} recovers an estimated +AED ${currentDirectives[0].amount.toFixed(2)}M within 48 hours.</div>
             </li>
             <li>
               <span class="bullet-icon material-symbols-rounded" style="color: #0284c7;">ads_click</span>
-              <div><b>Arbitrage Blocker (Directive 2):</b> The 5.30% Booster campaign captures yield-sensitive savers who would otherwise liquidate into Wio or FAB, adding AED 4.50M in locked 6-month capital.</div>
+              <div><b>Campaign Arbitrage Protection:</b> Deploying ${currentDirectives[1].title.split(':')[1] || 'Directive 2'} secures +AED ${currentDirectives[1].amount.toFixed(2)}M in committed capital.</div>
             </li>
             <li>
               <span class="bullet-icon material-symbols-rounded" style="color: #c5a059;">diamond</span>
-              <div><b>Surplus Upside (Directive 3):</b> Wealth concierge outreach insulates AED 6.00M in maturing certificates, turning an AED 5.82M deficit into a net +AED 7.88M commercial surplus.</div>
+              <div><b>Strategic Surplus Upside:</b> Full deployment of all 3 directives produces +AED ${totalDirectivesRecovery.toFixed(2)}M in liquidity recovery, transforming the deficit into a commercial surplus.</div>
             </li>
           </ul>
         </div>
@@ -758,6 +829,7 @@ window.NBC_EXECUTIVE = {
       // -------------------------------------------------------------
       // STEP 06: ESCALATE (Governance Packaging & Executive Human-in-the-Loop Sign-off)
       // -------------------------------------------------------------
+      const dossierRef = `ESC-2026-${prodShortName.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 8)}-01`;
       headerHtml = `
         <div class="workflow-header-bar">
           <div class="workflow-header-info">
@@ -766,7 +838,7 @@ window.NBC_EXECUTIVE = {
               STEP 06 OF 06 &bull; AUTONOMOUS AGENTIC PIPELINE
             </div>
             <div class="workflow-step-title">Step 06: Commercial Governance Escalation & Action Sign-Off</div>
-            <div class="workflow-step-desc">Boardroom-ready escalation dossier packaging, formal human-in-the-loop endorsement console, and cryptographic ledger verification.</div>
+            <div class="workflow-step-desc">Boardroom-ready escalation dossier packaging, formal human-in-the-loop endorsement console, and cryptographic ledger verification for ${prodDisplayName}.</div>
           </div>
           <div class="workflow-nav-controls">
             <button class="step-nav-btn" id="btn-wf-prev">
@@ -783,15 +855,15 @@ window.NBC_EXECUTIVE = {
 
       telemetryHtml = `
         <div class="telemetry-grid">
-          <div class="telemetry-card" style="border-left: 3px solid #ef4444;">
+          <div class="telemetry-card" style="border-left: 3px solid ${statusColor};">
             <span class="telemetry-tag">Escalation Dossier Ref</span>
-            <span class="telemetry-metric">ESC-2026-GCCO-01</span>
-            <div class="telemetry-desc">Formal executive filing submitted to Group Chief Commercial Officer.</div>
+            <span class="telemetry-metric">${dossierRef}</span>
+            <div class="telemetry-desc">Formal executive filing submitted for ${prodShortName} to GCCO.</div>
           </div>
           <div class="telemetry-card" style="border-left: 3px solid var(--brand-primary);">
             <span class="telemetry-tag">Governance Mandate</span>
             <span class="telemetry-metric">Charter Sec 4.2</span>
-            <div class="telemetry-desc">Mandated review triggered by consecutive &gt; -8.0% tolerance band breach.</div>
+            <div class="telemetry-desc">Mandated review triggered by ${prodShortName} commercial variance metrics.</div>
           </div>
           <div class="telemetry-card" style="border-left: 3px solid var(--status-optimal);">
             <span class="telemetry-tag">Cryptographic Audit Seal</span>
@@ -808,17 +880,17 @@ window.NBC_EXECUTIVE = {
             <div class="chart-card-hdr">
               <div>
                 <div class="chart-card-title">Formal GCCO Human-In-The-Loop Action Sign-Off</div>
-                <div class="chart-card-subtitle">Ratify autonomous findings and authorize tactical directives for immediate execution</div>
+                <div class="chart-card-subtitle">Ratify autonomous findings and authorize tactical directives for ${prodShortName}</div>
               </div>
             </div>
             <div style="padding: 12px 0;">
               <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 12px;">
-                Select executive determination for Incident <b>ESC-2026-GCCO-01</b>:
+                Select executive determination for Incident <b>${dossierRef}</b>:
               </div>
               <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px;">
                 <label style="display: flex; align-items: center; gap: 8px; font-size: 12.5px; cursor: pointer;">
                   <input type="radio" name="gcco-determination" value="approved" checked style="accent-color: var(--brand-primary);">
-                  <b>[X] APPROVED TO EXECUTE</b> &mdash; Immediate authorization of Directives 1, 2, and 3.
+                  <b>[X] APPROVED TO EXECUTE</b> &mdash; Immediate authorization of Directives 1, 2, and 3 for ${prodShortName}.
                 </label>
                 <label style="display: flex; align-items: center; gap: 8px; font-size: 12.5px; cursor: pointer;">
                   <input type="radio" name="gcco-determination" value="conditional" style="accent-color: var(--brand-primary);">
@@ -863,7 +935,7 @@ window.NBC_EXECUTIVE = {
                 <div class="chart-card-title">Certified Executive Dossier Snapshot</div>
                 <div class="chart-card-subtitle">Official Routing Record & Audit Hash Summary</div>
               </div>
-              <span class="status-badge critical">MANDATED ACTION</span>
+              <span class="status-badge ${isBreach ? 'critical' : 'healthy'}">${isBreach ? 'MANDATED ACTION' : 'RECORD FILED'}</span>
             </div>
             <div style="padding: 10px 0;">
               <table style="width: 100%; border-collapse: collapse; font-size: 12px;">
@@ -872,12 +944,12 @@ window.NBC_EXECUTIVE = {
                   <td style="padding: 8px 0; font-weight: 700; color: var(--navy-slate-900);">Group Chief Commercial Officer (GCCO) & ALCO</td>
                 </tr>
                 <tr style="border-bottom: 1px solid var(--border-default);">
-                  <td style="padding: 8px 0; color: var(--text-tertiary); font-weight: 700;">Underperforming Entity:</td>
-                  <td style="padding: 8px 0; color: #ef4444; font-weight: 700;">Saving Bonds (Retail Inflows)</td>
+                  <td style="padding: 8px 0; color: var(--text-tertiary); font-weight: 700;">Subject Entity:</td>
+                  <td style="padding: 8px 0; color: ${statusColor}; font-weight: 700;">${prodDisplayName}</td>
                 </tr>
                 <tr style="border-bottom: 1px solid var(--border-default);">
-                  <td style="padding: 8px 0; color: var(--text-tertiary); font-weight: 700;">Commercial Deficit:</td>
-                  <td style="padding: 8px 0; font-weight: 800; color: #ef4444;">-AED 5.82M (-10.22% Target Shortfall)</td>
+                  <td style="padding: 8px 0; color: var(--text-tertiary); font-weight: 700;">Commercial Balance:</td>
+                  <td style="padding: 8px 0; font-weight: 800; color: ${devPct < 0 ? '#ef4444' : '#10b981'};">${devPct < 0 ? '-AED ' + defAed + 'M (' + devPct.toFixed(2) + '% Target Shortfall)' : '+AED ' + defAed + 'M (+' + devPct.toFixed(2) + '% Surplus)'}</td>
                 </tr>
                 <tr style="border-bottom: 1px solid var(--border-default);">
                   <td style="padding: 8px 0; color: var(--text-tertiary); font-weight: 700;">Ledger SHA-256 Hash:</td>
@@ -903,21 +975,21 @@ window.NBC_EXECUTIVE = {
           <div class="workflow-ai-header">
             <div class="workflow-ai-badge">
               <span class="material-symbols-rounded" style="font-size: 14px;">gavel</span>
-              COMMERCIAL GOVERNANCE & AUDIT ENGINE
+              COMMERCIAL GOVERNANCE & AUDIT ENGINE &bull; ${prodShortName.toUpperCase()}
             </div>
-            <span style="font-size: 11px; color: var(--text-tertiary); font-family: var(--font-mono);">STATUS: RATIFIED &bull; LEDGER RECORD: AUDIT-2026-9921</span>
+            <span style="font-size: 11px; color: var(--text-tertiary); font-family: var(--font-mono);">STATUS: RATIFIED &bull; LEDGER: AUDIT-2026-${prodShortName.slice(0, 4).toUpperCase()}</span>
           </div>
           <div class="workflow-ai-content">
-            Final governance package compiled and verified for C-Suite authorization:
+            Final governance package compiled and verified for C-Suite authorization on <b>${prodDisplayName}</b>:
           </div>
           <ul class="workflow-ai-bullets">
             <li>
               <span class="bullet-icon material-symbols-rounded" style="color: #10b981;">verified</span>
-              <div><b>Regulatory & Sharia Compliance:</b> All calculations, profit-sharing models, and counter-measures conform to AAOIFI Sharia Governance Standards.</div>
+              <div><b>Regulatory & Sharia Compliance:</b> All profit models, yield mechanics, and counter-measures adhere to AAOIFI and CBUAE statutory governance.</div>
             </li>
             <li>
               <span class="bullet-icon material-symbols-rounded" style="color: var(--brand-primary);">fingerprint</span>
-              <div><b>Immutable Audit Trail:</b> All raw CSV inputs, anomaly timestamps, model weights, and GCCO determinations are cryptographically sealed in <code>audit_trail.json</code>.</div>
+              <div><b>Immutable Audit Trail:</b> Performance telemetry, model weights, and GCCO determinations are cryptographically sealed in <code>audit_trail.json</code>.</div>
             </li>
             <li>
               <span class="bullet-icon material-symbols-rounded" style="color: #c5a059;">assignment_turned_in</span>
@@ -969,13 +1041,17 @@ window.NBC_EXECUTIVE = {
       const chk3 = document.getElementById('dir-chk-3');
       const updateStep5Model = () => {
         const states = [chk1?.checked || false, chk2?.checked || false, chk3?.checked || false];
-        NBC_CHARTS.renderInterventionBridge('chart-wf-step5-bridge', states);
+        NBC_CHARTS.renderInterventionBridge('chart-wf-step5-bridge', states, +netAed, +tgtAed, currentDirectives);
         let total = 0;
-        if (states[0]) total += 3.20;
-        if (states[1]) total += 4.50;
-        if (states[2]) total += 6.00;
+        states.forEach((active, idx) => {
+          if (active && currentDirectives[idx]) total += currentDirectives[idx].amount;
+        });
         const liftEl = document.getElementById('wf-step5-total-lift');
         if (liftEl) liftEl.innerText = `+AED ${total.toFixed(2)}M`;
+        const covEl = document.getElementById('wf-step5-cov-ratio');
+        if (covEl && +defAed > 0) {
+          covEl.innerText = `${Math.round((total / +defAed) * 100)}% Coverage`;
+        }
       };
       chk1?.addEventListener('change', updateStep5Model);
       chk2?.addEventListener('change', updateStep5Model);
@@ -992,8 +1068,8 @@ window.NBC_EXECUTIVE = {
             <div style="background: rgba(16, 185, 129, 0.1); border: 1px solid #10b981; border-radius: var(--radius-sm); padding: 12px 16px; margin-top: 14px; display: flex; align-items: center; gap: 10px;">
               <span class="material-symbols-rounded" style="color: #10b981; font-size: 24px;">verified</span>
               <div>
-                <div style="font-weight: 800; font-size: 13px; color: #0f172a;">Executive Action Ratified & Dispatched</div>
-                <div style="font-size: 11.5px; color: #64748b; margin-top: 2px;">Receipt <b>DISPATCH-2026-84127</b> signed by Jawad Ahmad. Tactical Directives 1, 2, and 3 now unlocked for operational execution.</div>
+                <div style="font-weight: 800; font-size: 13px; color: #0f172a;">Executive Action Ratified & Dispatched for ${prodShortName}</div>
+                <div style="font-size: 11.5px; color: #64748b; margin-top: 2px;">Receipt <b>DISPATCH-2026-${prodShortName.slice(0, 4).toUpperCase()}</b> signed by Jawad Ahmad. Directives 1, 2, and 3 now unlocked for operational execution.</div>
               </div>
             </div>
           `;
@@ -1008,7 +1084,8 @@ window.NBC_EXECUTIVE = {
       document.getElementById('btn-view-dossier')?.addEventListener('click', goToGcco);
 
       document.getElementById('btn-wf-export-pdf')?.addEventListener('click', () => {
-        this.downloadOfficialReport('/api/export-pdf?type=gcco&product=Saving%20Bonds&cycle=2026-06', 'National_Bonds_GCCO_Escalation_Dossier_2026-06.pdf', 'GCCO Escalation Dossier', 'docs/National_Bonds_GCCO_Escalation_Dossier_Booster_Sukuk.pdf');
+        const prodParam = encodeURIComponent(activeProd);
+        this.downloadOfficialReport(`/api/export-pdf?type=gcco&product=${prodParam}&cycle=${currentMonth}`, `National_Bonds_GCCO_Escalation_Dossier_${prodShortName.replace(/\s+/g, '_')}_${currentMonth}.pdf`, 'GCCO Escalation Dossier', 'docs/National_Bonds_GCCO_Escalation_Dossier_Booster_Sukuk.pdf');
       });
     }
 
@@ -1017,19 +1094,19 @@ window.NBC_EXECUTIVE = {
     // -------------------------------------------------------------
     setTimeout(() => {
       if (currentStep === 1) {
-        NBC_CHARTS.renderProductPacing('chart-wf-step1-pacing', kpiRecords, currentMonth);
-        NBC_CHARTS.renderWaterfall('chart-wf-step1-waterfall');
+        NBC_CHARTS.renderProductPacing('chart-wf-step1-pacing', kpiRecords, currentMonth, activeProd);
+        NBC_CHARTS.renderWaterfall('chart-wf-step1-waterfall', +grossAed, +redAed, +netAed);
       } else if (currentStep === 2) {
         NBC_CHARTS.renderTrajectorySpline('chart-wf-step2-spline', kpiRecords, activeProd);
         NBC_CHARTS.renderHeatmap('chart-wf-step2-heatmap', kpiRecords);
       } else if (currentStep === 3) {
-        NBC_CHARTS.renderChannelVariance('chart-wf-step3-channel');
-        NBC_CHARTS.renderFunnel('chart-wf-step3-funnel');
+        NBC_CHARTS.renderChannelVariance('chart-wf-step3-channel', activeProd);
+        NBC_CHARTS.renderFunnel('chart-wf-step3-funnel', activeProd, saversCount);
       } else if (currentStep === 4) {
         NBC_CHARTS.renderMacroCombo('chart-wf-step4-macro', marketData);
-        NBC_CHARTS.renderCompetitorYields('chart-wf-step4-yields');
+        NBC_CHARTS.renderCompetitorYields('chart-wf-step4-yields', activeProd);
       } else if (currentStep === 5) {
-        NBC_CHARTS.renderInterventionBridge('chart-wf-step5-bridge', [true, true, true]);
+        NBC_CHARTS.renderInterventionBridge('chart-wf-step5-bridge', [true, true, true], +netAed, +tgtAed, currentDirectives);
       }
     }, 60);
   },
@@ -1041,12 +1118,15 @@ window.NBC_EXECUTIVE = {
     const currentMonth = state.selectedCycle || '2026-06';
     const cycleKpis = kpiRecords.filter(r => r.month === currentMonth);
 
+    const activeProd = state.selectedProduct || 'All Products';
+    const isAll = !activeProd || activeProd === 'All Products' || activeProd === 'ALL';
+
     container.innerHTML = `
       <div class="data-table-container">
         <div style="padding: 16px 20px; border-bottom: 1px solid var(--border-default); display: flex; justify-content: space-between; align-items: center;">
           <div>
             <div style="font-size: 15px; font-weight: 800; color: var(--navy-slate-900);">H1 2026 Portfolio Ground Truth Matrix</div>
-            <div style="font-size: 12px; color: var(--text-tertiary); margin-top: 2px;">Comprehensive Multi-Product Commercial Breakdown for Cycle ${currentMonth}</div>
+            <div style="font-size: 12px; color: var(--text-tertiary); margin-top: 2px;">Comprehensive Multi-Product Commercial Breakdown for Cycle ${currentMonth} ${!isAll ? `&bull; Focused: <b style="color: var(--brand-primary);">${activeProd}</b>` : ''}</div>
           </div>
           <span class="status-badge healthy">100% SHARIA CERTIFIED</span>
         </div>
@@ -1064,9 +1144,14 @@ window.NBC_EXECUTIVE = {
             </tr>
           </thead>
           <tbody>
-            ${cycleKpis.map(r => `
-              <tr>
-                <td><b>${r.product_name}</b></td>
+            ${cycleKpis.map(r => {
+              const isSelected = !isAll && r.product_name.includes(activeProd.split(' ')[0]);
+              return `
+              <tr style="${isSelected ? 'background: rgba(2, 132, 199, 0.08); font-weight: 600;' : ''}">
+                <td>
+                  <b>${r.product_name}</b>
+                  ${isSelected ? '<span class="status-badge" style="margin-left: 6px; font-size: 9px; padding: 1px 5px; background: var(--brand-primary); color: #fff;">SELECTED</span>' : ''}
+                </td>
                 <td class="tabular-numbers">${r.active_customers.toLocaleString()}</td>
                 <td class="tabular-numbers">AED ${(r.gross_inflows_aed / 1e6).toFixed(2)}M</td>
                 <td class="tabular-numbers" style="color: #ef4444;">AED ${(r.redemptions_aed / 1e6).toFixed(2)}M</td>
@@ -1079,7 +1164,7 @@ window.NBC_EXECUTIVE = {
                   <span class="status-badge ${r.status.toLowerCase()}">${r.status}</span>
                 </td>
               </tr>
-            `).join('')}
+            `;}).join('')}
           </tbody>
         </table>
       </div>

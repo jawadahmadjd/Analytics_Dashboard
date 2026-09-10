@@ -10,7 +10,7 @@ window.NBC_APP = {
     activeExecTab: 'workflow',   // workflow, portfolio, diagnostic, report, gcco
     workflowStep: 1,             // 1: Monitor, 2: Detect, 3: Investigate, 4: Analyse, 5: Recommend, 6: Escalate
     selectedCycle: '2026-06',
-    selectedProduct: 'Saving Bonds',
+    selectedProduct: 'All Products',
     warningThreshold: -8.0,
     breachThreshold: -15.0,
     kpiRecords: [],
@@ -83,6 +83,7 @@ window.NBC_APP = {
       const topProd = document.getElementById('filter-product-select');
       if (topProd) topProd.value = e.target.value;
       this.updateProductCard();
+      this.updateOverviewHeader();
       if (this.state.mode === 'executive') {
         this.renderCurrentView();
       }
@@ -176,12 +177,11 @@ window.NBC_APP = {
     const filterProduct = document.getElementById('filter-product-select');
     filterProduct?.addEventListener('change', (e) => {
       const val = e.target.value;
-      if (val !== 'All Products') {
-        this.state.selectedProduct = val;
-        const sideProd = document.getElementById('sidebar-product-select');
-        if (sideProd) sideProd.value = val;
-        this.updateProductCard();
-      }
+      this.state.selectedProduct = val;
+      const sideProd = document.getElementById('sidebar-product-select');
+      if (sideProd) sideProd.value = val;
+      this.updateProductCard();
+      this.updateOverviewHeader();
       this.renderCurrentView();
     });
 
@@ -253,6 +253,7 @@ window.NBC_APP = {
           const sideProd = document.getElementById('sidebar-product-select');
           if (sideProd) sideProd.value = prod;
           this.updateProductCard();
+          this.updateOverviewHeader();
 
           // Switch to Six Step Workflow (Step 02: Detect)
           this.state.workflowStep = 2;
@@ -267,30 +268,83 @@ window.NBC_APP = {
 
   updateOverviewHeader() {
     const { kpiRecords, selectedCycle, selectedProduct } = this.state;
+    const isAll = !selectedProduct || selectedProduct === 'All Products' || selectedProduct === 'ALL';
     const cycleKpis = kpiRecords.filter(r => r.month === selectedCycle);
-
-    // Calculate aggregations
-    const gross = cycleKpis.reduce((acc, r) => acc + r.gross_inflows_aed, 0) / 1e6;
-    const red = cycleKpis.reduce((acc, r) => acc + r.redemptions_aed, 0) / 1e6;
-    const net = cycleKpis.reduce((acc, r) => acc + r.net_inflows_aed, 0) / 1e6;
-    const target = cycleKpis.reduce((acc, r) => acc + r.target_inflows_aed, 0) / 1e6;
-    const variancePct = target > 0 ? ((net - target) / target) * 100 : 0;
-    const savers = cycleKpis.reduce((acc, r) => acc + r.active_customers, 0);
 
     // 1. Update Slim Horizontal Header Strip
     const statAum = document.getElementById('hdr-stat-aum');
+    const statAumLabel = document.querySelector('#header-stat-strip .header-stat-item:nth-child(1) .stat-label');
+    const statAumBadge = document.querySelector('#header-stat-strip .header-stat-item:nth-child(1) .stat-badge');
     const statNet = document.getElementById('hdr-stat-net');
     const statNetBadge = document.getElementById('hdr-stat-net-badge');
     const statSavers = document.getElementById('hdr-stat-savers');
 
-    if (statAum) statAum.textContent = 'AED 18.34B';
-    if (statNet) statNet.textContent = `AED ${net.toFixed(1)}M`;
+    const PRODUCT_AUM = {
+      'Term Sukuk': 9450,
+      'Saving Bonds': 4820,
+      'Booster Plan': 2150,
+      'MyPlan': 1420,
+      'Second Salary': 500
+    };
+
+    let aumText = 'AED 18.34B';
+    let aumBadgeText = '+8.4% YoY';
+    let netText = 'AED 0.0M';
+    let variancePct = 0;
+    let saversText = '154.2K';
+
+    if (isAll) {
+      const net = cycleKpis.reduce((acc, r) => acc + r.net_inflows_aed, 0) / 1e6;
+      const target = cycleKpis.reduce((acc, r) => acc + r.target_inflows_aed, 0) / 1e6;
+      variancePct = target > 0 ? ((net - target) / target) * 100 : 0;
+      const savers = cycleKpis.reduce((acc, r) => acc + r.active_customers, 0);
+
+      aumText = 'AED 18.34B';
+      aumBadgeText = '+8.4% YoY';
+      netText = `AED ${net.toFixed(1)}M`;
+      saversText = savers > 0 ? `${(savers / 1000).toFixed(1)}K` : '154.2K';
+
+      if (statAumLabel) {
+        statAumLabel.innerHTML = `
+          <span class="material-symbols-rounded">account_balance</span>
+          Total Portfolio
+        `;
+      }
+    } else {
+      const found = cycleKpis.find(r => r.product_name.includes(selectedProduct.split(' ')[0])) || cycleKpis[0];
+      if (found) {
+        const net = found.net_inflows_aed / 1e6;
+        variancePct = found.deviation_pct;
+        netText = `AED ${net.toFixed(1)}M`;
+        saversText = found.active_customers > 0 ? `${(found.active_customers / 1000).toFixed(1)}K` : '0K';
+
+        const aumKey = Object.keys(PRODUCT_AUM).find(k => found.product_name.includes(k));
+        const aumVal = aumKey ? PRODUCT_AUM[aumKey] : 2000;
+        aumText = aumVal >= 1000 ? `AED ${(aumVal / 1000).toFixed(2)}B` : `AED ${aumVal}M`;
+        const aumShare = ((aumVal / 18340) * 100).toFixed(1);
+        aumBadgeText = `${aumShare}% AUM`;
+
+        if (statAumLabel) {
+          statAumLabel.innerHTML = `
+            <span class="material-symbols-rounded">category</span>
+            Product AUM
+          `;
+        }
+      }
+    }
+
+    if (statAum) statAum.textContent = aumText;
+    if (statAumBadge) {
+      statAumBadge.textContent = aumBadgeText;
+      statAumBadge.className = `stat-badge ${isAll ? 'positive' : 'neutral'}`;
+    }
+    if (statNet) statNet.textContent = netText;
     if (statNetBadge) {
       statNetBadge.textContent = `${variancePct > 0 ? '+' : ''}${variancePct.toFixed(1)}% vs Target`;
       statNetBadge.className = `stat-badge ${variancePct >= 0 ? 'positive' : variancePct > -10 ? 'warning' : 'negative'}`;
     }
     if (statSavers) {
-      statSavers.textContent = savers > 0 ? `${(savers / 1000).toFixed(1)}K` : '154.2K';
+      statSavers.textContent = saversText;
     }
 
     // 2. Populate Notification Center Drawer & Badge
@@ -369,14 +423,42 @@ window.NBC_APP = {
 
   updateProductCard() {
     const { kpiRecords, selectedCycle, selectedProduct } = this.state;
-    const found = kpiRecords.find(r => r.month === selectedCycle && r.product_name.includes(selectedProduct.split(' ')[0]));
-    if (!found) return;
+    const isAll = !selectedProduct || selectedProduct === 'All Products' || selectedProduct === 'ALL';
+    const cycleKpis = kpiRecords.filter(r => r.month === selectedCycle);
 
     const nameEl = document.getElementById('sidebar-prod-name');
+    const badgeEl = document.getElementById('sidebar-prod-badge');
     const netEl = document.getElementById('sidebar-prod-net');
     const varEl = document.getElementById('sidebar-prod-var');
 
+    if (isAll) {
+      const totalNet = cycleKpis.reduce((acc, r) => acc + r.net_inflows_aed, 0) / 1e6;
+      const totalTgt = cycleKpis.reduce((acc, r) => acc + r.target_inflows_aed, 0) / 1e6;
+      const totalVar = totalTgt > 0 ? ((totalNet - totalTgt) / totalTgt) * 100 : 0;
+
+      if (nameEl) nameEl.textContent = 'All Products';
+      if (badgeEl) {
+        const isBreach = totalVar <= this.state.breachThreshold;
+        const isWarn = totalVar <= this.state.warningThreshold;
+        badgeEl.textContent = isBreach ? 'BREACH' : isWarn ? 'WARNING' : 'HEALTHY';
+        badgeEl.className = `status-badge ${isBreach ? 'breach' : isWarn ? 'warning' : 'healthy'}`;
+      }
+      if (netEl) netEl.textContent = `AED ${totalNet.toFixed(1)}M`;
+      if (varEl) {
+        varEl.textContent = `${totalVar > 0 ? '+' : ''}${totalVar.toFixed(1)}%`;
+        varEl.style.color = totalVar < -15 ? '#ef4444' : totalVar < 0 ? '#f59e0b' : '#10b981';
+      }
+      return;
+    }
+
+    const found = cycleKpis.find(r => r.product_name.includes(selectedProduct.split(' ')[0])) || cycleKpis[0];
+    if (!found) return;
+
     if (nameEl) nameEl.textContent = found.product_name.split(' (')[0];
+    if (badgeEl) {
+      badgeEl.textContent = found.status;
+      badgeEl.className = `status-badge ${found.status.toLowerCase()}`;
+    }
     if (netEl) netEl.textContent = `AED ${(found.net_inflows_aed / 1e6).toFixed(1)}M`;
     if (varEl) {
       varEl.textContent = `${found.deviation_pct > 0 ? '+' : ''}${found.deviation_pct.toFixed(1)}%`;

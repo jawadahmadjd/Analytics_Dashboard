@@ -262,8 +262,9 @@ def render_powerbi_studio(kpi_df, cust_df, market_json_path="market_intelligence
         if not os.path.exists(resolved_market_path):
             for candidate in [
                 os.path.join("data", "market_intelligence_data.json"),
+                os.path.join(os.path.dirname(__file__), "..", "data", "market_intelligence_data.json"),
                 os.path.join(os.path.dirname(__file__), "data", "market_intelligence_data.json"),
-                os.path.join(os.path.dirname(__file__), "market_intelligence_data.json")
+                os.path.join(os.path.dirname(__file__), "..", "market_intelligence_data.json")
             ]:
                 if os.path.exists(candidate):
                     resolved_market_path = candidate
