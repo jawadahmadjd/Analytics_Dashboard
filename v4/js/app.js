@@ -39,6 +39,8 @@ window.NBC_APP = {
     this.bindNavigationTabs();
     this.bindInlineFilters();
     this.bindNotificationCenter();
+    this.initAuth();
+    this.startLiveTelemetry();
     this.updateOverviewHeader();
     this.renderCurrentView();
 
@@ -410,6 +412,243 @@ window.NBC_APP = {
       default:
         window.NBC_EXECUTIVE.renderAgenticWorkflow(container, this.state);
     }
+  },
+
+  /* ==========================================================================
+     Executive Authentication & Profile Management
+     ========================================================================== */
+  initAuth() {
+    const profileBtn = document.getElementById('btn-user-profile');
+    const modalOverlay = document.getElementById('auth-modal-overlay');
+    const closeBtn = document.getElementById('btn-close-auth-modal');
+    const tabLogin = document.getElementById('tab-btn-login');
+    const tabSignup = document.getElementById('tab-btn-signup');
+    const formLogin = document.getElementById('form-auth-login');
+    const formSignup = document.getElementById('form-auth-signup');
+
+    // Restore saved user or load default
+    const savedUserJson = localStorage.getItem('nb_active_user');
+    let currentUser = null;
+    if (savedUserJson) {
+      try { currentUser = JSON.parse(savedUserJson); } catch (e) {}
+    }
+    if (!currentUser) {
+      currentUser = {
+        name: "Jawad Ahmad",
+        email: "jawad.ahmad@nationalbonds.ae",
+        phone: "+971 50 123 4567",
+        designation: "GCCO Commercial Advisory Lead",
+        avatar: "JA"
+      };
+    }
+    this.applyUserProfile(currentUser);
+
+    // Open Modal
+    profileBtn?.addEventListener('click', () => {
+      this.loadQuickProfiles();
+      this.clearAuthFeedback();
+      modalOverlay?.classList.add('active');
+    });
+
+    // Close Modal
+    const closeModal = () => modalOverlay?.classList.remove('active');
+    closeBtn?.addEventListener('click', closeModal);
+    modalOverlay?.addEventListener('click', (e) => {
+      if (e.target === modalOverlay) closeModal();
+    });
+
+    // Tab Switcher
+    tabLogin?.addEventListener('click', () => {
+      tabLogin.classList.add('active');
+      tabSignup?.classList.remove('active');
+      if (formLogin) formLogin.style.display = 'block';
+      if (formSignup) formSignup.style.display = 'none';
+      this.clearAuthFeedback();
+    });
+
+    tabSignup?.addEventListener('click', () => {
+      tabSignup.classList.add('active');
+      tabLogin?.classList.remove('active');
+      if (formLogin) formLogin.style.display = 'none';
+      if (formSignup) formSignup.style.display = 'block';
+      this.clearAuthFeedback();
+    });
+
+    // Handle Login Submit
+    formLogin?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('login-email')?.value.trim();
+      const password = document.getElementById('login-password')?.value.trim();
+      
+      try {
+        const res = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+        const data = await res.json();
+        if (data.success && data.user) {
+          this.showAuthFeedback('success', `Welcome back, ${data.user.name}!`);
+          this.applyUserProfile(data.user);
+          setTimeout(closeModal, 800);
+        } else {
+          this.showAuthFeedback('error', data.message || 'Login failed.');
+        }
+      } catch (err) {
+        this.showAuthFeedback('error', 'Network error contacting server.');
+      }
+    });
+
+    // Handle Signup Submit
+    formSignup?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const name = document.getElementById('signup-name')?.value.trim();
+      const email = document.getElementById('signup-email')?.value.trim();
+      const phone = document.getElementById('signup-phone')?.value.trim();
+      const designation = document.getElementById('signup-designation')?.value.trim();
+      const password = document.getElementById('signup-password')?.value.trim();
+
+      try {
+        const res = await fetch('/api/auth/signup', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, email, phone, designation, password })
+        });
+        const data = await res.json();
+        if (data.success && data.user) {
+          this.showAuthFeedback('success', `Account created successfully! Logged in as ${data.user.name}.`);
+          this.applyUserProfile(data.user);
+          formSignup.reset();
+          setTimeout(closeModal, 1000);
+        } else {
+          this.showAuthFeedback('error', data.message || 'Signup failed.');
+        }
+      } catch (err) {
+        this.showAuthFeedback('error', 'Network error contacting server.');
+      }
+    });
+  },
+
+  applyUserProfile(user) {
+    if (!user) return;
+    localStorage.setItem('nb_active_user', JSON.stringify(user));
+    const avatarEl = document.getElementById('sidebar-user-avatar');
+    const nameEl = document.getElementById('sidebar-user-name');
+    const roleEl = document.getElementById('sidebar-user-role');
+    if (avatarEl) avatarEl.textContent = user.avatar || user.name.slice(0, 2).toUpperCase();
+    if (nameEl) nameEl.textContent = user.name;
+    if (roleEl) roleEl.textContent = user.designation || user.role || 'Executive';
+  },
+
+  async loadQuickProfiles() {
+    const quickList = document.getElementById('quick-profiles-list');
+    if (!quickList) return;
+    try {
+      const res = await fetch('/api/auth/users');
+      const data = await res.json();
+      if (data.users && data.users.length > 0) {
+        quickList.innerHTML = data.users.map(u => `
+          <div class="quick-profile-item" data-user-email="${u.email}">
+            <div class="quick-profile-avatar">${u.avatar}</div>
+            <div>
+              <div class="quick-profile-name">${u.name}</div>
+              <div style="font-size: 10.5px; color: #64748b;">${u.email}</div>
+            </div>
+            <div class="quick-profile-role">${u.designation || u.role}</div>
+          </div>
+        `).join('');
+
+        quickList.querySelectorAll('.quick-profile-item').forEach(item => {
+          item.addEventListener('click', () => {
+            const email = item.getAttribute('data-user-email');
+            const found = data.users.find(u => u.email === email);
+            if (found) {
+              this.applyUserProfile(found);
+              this.showAuthFeedback('success', `Switched active persona to ${found.name}.`);
+              setTimeout(() => {
+                document.getElementById('auth-modal-overlay')?.classList.remove('active');
+              }, 600);
+            }
+          });
+        });
+      }
+    } catch (err) {
+      console.warn('Failed to fetch quick profiles:', err);
+    }
+  },
+
+  showAuthFeedback(type, message) {
+    const banner = document.getElementById('auth-feedback-banner');
+    if (!banner) return;
+    banner.className = `auth-feedback-banner ${type}`;
+    banner.innerHTML = `
+      <span class="material-symbols-rounded" style="font-size: 18px;">${type === 'success' ? 'check_circle' : 'error'}</span>
+      <span>${message}</span>
+    `;
+    banner.style.display = 'flex';
+  },
+
+  clearAuthFeedback() {
+    const banner = document.getElementById('auth-feedback-banner');
+    if (banner) {
+      banner.className = 'auth-feedback-banner';
+      banner.innerHTML = '';
+      banner.style.display = 'none';
+    }
+  },
+
+  /* ==========================================================================
+     Live Data Stream Telemetry Poller
+     ========================================================================== */
+  startLiveTelemetry() {
+    let lastSavers = null;
+
+    const fetchTelemetry = async () => {
+      try {
+        const res = await fetch('/api/live-metrics');
+        if (!res.ok) return;
+        const data = await res.json();
+        if (data.is_live) {
+          const saversEl = document.getElementById('hdr-stat-savers');
+          const aumEl = document.getElementById('hdr-stat-aum');
+          const netEl = document.getElementById('hdr-stat-net');
+          const badgeEl = document.getElementById('live-telemetry-badge');
+
+          if (saversEl && data.total_savers_formatted) {
+            if (lastSavers !== null && data.total_savers !== lastSavers) {
+              saversEl.classList.remove('stat-val-pulse');
+              void saversEl.offsetWidth;
+              saversEl.classList.add('stat-val-pulse');
+
+              if (aumEl) {
+                aumEl.classList.remove('stat-val-pulse');
+                void aumEl.offsetWidth;
+                aumEl.classList.add('stat-val-pulse');
+              }
+            }
+            saversEl.textContent = data.total_savers_formatted;
+            lastSavers = data.total_savers;
+          }
+
+          if (aumEl && data.total_aum_formatted) {
+            aumEl.textContent = data.total_aum_formatted;
+          }
+
+          if (netEl && data.net_inflows_formatted) {
+            netEl.textContent = data.net_inflows_formatted;
+          }
+
+          if (badgeEl && data.added_customers !== undefined) {
+            badgeEl.title = `Live Ingestion Active: +${data.added_customers} dummy customer records appended. Last sync: ${data.timestamp}`;
+          }
+        }
+      } catch (err) {
+        // Silently retry on next tick
+      }
+    };
+
+    fetchTelemetry();
+    setInterval(fetchTelemetry, 2000);
   }
 };
 

@@ -7,9 +7,9 @@
   <meta name="description" content="Institutional Executive Cockpit and Frontline Knowledge Assistant for National Bonds Corporation. Audited ground-truth analytics, agentic workflows, and Sharia compliance.">
 
   <!-- Design Tokens, Layout & Components -->
-  <link rel="stylesheet" href="css/design-tokens.css?v=4.0.4">
-  <link rel="stylesheet" href="css/layout.css?v=4.0.4">
-  <link rel="stylesheet" href="css/components.css?v=4.0.4">
+  <link rel="stylesheet" href="css/design-tokens.css?v=4.1.0">
+  <link rel="stylesheet" href="css/layout.css?v=4.1.0">
+  <link rel="stylesheet" href="css/components.css?v=4.1.0">
 
   <!-- ApexCharts Suite (Defect 1 Fix: Zero Legend Overlap) -->
   <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
@@ -79,36 +79,6 @@
         </div>
       </div>
 
-      <!-- Slicer: Reporting Cycle -->
-      <div class="sidebar-section">
-        <div class="sidebar-label">
-          <span>Reporting Cycle</span>
-          <span class="slider-val-badge" id="sidebar-cycle-badge">2026-06</span>
-        </div>
-        <div class="sidebar-slider-container">
-          <input type="range" id="sidebar-cycle-slider" min="0" max="17" value="17" class="sidebar-range">
-          <div style="display: flex; justify-content: space-between; font-size: 10px; color: var(--text-inverse-muted); margin-top: 4px;">
-            <span>2025-01</span>
-            <span>2026-06 (Latest)</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Slicer: Anomaly Sensitivity -->
-      <div class="sidebar-section">
-        <div class="sidebar-label">
-          <span>Early Warning Floor</span>
-          <span class="slider-val-badge" id="sidebar-thresh-badge">-8.0%</span>
-        </div>
-        <div class="sidebar-slider-container">
-          <input type="range" id="sidebar-thresh-range" min="-20" max="-2" value="-8" step="1" class="sidebar-range">
-          <div style="display: flex; justify-content: space-between; font-size: 10px; color: var(--text-inverse-muted); margin-top: 4px;">
-            <span>-20% (Lax)</span>
-            <span>-2% (Strict)</span>
-          </div>
-        </div>
-      </div>
-
       <!-- Executive Reports & Dossiers Section -->
       <div class="sidebar-section">
         <div class="sidebar-label">
@@ -128,12 +98,13 @@
       </div>
 
       <!-- Pinned Footer User Profile -->
-      <div class="sidebar-footer">
-        <div class="user-avatar">JA</div>
+      <div class="sidebar-footer" id="btn-user-profile" title="Manage Profile or Switch User" style="cursor: pointer;">
+        <div class="user-avatar" id="sidebar-user-avatar">JA</div>
         <div class="user-meta">
-          <span class="user-name">Jawad Ahmad</span>
-          <span class="user-role">GCCO Commercial Advisory</span>
+          <span class="user-name" id="sidebar-user-name">Jawad Ahmad</span>
+          <span class="user-role" id="sidebar-user-role">GCCO Commercial Advisory</span>
         </div>
+        <span class="material-symbols-rounded" style="font-size: 16px; color: #94a3b8; margin-left: auto;">manage_accounts</span>
       </div>
     </aside>
 
@@ -146,7 +117,12 @@
         <!-- Global Executive Header -->
         <header class="exec-header">
           <div class="header-brand-group">
-            <h1 class="header-title">National Bonds Corporation</h1>
+            <h1 class="header-title" style="display: flex; align-items: center; flex-wrap: wrap; gap: 8px;">
+              <span>National Bonds Corporation</span>
+              <span class="live-pulse-badge" id="live-telemetry-badge" title="Live transactions stream active">
+                <span class="live-pulse-dot"></span> LIVE TELEMETRY
+              </span>
+            </h1>
             <p class="header-subtitle">Executive Intelligence & Early Warning System &bull; Initiative 3 (Zero-Streamlit V4)</p>
           </div>
 
@@ -357,12 +333,129 @@
 
   </div>
 
+  <!-- ====================================================================
+       Executive Authentication & User Profile Modal
+       ==================================================================== -->
+  <div class="auth-modal-overlay" id="auth-modal-overlay">
+    <div class="auth-modal-container">
+      <div class="auth-modal-header">
+        <div class="auth-modal-title-group">
+          <div class="auth-brand-emblem">NB</div>
+          <div>
+            <h3 class="auth-modal-title">National Bonds Executive Portal</h3>
+            <p class="auth-modal-subtitle">Profile Management & Access Control</p>
+          </div>
+        </div>
+        <button class="auth-modal-close" id="btn-close-auth-modal" title="Close modal">
+          <span class="material-symbols-rounded">close</span>
+        </button>
+      </div>
+
+      <!-- Auth Tabs: Sign In vs Sign Up -->
+      <div class="auth-tabs">
+        <button class="auth-tab-btn active" id="tab-btn-login">
+          <span class="material-symbols-rounded" style="font-size: 16px;">login</span>
+          Sign In
+        </button>
+        <button class="auth-tab-btn" id="tab-btn-signup">
+          <span class="material-symbols-rounded" style="font-size: 16px;">person_add</span>
+          Create Account / Sign Up
+        </button>
+      </div>
+
+      <div class="auth-modal-body">
+        <!-- Status / Feedback Banner -->
+        <div class="auth-feedback-banner" id="auth-feedback-banner"></div>
+
+        <!-- 1. SIGN IN FORM -->
+        <form id="form-auth-login">
+          <div class="auth-form-group">
+            <label class="auth-form-label" for="login-email">Official Corporate Email</label>
+            <div class="auth-input-wrap">
+              <span class="material-symbols-rounded">mail</span>
+              <input type="email" id="login-email" class="auth-input" placeholder="e.g. jawad.ahmad@nationalbonds.ae" required autocomplete="email">
+            </div>
+          </div>
+
+          <div class="auth-form-group">
+            <label class="auth-form-label" for="login-password">Password</label>
+            <div class="auth-input-wrap">
+              <span class="material-symbols-rounded">lock</span>
+              <input type="password" id="login-password" class="auth-input" placeholder="Enter password" required autocomplete="current-password">
+            </div>
+          </div>
+
+          <button type="submit" class="auth-btn-primary" id="btn-submit-login">
+            <span class="material-symbols-rounded" style="font-size: 18px;">login</span>
+            Sign In to Executive Portal
+          </button>
+
+          <!-- Quick Persona Switchers -->
+          <div class="quick-profiles-section">
+            <span class="quick-profiles-label">Quick Switch to Seeded Profile</span>
+            <div class="quick-profiles-list" id="quick-profiles-list">
+              <!-- Dynamically populated -->
+            </div>
+          </div>
+        </form>
+
+        <!-- 2. SIGN UP FORM -->
+        <form id="form-auth-signup" style="display: none;">
+          <div class="auth-form-group">
+            <label class="auth-form-label" for="signup-name">Full Name</label>
+            <div class="auth-input-wrap">
+              <span class="material-symbols-rounded">person</span>
+              <input type="text" id="signup-name" class="auth-input" placeholder="e.g. Tariq Al Mansoor" required>
+            </div>
+          </div>
+
+          <div class="auth-form-group">
+            <label class="auth-form-label" for="signup-email">Official Corporate Email</label>
+            <div class="auth-input-wrap">
+              <span class="material-symbols-rounded">mail</span>
+              <input type="email" id="signup-email" class="auth-input" placeholder="e.g. tariq.mansoor@nationalbonds.ae" required autocomplete="email">
+            </div>
+          </div>
+
+          <div class="auth-form-group">
+            <label class="auth-form-label" for="signup-phone">Phone Number</label>
+            <div class="auth-input-wrap">
+              <span class="material-symbols-rounded">call</span>
+              <input type="tel" id="signup-phone" class="auth-input" placeholder="e.g. +971 50 888 7766" required>
+            </div>
+          </div>
+
+          <div class="auth-form-group">
+            <label class="auth-form-label" for="signup-designation">Designation / Department</label>
+            <div class="auth-input-wrap">
+              <span class="material-symbols-rounded">badge</span>
+              <input type="text" id="signup-designation" class="auth-input" placeholder="e.g. Head of Liquidity Management" required>
+            </div>
+          </div>
+
+          <div class="auth-form-group">
+            <label class="auth-form-label" for="signup-password">Password</label>
+            <div class="auth-input-wrap">
+              <span class="material-symbols-rounded">lock</span>
+              <input type="password" id="signup-password" class="auth-input" placeholder="Create a password" required autocomplete="new-password">
+            </div>
+          </div>
+
+          <button type="submit" class="auth-btn-primary" id="btn-submit-signup">
+            <span class="material-symbols-rounded" style="font-size: 18px;">person_add</span>
+            Create Account & Save Profile
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
   <!-- JavaScript Modules -->
-  <script src="js/data.js?v=4.0.4"></script>
-  <script src="js/charts.js?v=4.0.4"></script>
-  <script src="js/executive.js?v=4.0.4"></script>
-  <script src="js/frontline.js?v=4.0.4"></script>
-  <script src="js/copilot.js?v=4.0.4"></script>
-  <script src="js/app.js?v=4.0.4"></script>
+  <script src="js/data.js?v=4.1.0"></script>
+  <script src="js/charts.js?v=4.1.0"></script>
+  <script src="js/executive.js?v=4.1.0"></script>
+  <script src="js/frontline.js?v=4.1.0"></script>
+  <script src="js/copilot.js?v=4.1.0"></script>
+  <script src="js/app.js?v=4.1.0"></script>
 </body>
 </html>

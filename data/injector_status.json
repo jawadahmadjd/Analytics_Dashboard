@@ -1,0 +1,10 @@
+{
+  "current_iteration": 151,
+  "total_iterations": 180,
+  "records_injected_this_session": 15100,
+  "last_customer_id": 1169100,
+  "last_injected_at": "2026-09-10 14:47:11",
+  "status": "running",
+  "rate": "100 records/minute",
+  "planned_duration_hours": 3.0
+}

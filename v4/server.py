@@ -44,6 +44,10 @@ class V4RequestHandler(SimpleHTTPRequestHandler):
             query_params = urllib.parse.parse_qs(parsed.query)
             q = query_params.get('q', [''])[0] or query_params.get('query', [''])[0]
             self.handle_api_copilot({'query': q})
+        elif parsed.path == '/api/live-metrics':
+            self.handle_api_live_metrics()
+        elif parsed.path == '/api/auth/users':
+            self.handle_api_auth_users()
         else:
             super().do_GET()
 
@@ -88,6 +92,12 @@ class V4RequestHandler(SimpleHTTPRequestHandler):
             self.handle_api_copilot(payload)
         elif parsed.path == '/api/escalate':
             self.handle_api_escalate(payload)
+        elif parsed.path == '/api/auth/login':
+            self.handle_api_auth_login(payload)
+        elif parsed.path == '/api/auth/signup':
+            self.handle_api_auth_signup(payload)
+        elif parsed.path == '/api/auth/update-profile':
+            self.handle_api_auth_update_profile(payload)
         else:
             self.send_error(404, "Endpoint Not Found")
 
@@ -168,6 +178,182 @@ class V4RequestHandler(SimpleHTTPRequestHandler):
             self.send_json_response({"success": True, "ticket": new_ticket})
         except Exception as e:
             self.send_json_response({"success": False, "error": str(e)})
+
+    def handle_api_live_metrics(self):
+        csv_path = os.path.join(BASE_DIR, 'cleaned_national_bonds_customers.csv')
+        line_count = 154200
+        try:
+            if os.path.exists(csv_path):
+                with open(csv_path, 'rb') as f:
+                    line_count = sum(1 for _ in f) - 1
+        except Exception as e:
+            print(f"[V4 Server] Line count error: {e}")
+
+        base_count = 154200
+        added = max(0, line_count - base_count)
+        
+        total_savers = line_count
+        total_aum = 18.34e9 + (added * 125000.0)
+        net_inflows = 268.4e6 + (added * 35000.0)
+        
+        savers_formatted = f"{total_savers / 1000.0:.1f}K" if total_savers >= 1000 else f"{total_savers:,}"
+        aum_formatted = f"AED {total_aum / 1e9:.2f}B"
+        net_inflows_formatted = f"+AED {net_inflows / 1e6:.1f}M"
+        
+        import datetime
+        now_str = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+        self.send_json_response({
+            "status": "success",
+            "is_live": True,
+            "timestamp": now_str,
+            "total_savers": total_savers,
+            "total_savers_formatted": savers_formatted,
+            "total_aum": total_aum,
+            "total_aum_formatted": aum_formatted,
+            "net_inflows": net_inflows,
+            "net_inflows_formatted": net_inflows_formatted,
+            "added_customers": added,
+            "injection_rate": "100 rec/min",
+            "capital_adequacy": "22.4%",
+            "lcr_ratio": "218%"
+        })
+
+    def get_users_list(self):
+        users_path = os.path.join(BASE_DIR, 'data', 'users.json')
+        if os.path.exists(users_path):
+            try:
+                with open(users_path, 'r', encoding='utf-8') as f:
+                    return json.load(f)
+            except Exception:
+                return []
+        return []
+
+    def save_users_list(self, users):
+        users_path = os.path.join(BASE_DIR, 'data', 'users.json')
+        os.makedirs(os.path.dirname(users_path), exist_ok=True)
+        with open(users_path, 'w', encoding='utf-8') as f:
+            json.dump(users, f, indent=2)
+
+    def handle_api_auth_users(self):
+        users = self.get_users_list()
+        sanitized = [{
+            "id": u.get("id"),
+            "name": u.get("name"),
+            "email": u.get("email"),
+            "phone": u.get("phone", ""),
+            "designation": u.get("designation", ""),
+            "role": u.get("role", "Executive User"),
+            "avatar": u.get("avatar", u.get("name", "NB")[:2].upper())
+        } for u in users]
+        self.send_json_response({"users": sanitized})
+
+    def handle_api_auth_login(self, payload):
+        email = payload.get('email', '').strip().lower()
+        password = payload.get('password', '').strip()
+        if not email or not password:
+            self.send_json_response({"success": False, "message": "Email and password are required."}, 400)
+            return
+
+        users = self.get_users_list()
+        for u in users:
+            if u.get('email', '').lower() == email:
+                if u.get('password') == password:
+                    user_data = {
+                        "id": u.get("id"),
+                        "name": u.get("name"),
+                        "email": u.get("email"),
+                        "phone": u.get("phone", ""),
+                        "designation": u.get("designation", ""),
+                        "role": u.get("role", "Executive User"),
+                        "avatar": u.get("avatar", u.get("name", "NB")[:2].upper())
+                    }
+                    self.send_json_response({"success": True, "message": "Login successful.", "user": user_data})
+                    return
+                else:
+                    self.send_json_response({"success": False, "message": "Incorrect password. Please try again."}, 401)
+                    return
+        
+        self.send_json_response({"success": False, "message": "No account found with this email address."}, 404)
+
+    def handle_api_auth_signup(self, payload):
+        name = payload.get('name', '').strip()
+        email = payload.get('email', '').strip().lower()
+        phone = payload.get('phone', '').strip()
+        designation = payload.get('designation', '').strip()
+        password = payload.get('password', '').strip()
+
+        if not name or not email or not phone or not designation or not password:
+            self.send_json_response({"success": False, "message": "All fields (Name, Email, Phone, Designation, Password) are required."}, 400)
+            return
+
+        users = self.get_users_list()
+        for u in users:
+            if u.get('email', '').lower() == email:
+                self.send_json_response({"success": False, "message": "An account with this email already exists."}, 400)
+                return
+
+        import datetime
+        import uuid
+        user_id = f"usr-{uuid.uuid4().hex[:6]}"
+        initials = "".join([part[0] for part in name.split()[:2]]).upper() if name else "NB"
+        new_user = {
+            "id": user_id,
+            "name": name,
+            "email": email,
+            "phone": phone,
+            "designation": designation,
+            "password": password,
+            "avatar": initials,
+            "role": "Executive User",
+            "created_at": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        }
+        users.append(new_user)
+        self.save_users_list(users)
+
+        sanitized_user = {
+            "id": new_user["id"],
+            "name": new_user["name"],
+            "email": new_user["email"],
+            "phone": new_user["phone"],
+            "designation": new_user["designation"],
+            "role": new_user["role"],
+            "avatar": new_user["avatar"]
+        }
+        self.send_json_response({"success": True, "message": "Profile created successfully!", "user": sanitized_user})
+
+    def handle_api_auth_update_profile(self, payload):
+        email = payload.get('email', '').strip().lower()
+        name = payload.get('name', '').strip()
+        phone = payload.get('phone', '').strip()
+        designation = payload.get('designation', '').strip()
+
+        users = self.get_users_list()
+        found = False
+        updated_user = None
+        for u in users:
+            if u.get('email', '').lower() == email:
+                if name: u['name'] = name
+                if phone: u['phone'] = phone
+                if designation: u['designation'] = designation
+                u['avatar'] = "".join([part[0] for part in name.split()[:2]]).upper() if name else u.get('avatar', 'NB')
+                found = True
+                updated_user = {
+                    "id": u.get("id"),
+                    "name": u.get("name"),
+                    "email": u.get("email"),
+                    "phone": u.get("phone", ""),
+                    "designation": u.get("designation", ""),
+                    "role": u.get("role", "Executive User"),
+                    "avatar": u.get("avatar")
+                }
+                break
+
+        if found:
+            self.save_users_list(users)
+            self.send_json_response({"success": True, "message": "Profile updated successfully.", "user": updated_user})
+        else:
+            self.send_json_response({"success": False, "message": "User not found."}, 404)
 
     def send_json_response(self, obj, status_code=200):
         body = json.dumps(obj, ensure_ascii=False).encode('utf-8')
