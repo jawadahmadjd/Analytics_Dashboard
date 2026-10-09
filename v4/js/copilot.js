@@ -1,5 +1,5 @@
 /* ==========================================================================
-   National Bonds Corporation — JD Product & Data Intelligence Copilot
+   National Bonds Corporation — JD Product & Data Intelligence Assistant
    Cross-Cutting Floating Assistant (Defect 4 Fix: Fluid Max Height & Scroll)
    ========================================================================== */
 
@@ -117,7 +117,7 @@ window.NBC_COPILOT = {
       const toSave = (this.messages || []).filter(m => !m.tempId);
       localStorage.setItem('nbc_jd_copilot_messages', JSON.stringify(toSave));
     } catch (e) {
-      console.warn('[JD Copilot] Error saving chat to localStorage:', e);
+      console.warn('[JD Assistant] Error saving chat to localStorage:', e);
     }
   },
 
@@ -161,7 +161,7 @@ window.NBC_COPILOT = {
         }
       }
     } catch (e) {
-      console.warn('[JD Copilot] Server API offline or timed out, using deterministic ground truth engine:', e);
+      console.warn('[JD Assistant] Server API offline or timed out, using deterministic ground truth engine:', e);
     }
 
     if (!answer) {
@@ -290,7 +290,7 @@ Depending on whether performance is evaluated by **plan outperformance** or **to
 ---
 
 ### 💻 Role of Jawad Ahmad:
-**Jawad Ahmad** is the **Lead Systems Engineer & AI Architect** who engineered this **Product Intelligence & Decision Support System (V4 Analytics Platform, Ask AI, and Real-Time Dashboard)**. He is the creator of the software application and AI copilot, **not** the founder, creator, or fund manager of the financial bond products.`;
+**Jawad Ahmad** is the **Lead Systems Engineer & AI Architect** who engineered this **Product Intelligence & Decision Support System (V4 Analytics Platform, Ask AI, and Real-Time Dashboard)**. He is the creator of the software application and AI assistant, **not** the founder, creator, or fund manager of the financial bond products.`;
       } else {
         return `### 🏛️ National Bonds Product Provenance & Governance
 • **Product Issuer:** **National Bonds Corporation** (wholly owned by the **Investment Corporation of Dubai - ICD**).
@@ -511,9 +511,9 @@ The Asset-Liability Committee (ALCO) and Executive Committee have ratified 3 tar
     const hasDomain = words.some(w => domainKeywords.includes(w));
 
     if (!hasDomain && (q.includes('capital') || q.includes('joke') || q.includes('messi') || q.includes('ronaldo') || q.includes('weather') || q.includes('movie') || q.includes('crypto') || q.includes('bitcoin') || words.length <= 2)) {
-      return `### 🏛️ National Bonds Executive Copilot — Scope Boundary
+      return `### 🏛️ National Bonds Executive Assistant — Scope Boundary
 
-I am **JD**, the dedicated Executive Product & Data Intelligence Copilot for **National Bonds Corporation (UAE)**.
+I am **JD**, the dedicated Executive Product & Data Intelligence Assistant for **National Bonds Corporation (UAE)**.
 
 My knowledge base is strictly anchored in:
 • 58 Audited H1 2026 Executive Presentation Slides

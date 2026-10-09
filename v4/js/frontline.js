@@ -11,7 +11,7 @@ window.NBC_FRONTLINE = {
       <!-- Frontline Hero Banner -->
       <div class="frontline-hero">
         <div>
-          <div style="font-size: 21px; font-weight: 800; color: var(--navy-slate-900);">Frontline Knowledge Assistant & Grounded Copilot</div>
+          <div style="font-size: 21px; font-weight: 800; color: var(--navy-slate-900);">Frontline Knowledge Assistant</div>
           <div style="font-size: 13px; color: var(--text-secondary); margin-top: 3px;">
             Single Source of Truth for Sales, Branches & Relationship Managers &bull; 100% Sharia Certified & Grounded Citations
           </div>

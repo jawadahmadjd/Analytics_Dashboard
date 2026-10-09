@@ -144,7 +144,7 @@ class V4RequestHandler(SimpleHTTPRequestHandler):
                     self.send_json_response({"answer": answer, "grounded": True, "saved": True})
                     return
             except Exception as e:
-                print(f"[V4 Server] Copilot ask() error: {e}")
+                print(f"[V4 Server] Assistant ask() error: {e}")
 
         # Fallback response if engine not available
         self.send_json_response({

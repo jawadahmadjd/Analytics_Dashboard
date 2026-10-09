@@ -1159,7 +1159,7 @@
 }
 
 /* ==========================================================================
-   9. Floating JD AI Copilot (Defect 4 Fix: Fluid Max Height & Scroll)
+   9. Floating JD AI Assistant (Defect 4 Fix: Fluid Max Height & Scroll)
    ========================================================================== */
 .copilot-trigger {
   position: fixed;
@@ -1209,7 +1209,7 @@
   transform: translateY(16px) scale(0.97);
 }
 
-/* Full Screen Mode for JD Copilot */
+/* Full Screen Mode for JD Assistant */
 .copilot-popover.fullscreen {
   position: fixed !important;
   inset: 16px !important;

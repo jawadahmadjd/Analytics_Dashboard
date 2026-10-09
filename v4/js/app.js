@@ -45,7 +45,7 @@ window.NBC_APP = {
     this.updateOverviewHeader();
     this.renderCurrentView();
 
-    // Initialize JD Copilot
+    // Initialize JD Assistant
     if (window.NBC_COPILOT) {
       window.NBC_COPILOT.init();
     }
