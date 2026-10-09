@@ -21,3 +21,35 @@ ehthumbs_vista.db
 *.exe
 scratch/
 
+# Data files and directories
+data/
+*.csv
+*.parquet
+paraquet files/
+cleaned_national_bonds_customers.csv
+product_knowledge_base.json
+svg_extracted_data.json
+market_intelligence_data.json
+dispatch_log.json
+escalation_tickets.json
+audit_trail.json
+
+# Previous UI & Legacy Applications (V1 & V2)
+app.py
+app_v2.py
+ui_v1/
+ui_chat/
+backend/
+frontline_view.py
+executive_views.py
+powerbi_analytics_hub.py
+pdf_generator.py
+report_generator.py
+icons.py
+jd_engine.py
+
+# Legacy Documentation, UI Audits & Scripts
+UI Structure/
+docs/
+scripts/
+extracted_svg_images/
