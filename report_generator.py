@@ -169,7 +169,7 @@ class BiWeeklyReportGenerator:
         lines.extend([
             "",
             "=" * 84,
-            "Report compiled automatically via AI Product Intelligence & Early Warning Engine.",
+            "Report compiled automatically via AI Product Intelligence & Decision Support Engine.",
             "=" * 84
         ])
         return "\n".join(lines)

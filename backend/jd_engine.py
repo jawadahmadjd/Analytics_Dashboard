@@ -848,7 +848,7 @@ To evaluate corresponding mid-year performance from the verified dataset, here i
 ---
 
 ### 💻 Role of Jawad Ahmad:
-**Jawad Ahmad** is the **Lead Systems Engineer & AI Architect** who engineered this **Product Intelligence & Early Warning System (V4 Analytics Platform, JD Copilot, and Real-Time Dashboard)**. He is the creator of the software application and AI copilot, **not** the founder, creator, or fund manager of the financial bond products."""
+**Jawad Ahmad** is the **Lead Systems Engineer & AI Architect** who engineered this **Product Intelligence & Decision Support System (V4 Analytics Platform, Ask AI, and Real-Time Dashboard)**. He is the creator of the software application and AI copilot, **not** the founder, creator, or fund manager of the financial bond products."""
             else:
                 return f"""🏛️ **National Bonds Product Provenance & Governance:**
 

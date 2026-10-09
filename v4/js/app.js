@@ -523,7 +523,7 @@ window.NBC_APP = {
         name: "Jawad Ahmad",
         email: "jawad.ahmad@nationalbonds.ae",
         phone: "+971 50 123 4567",
-        designation: "GCCO Commercial Advisory Lead",
+        designation: "Lead Systems Engineer & AI Architect",
         avatar: "JA"
       };
     }
@@ -740,7 +740,7 @@ window.NBC_APP = {
         name: "Jawad Ahmad",
         email: "jawad.ahmad@nationalbonds.ae",
         phone: "+971 50 123 4567",
-        designation: "GCCO Commercial Advisory Lead"
+        designation: "Lead Systems Engineer & AI Architect"
       };
     }
 

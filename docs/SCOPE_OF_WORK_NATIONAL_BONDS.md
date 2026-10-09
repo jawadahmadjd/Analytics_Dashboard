@@ -13,7 +13,7 @@
 Document Reference : NBC-AIPM-ROADMAP-SOW-2026-V1.0
 Presented To       : Group Chief Commercial Officer (GCCO), National Bonds Corporation
 Presented By       : Fariha Fatima Hameed | Product Management
-Technical Architect: Jawad Ahmad | Lead AI & Product Solutions Architect
+Technical Architect: Jawad Ahmad | Lead Systems Engineer & AI Architect
 Strategic Charter  : "Three Connected Initiatives. One Intelligent Operating Model."
 Execution Motto    : Deliver • Deliver • Transform
 Effective Date     : September 7, 2026 (Anchoring the 31 August 2026 Executive Roadmap)
@@ -70,7 +70,7 @@ Product Management Lead
 
 \
 **Jawad Ahmad**  
-Lead AI & Product Solutions Architect  
+Lead Systems Engineer & AI Architect  
 *Product AI Solutions Group*  
 
 ---
@@ -723,7 +723,7 @@ Date: ________________________
 \
 ____________________________________________________  
 **Jawad Ahmad**  
-Lead AI & Product Solutions Architect  
+Lead Systems Engineer & AI Architect  
 Product AI Solutions Group  
 Date: September 7, 2026  
 

@@ -330,7 +330,7 @@ window.NBC_EXECUTIVE = {
           <div class="workflow-header-info">
             <div class="workflow-step-pill">
               <span class="material-symbols-rounded" style="font-size: 14px;">radar</span>
-              STEP 01 OF 06 &bull; AUTONOMOUS AGENTIC PIPELINE
+              STEP 01 OF 06 &bull; AI Product Intelligence Workflow
             </div>
             <div class="workflow-step-title">${isAllProducts ? 'Step 01: Continuous Portfolio & Liquidity Surveillance' : `Step 01: Continuous Product Surveillance &mdash; ${prodShortName}`}</div>
             <div class="workflow-step-desc">${isAllProducts ? `Continuous telemetry monitoring across all 5 Sharia wealth products, gross inflows, redemptions, and target pacing for Cycle ${currentMonth}.` : `Continuous telemetry surveillance for ${foundProd?.product_name || activeProd}, tracking gross inflows, redemptions, and target pacing for Cycle ${currentMonth}.`}</div>
@@ -425,7 +425,7 @@ window.NBC_EXECUTIVE = {
           <div class="workflow-header-info">
             <div class="workflow-step-pill">
               <span class="material-symbols-rounded" style="font-size: 14px;">warning</span>
-              STEP 02 OF 06 &bull; AUTONOMOUS AGENTIC PIPELINE
+              STEP 02 OF 06 &bull; AI Product Intelligence Workflow
             </div>
             <div class="workflow-step-title">Step 02: Algorithmic Breach Detection & Statistical Divergence</div>
             <div class="workflow-step-desc">Automated threshold triggers detecting consecutive contractions, statistical divergence, and policy breach criteria for ${prodShortName}.</div>
@@ -524,7 +524,7 @@ window.NBC_EXECUTIVE = {
           <div class="workflow-header-info">
             <div class="workflow-step-pill">
               <span class="material-symbols-rounded" style="font-size: 14px;">manage_search</span>
-              STEP 03 OF 06 &bull; AUTONOMOUS AGENTIC PIPELINE
+              STEP 03 OF 06 &bull; AI Product Intelligence Workflow
             </div>
             <div class="workflow-step-title">Step 03: Channel Attribution & Customer Cohort Forensics</div>
             <div class="workflow-step-desc">Forensic deconstruction of inflow leakage across digital channels, retail branches, and customer balance tiers for ${prodShortName}.</div>
@@ -623,7 +623,7 @@ window.NBC_EXECUTIVE = {
           <div class="workflow-header-info">
             <div class="workflow-step-pill">
               <span class="material-symbols-rounded" style="font-size: 14px;">query_stats</span>
-              STEP 04 OF 06 &bull; AUTONOMOUS AGENTIC PIPELINE
+              STEP 04 OF 06 &bull; AI Product Intelligence Workflow
             </div>
             <div class="workflow-step-title">Step 04: Macro Sensitivity & UAE Bank Yield Arbitrage</div>
             <div class="workflow-step-desc">Macroeconomic intelligence examining UAE central bank rate dynamics, interbank spreads, and competitor promotional yield arbitrage for ${prodShortName}.</div>
@@ -722,7 +722,7 @@ window.NBC_EXECUTIVE = {
           <div class="workflow-header-info">
             <div class="workflow-step-pill">
               <span class="material-symbols-rounded" style="font-size: 14px;">lightbulb</span>
-              STEP 05 OF 06 &bull; AUTONOMOUS AGENTIC PIPELINE
+              STEP 05 OF 06 &bull; AI Product Intelligence Workflow
             </div>
             <div class="workflow-step-title">Step 05: Prescriptive Strategic Counter-Measures & ROI Modeling</div>
             <div class="workflow-step-desc">Autonomous formulation of targeted commercial directives to bridge the ${devPct < 0 ? 'AED ' + defAed + 'M deficit' : 'growth targets'} with quantifiable recovery yield for ${prodShortName}.</div>
@@ -835,7 +835,7 @@ window.NBC_EXECUTIVE = {
           <div class="workflow-header-info">
             <div class="workflow-step-pill">
               <span class="material-symbols-rounded" style="font-size: 14px;">verified_user</span>
-              STEP 06 OF 06 &bull; AUTONOMOUS AGENTIC PIPELINE
+              STEP 06 OF 06 &bull; AI Product Intelligence Workflow
             </div>
             <div class="workflow-step-title">Step 06: Commercial Governance Escalation & Action Sign-Off</div>
             <div class="workflow-step-desc">Boardroom-ready escalation dossier packaging, formal human-in-the-loop endorsement console, and cryptographic ledger verification for ${prodDisplayName}.</div>
@@ -905,7 +905,7 @@ window.NBC_EXECUTIVE = {
               <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px;">
                 <div>
                   <label style="font-size: 11px; font-weight: 700; color: var(--text-tertiary); text-transform: uppercase;">Signatory Authority</label>
-                  <input type="text" id="signoff-authority" value="Jawad Ahmad (Group Commercial Advisory)" style="width: 100%; padding: 8px 10px; border-radius: var(--radius-sm); border: 1px solid var(--border-default); font-size: 12px; margin-top: 4px; font-family: var(--font-primary);">
+                  <input type="text" id="signoff-authority" value="Jawad Ahmad (Lead Systems Engineer & AI Architect)" style="width: 100%; padding: 8px 10px; border-radius: var(--radius-sm); border: 1px solid var(--border-default); font-size: 12px; margin-top: 4px; font-family: var(--font-primary);">
                 </div>
                 <div>
                   <label style="font-size: 11px; font-weight: 700; color: var(--text-tertiary); text-transform: uppercase;">Endorsement Date</label>

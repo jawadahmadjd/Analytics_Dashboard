@@ -1,7 +1,7 @@
 # National Bonds Corporation — Data Analysis & AI Platform
 
-**Initiative:** Agentic Product Intelligence & Early Warning System Prototype  
-**Author:** Jawad Ahmad | Product AI Solutions  
+**Initiative:** Agentic Product Intelligence & Decision Support System Prototype  
+**Author:** Jawad Ahmad | Lead Systems Engineer & AI Architect  
 **Target Viewports:** 1920x1080 Desktop Cockpit & Clean ChatGPT Intelligence Experience  
 
 ---
